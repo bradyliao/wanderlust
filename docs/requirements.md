@@ -72,11 +72,13 @@ This is the largest unknown and decides most of the cost.
 | Option | Gives | Concern |
 | --- | --- | --- |
 | Manual check via Google Maps link (today) | Correct numbers, zero cost | Slow: one click and a few fields per connection |
-| Google Routes API | Walking, driving, transit times | Paid per request. Transit coverage and fare data for Japan through the API must be verified before committing; I have not tested it |
+| Google Routes API | Walking and driving times worldwide; transit in most countries | **No transit in Japan**: Google's FAQ says the Routes API excludes Japanese transit partners (checked 2026-11-17). Pricing: 10,000 free requests a month for basic routes, then about USD 5 per 1,000 |
 | Open routing (OSRM, Valhalla, OpenTripPlanner) | Walking and driving for free; transit only where GTFS feeds exist | Japanese rail GTFS coverage is partial; fares mostly absent |
 | Japan-specific transit APIs (e.g. Navitime, Ekispert) | Good Japan transit and fares | Paid, Japan only |
 
-Recommendation: keep the manual check as the baseline, add walking times from an open router first (cheap, removes most guesses within a neighbourhood), and decide on a transit provider after testing one real trip's connections against Google Maps.
+Recommendation: keep the manual check as the baseline (the Google Maps website and app do show Japanese transit, so the "Check route" link works), add walking times from Google Routes or an open router, and use a Japan-specific provider only if automatic train times in Japan prove worth paying for.
+
+Sources: [Google Maps Platform pricing](https://developers.google.com/maps/billing-and-pricing/pricing), [Google Maps Platform FAQ](https://developers.google.com/maps/faq), [Routes API coverage](https://developers.google.com/maps/documentation/routes/coverage).
 
 ### Budget
 
