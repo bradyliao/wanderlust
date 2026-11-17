@@ -5,34 +5,31 @@ import type { Block, Place, Trip } from './types'
  * Coordinates, hours and prices are approximate placeholders, not verified data.
  */
 
-const me = 'you'
-const elders = 'parents'
-
-function place(p: Omit<Place, 'wishes'> & { wishes?: Place['wishes'] }): Place {
-  return { wishes: {}, ...p }
+function place(p: Place): Place {
+  return p
 }
 
 const places: Place[] = [
   place({ id: 'hotel', name: 'Hotel near Ueno Station', area: 'Ueno', category: 'lodging', lat: 35.712, lng: 139.778, stayMin: 60, note: 'Placeholder lodging.' }),
   place({ id: 'haneda', name: 'Haneda Airport Terminal 3', area: 'Haneda', category: 'transport', lat: 35.5494, lng: 139.7798, stayMin: 60 }),
-  place({ id: 'sensoji', name: 'Senso-ji', area: 'Asakusa', category: 'sight', lat: 35.7148, lng: 139.7967, stayMin: 90, wishes: { [me]: 'want', [elders]: 'want' } }),
-  place({ id: 'kappabashi', name: 'Kappabashi Kitchen Street', area: 'Asakusa', category: 'shopping', lat: 35.7143, lng: 139.7888, stayMin: 60, open: 600, close: 1020, wishes: { [me]: 'maybe' } }),
-  place({ id: 'skytree', name: 'Tokyo Skytree', area: 'Oshiage', category: 'sight', lat: 35.7101, lng: 139.8107, stayMin: 90, open: 600, close: 1320, wishes: { [me]: 'maybe', [elders]: 'want' } }),
-  place({ id: 'uenopark', name: 'Ueno Park', area: 'Ueno', category: 'sight', lat: 35.7146, lng: 139.7734, stayMin: 60, wishes: { [elders]: 'want' } }),
-  place({ id: 'tnm', name: 'Tokyo National Museum', area: 'Ueno', category: 'sight', lat: 35.7188, lng: 139.7765, stayMin: 120, open: 570, close: 1020, closedDays: [1], wishes: { [me]: 'want' } }),
-  place({ id: 'ameyoko', name: 'Ameyoko Market', area: 'Ueno', category: 'food', lat: 35.7106, lng: 139.7745, stayMin: 60, wishes: { [me]: 'want', [elders]: 'maybe' } }),
-  place({ id: 'rikugien', name: 'Rikugien Garden', area: 'Komagome', category: 'sight', lat: 35.7331, lng: 139.7466, stayMin: 75, open: 540, close: 1020, seasonal: 'Autumn leaves', wishes: { [elders]: 'want' } }),
-  place({ id: 'meiji', name: 'Meiji Jingu', area: 'Harajuku', category: 'sight', lat: 35.6764, lng: 139.6993, stayMin: 75, wishes: { [me]: 'want', [elders]: 'want' } }),
-  place({ id: 'gaien', name: 'Jingu Gaien Ginkgo Avenue', area: 'Aoyama', category: 'sight', lat: 35.6747, lng: 139.718, stayMin: 45, seasonal: 'Ginkgo', wishes: { [me]: 'want', [elders]: 'want' } }),
-  place({ id: 'gyoen', name: 'Shinjuku Gyoen', area: 'Shinjuku', category: 'sight', lat: 35.6852, lng: 139.71, stayMin: 90, open: 540, close: 960, closedDays: [1], seasonal: 'Autumn leaves', wishes: { [elders]: 'maybe' } }),
-  place({ id: 'shibuyasky', name: 'Shibuya Sky', area: 'Shibuya', category: 'sight', lat: 35.6585, lng: 139.7021, stayMin: 75, open: 600, close: 1350, note: 'Timed tickets; sunset slots sell out.', wishes: { [me]: 'want', [elders]: 'maybe' } }),
-  place({ id: 'omoide', name: 'Omoide Yokocho', area: 'Shinjuku', category: 'food', lat: 35.6929, lng: 139.6995, stayMin: 75, open: 1020, close: 1410, wishes: { [me]: 'maybe', [elders]: 'skip' } }),
-  place({ id: 'tsukiji', name: 'Tsukiji Outer Market', area: 'Tsukiji', category: 'food', lat: 35.6655, lng: 139.7707, stayMin: 90, open: 480, close: 840, closedDays: [0, 3], wishes: { [me]: 'want', [elders]: 'want' } }),
-  place({ id: 'teamlab', name: 'teamLab Planets', area: 'Toyosu', category: 'sight', lat: 35.6491, lng: 139.7898, stayMin: 120, open: 540, close: 1320, wishes: { [me]: 'want', [elders]: 'skip' } }),
-  place({ id: 'eastgardens', name: 'Imperial Palace East Gardens', area: 'Marunouchi', category: 'sight', lat: 35.6852, lng: 139.7528, stayMin: 75, open: 540, close: 960, closedDays: [1, 5], wishes: { [elders]: 'want' } }),
-  place({ id: 'tokyostation', name: 'Tokyo Station Marunouchi side', area: 'Marunouchi', category: 'sight', lat: 35.6812, lng: 139.7671, stayMin: 45, wishes: { [me]: 'maybe' } }),
-  place({ id: 'tower', name: 'Tokyo Tower', area: 'Shiba', category: 'sight', lat: 35.6586, lng: 139.7454, stayMin: 75, open: 540, close: 1380, wishes: { [elders]: 'maybe' } }),
-  place({ id: 'keyakizaka', name: 'Roppongi Keyakizaka illumination', area: 'Roppongi', category: 'sight', lat: 35.6605, lng: 139.7292, stayMin: 45, open: 1020, close: 1380, seasonal: 'Winter lights', wishes: { [me]: 'want', [elders]: 'want' } }),
+  place({ id: 'sensoji', name: 'Senso-ji', area: 'Asakusa', category: 'sight', lat: 35.7148, lng: 139.7967, stayMin: 90, rating: 3 }),
+  place({ id: 'kappabashi', name: 'Kappabashi Kitchen Street', area: 'Asakusa', category: 'shopping', lat: 35.7143, lng: 139.7888, stayMin: 60, open: 600, close: 1020, rating: 2 }),
+  place({ id: 'skytree', name: 'Tokyo Skytree', area: 'Oshiage', category: 'sight', lat: 35.7101, lng: 139.8107, stayMin: 90, open: 600, close: 1320, rating: 2 }),
+  place({ id: 'uenopark', name: 'Ueno Park', area: 'Ueno', category: 'sight', lat: 35.7146, lng: 139.7734, stayMin: 60, rating: 3 }),
+  place({ id: 'tnm', name: 'Tokyo National Museum', area: 'Ueno', category: 'sight', lat: 35.7188, lng: 139.7765, stayMin: 120, open: 570, close: 1020, closedDays: [1], rating: 3 }),
+  place({ id: 'ameyoko', name: 'Ameyoko Market', area: 'Ueno', category: 'food', lat: 35.7106, lng: 139.7745, stayMin: 60, rating: 2 }),
+  place({ id: 'rikugien', name: 'Rikugien Garden', area: 'Komagome', category: 'sight', lat: 35.7331, lng: 139.7466, stayMin: 75, open: 540, close: 1020, seasonal: 'Autumn leaves', rating: 3 }),
+  place({ id: 'meiji', name: 'Meiji Jingu', area: 'Harajuku', category: 'sight', lat: 35.6764, lng: 139.6993, stayMin: 75, rating: 3 }),
+  place({ id: 'gaien', name: 'Jingu Gaien Ginkgo Avenue', area: 'Aoyama', category: 'sight', lat: 35.6747, lng: 139.718, stayMin: 45, seasonal: 'Ginkgo', rating: 3 }),
+  place({ id: 'gyoen', name: 'Shinjuku Gyoen', area: 'Shinjuku', category: 'sight', lat: 35.6852, lng: 139.71, stayMin: 90, open: 540, close: 960, closedDays: [1], seasonal: 'Autumn leaves', rating: 2 }),
+  place({ id: 'shibuyasky', name: 'Shibuya Sky', area: 'Shibuya', category: 'sight', lat: 35.6585, lng: 139.7021, stayMin: 75, open: 600, close: 1350, note: 'Timed tickets; sunset slots sell out.', rating: 2 }),
+  place({ id: 'omoide', name: 'Omoide Yokocho', area: 'Shinjuku', category: 'food', lat: 35.6929, lng: 139.6995, stayMin: 75, open: 1020, close: 1410, rating: 1 }),
+  place({ id: 'tsukiji', name: 'Tsukiji Outer Market', area: 'Tsukiji', category: 'food', lat: 35.6655, lng: 139.7707, stayMin: 90, open: 480, close: 840, closedDays: [0, 3], rating: 3 }),
+  place({ id: 'teamlab', name: 'teamLab Planets', area: 'Toyosu', category: 'sight', lat: 35.6491, lng: 139.7898, stayMin: 120, open: 540, close: 1320, rating: 1 }),
+  place({ id: 'eastgardens', name: 'Imperial Palace East Gardens', area: 'Marunouchi', category: 'sight', lat: 35.6852, lng: 139.7528, stayMin: 75, open: 540, close: 960, closedDays: [1, 5], rating: 3 }),
+  place({ id: 'tokyostation', name: 'Tokyo Station Marunouchi side', area: 'Marunouchi', category: 'sight', lat: 35.6812, lng: 139.7671, stayMin: 45, rating: 2 }),
+  place({ id: 'tower', name: 'Tokyo Tower', area: 'Shiba', category: 'sight', lat: 35.6586, lng: 139.7454, stayMin: 75, open: 540, close: 1380, rating: 2 }),
+  place({ id: 'keyakizaka', name: 'Roppongi Keyakizaka illumination', area: 'Roppongi', category: 'sight', lat: 35.6605, lng: 139.7292, stayMin: 45, open: 1020, close: 1380, seasonal: 'Winter lights', rating: 3 }),
 ]
 
 const D1 = '2026-11-28'
@@ -74,10 +71,7 @@ export function sampleTrip(): Trip {
     destination: 'Tokyo, Japan',
     startDate: D1,
     endDate: D4,
-    travelers: [
-      { id: me, name: 'You' },
-      { id: elders, name: 'Parents' },
-    ],
+    partySize: 2,
     pace: 'relaxed',
     currency: 'JPY',
     homeCurrency: 'TWD',

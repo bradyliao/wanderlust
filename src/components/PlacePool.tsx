@@ -2,16 +2,14 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { dayBlocks, parseLatLng } from '../lib/schedule'
 import { fmtDuration, shortDate } from '../lib/time'
 import { newId, useApp } from '../store'
-import { CATEGORIES, type Category, type Place, type Wish } from '../types'
-
-const WISH_ORDER: (Wish | undefined)[] = [undefined, 'want', 'maybe', 'skip']
-const WISH_LABEL: Record<Wish, string> = { want: 'wants to go', maybe: 'could go either way', skip: 'would skip' }
+import { CATEGORIES, RATINGS, type Category, type Place } from '../types'
 
 export function PlacePool() {
   const { trip, dispatch, selection, select, activeDay } = useApp()
   const [query, setQuery] = useState('')
   const [area, setArea] = useState('')
   const [category, setCategory] = useState('')
+  const [rating, setRating] = useState('')
   const [unscheduledOnly, setUnscheduledOnly] = useState(false)
   const [adding, setAdding] = useState(false)
 
@@ -27,6 +25,7 @@ export function PlacePool() {
       (!query || p.name.toLowerCase().includes(query.toLowerCase())) &&
       (!area || p.area === area) &&
       (!category || p.category === category) &&
+      (!rating || String(p.rating ?? 0) === rating) &&
       (!unscheduledOnly || !scheduledOn.has(p.id)),
   )
 
@@ -40,11 +39,6 @@ export function PlacePool() {
       block: { id, day: activeDay, start, end: Math.min(start + place.stayMin, 24 * 60), placeId: place.id, title: place.name, category: place.category },
     })
     select({ type: 'block', id })
-  }
-
-  function cycleWish(place: Place, travelerId: string) {
-    const next = WISH_ORDER[(WISH_ORDER.indexOf(place.wishes[travelerId]) + 1) % WISH_ORDER.length]
-    dispatch({ type: 'setWish', placeId: place.id, travelerId, wish: next })
   }
 
   return (
@@ -76,6 +70,15 @@ export function PlacePool() {
             ))}
           </select>
         </div>
+        <select value={rating} onChange={(e) => setRating(e.target.value)} aria-label="Rating">
+          <option value="">All ratings</option>
+          {[...RATINGS].reverse().map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.label}
+            </option>
+          ))}
+          <option value="0">Not rated</option>
+        </select>
         <label className="check-inline">
           <input type="checkbox" checked={unscheduledOnly} onChange={(e) => setUnscheduledOnly(e.target.checked)} />
           Not on the timetable yet
@@ -89,7 +92,7 @@ export function PlacePool() {
           return (
             <li
               key={p.id}
-              className={`place cat-${p.category}${selected ? ' selected' : ''}`}
+              className={`place cat-${p.category}${selected ? ' selected' : ''}${p.rating === 1 ? ' forgotten' : ''}`}
               draggable
               onDragStart={(e) => {
                 e.dataTransfer.setData('text/place-id', p.id)
@@ -105,33 +108,30 @@ export function PlacePool() {
                 {day && <span className="chip scheduled">On {shortDate(day)}</span>}
               </button>
               <div className="place-side">
-                <div className="wishes">
-                  {trip.travelers.map((t) => {
-                    const w = p.wishes[t.id]
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`wish ${w ?? 'none'}`}
-                        onClick={() => cycleWish(p, t.id)}
-                        title={`${t.name}: ${w ? WISH_LABEL[w] : 'no opinion yet'}. Click to change.`}
-                        aria-label={`${t.name} ${w ? WISH_LABEL[w] : 'has no opinion yet'} on ${p.name}. Change.`}
-                      >
-                        {t.name.slice(0, 1).toUpperCase()}
-                      </button>
-                    )
-                  })}
-                </div>
                 <button type="button" className="btn tiny" onClick={() => addToDay(p)} disabled={!activeDay} title={activeDay ? `Add to ${shortDate(activeDay)}` : ''}>
                   Add to day
                 </button>
+              </div>
+              <div className="rating" role="group" aria-label={`Rating for ${p.name}`}>
+                {RATINGS.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    className={`r${r.id}`}
+                    aria-pressed={p.rating === r.id}
+                    title={p.rating === r.id ? 'Click again to clear' : undefined}
+                    onClick={() => dispatch({ type: 'updatePlace', id: p.id, patch: { rating: p.rating === r.id ? undefined : r.id } })}
+                  >
+                    {r.label}
+                  </button>
+                ))}
               </div>
             </li>
           )
         })}
         {shown.length === 0 && <li className="empty">{trip.places.length ? 'No places match these filters.' : 'No places yet. Add the first one above.'}</li>}
       </ul>
-      <p className="pane-foot">Drag a place onto a day, or use Add to day. Letters show who wants to go: filled is yes, outlined is maybe, struck is skip.</p>
+      <p className="pane-foot">Drag a place onto a day, or use Add to day. Places rated Forget stay in the list, greyed out.</p>
     </section>
   )
 }
@@ -151,7 +151,7 @@ function AddPlace({ onDone }: { onDone: () => void }) {
     const id = newId('p')
     dispatch({
       type: 'addPlace',
-      place: { id, name: name.trim(), area: area.trim() || 'Unsorted', category, ...coords, stayMin: stay, wishes: {}, source: location.startsWith('http') ? location : undefined },
+      place: { id, name: name.trim(), area: area.trim() || 'Unsorted', category, ...coords, stayMin: stay, source: location.startsWith('http') ? location : undefined },
     })
     select({ type: 'place', id })
     onDone()

@@ -42,7 +42,7 @@ export function guideData(trip: Trip): GuideData {
   return {
     name: trip.name,
     destination: trip.destination,
-    party: trip.travelers.length,
+    party: trip.partySize,
     currency: trip.currency,
     homeCurrency: trip.homeCurrency,
     rate: trip.rate,

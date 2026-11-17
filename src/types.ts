@@ -1,12 +1,8 @@
 export type Category = 'sight' | 'food' | 'lodging' | 'shopping' | 'transport' | 'other'
-export type Wish = 'want' | 'maybe' | 'skip'
+/** 1 Forget, 2 50-50, 3 Must Go. */
+export type Rating = 1 | 2 | 3
 export type Pace = 'relaxed' | 'standard' | 'packed'
 export type LegMode = 'walk' | 'transit' | 'drive'
-
-export interface Traveler {
-  id: string
-  name: string
-}
 
 /** A candidate spot in the pool. Not every place ends up on the timetable. */
 export interface Place {
@@ -27,7 +23,8 @@ export interface Place {
   note?: string
   /** Where the idea came from, e.g. a post link. */
   source?: string
-  wishes: Record<string, Wish>
+  /** Unset until the user rates the place. */
+  rating?: Rating
 }
 
 /** A stay on the timetable. Travel between stays is derived, see lib/schedule.ts. */
@@ -73,7 +70,8 @@ export interface Trip {
   destination: string
   startDate: string
   endDate: string
-  travelers: Traveler[]
+  /** How many people are travelling; multiplies per-person costs. */
+  partySize: number
   pace: Pace
   /** Currency prices are entered in, e.g. JPY. */
   currency: string
@@ -94,6 +92,12 @@ export type Selection =
   | { type: 'place'; id: string }
   | { type: 'leg'; key: string }
   | null
+
+export const RATINGS: { id: Rating; label: string }[] = [
+  { id: 1, label: 'Forget' },
+  { id: 2, label: '50-50' },
+  { id: 3, label: 'Must Go' },
+]
 
 export const CATEGORIES: { id: Category; label: string }[] = [
   { id: 'sight', label: 'Sight' },

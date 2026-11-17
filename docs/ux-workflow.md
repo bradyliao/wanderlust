@@ -4,7 +4,7 @@ The source for this is Brady's write-up of how a real family trip was planned wi
 
 ## Who it is for
 
-The general public, planning a multi-day trip for a small group. The first scenario is one organiser planning for family, including elders. Planning happens at a desk on a wide screen. The trip itself happens on a phone, often with poor signal, often one-handed.
+The general public, planning a multi-day trip for a small group. Planning happens at a desk on a wide screen. The trip itself happens on a phone, often with poor signal, often one-handed.
 
 ## The two modes
 
@@ -36,9 +36,9 @@ The dotted arrows are the important part. Every later step can send you back to 
 
 | # | Step | What the user does | What the app does | v0 |
 | --- | --- | --- | --- | --- |
-| 1 | Frame the trip | Names the trip, sets dates, who is going, and a pace | Creates the empty days. Pace sets walking speed and how tight connections may be | Built (Trip settings) |
+| 1 | Frame the trip | Names the trip, sets dates, how many people, and a pace | Creates the empty days. Pace sets walking speed and how tight connections may be | Built (Trip settings) |
 | 2 | Collect places | Saves ideas over weeks, from posts, links or by hand. Not all will be used | Keeps a pool. Fills in position, hours and usual stay | Manual add with a Maps link or coordinates. No auto-fill yet |
-| 3 | Pick and assign | Each traveller marks want / maybe / skip. Filters by area. Seasonal items go first | Shows who wants what, what is already scheduled, and where everything is on the map | Built |
+| 3 | Pick and assign | Rates each place: 1 Forget, 2 50-50, 3 Must Go. Filters by area and rating. Seasonal items go first | Greys out Forget without deleting it, shows what is already scheduled, and marks Must Go on the map | Built |
 | 4 | Build the timetable | Drags places onto days, moves and resizes blocks, marks fixed ones (flights, sunset, timed tickets) | Inserts travel between consecutive stops. Flags overlaps, closures, tight connections | Built |
 | 5 | Check travel and fares | For each connection, confirms route, time and fare | Opens the exact route in Google Maps. Stores the confirmed numbers and stops calling it an estimate | Built as a manual check. No routing provider |
 | 6 | Lodging and transfers | Compares candidates on total price, walk to station, cancellation | Comparison table and candidates on the map | Not built |
@@ -58,9 +58,9 @@ Three panes, side by side, selection linked across all of them. On a narrow scre
 | Places         | Timetable                   | Map                  |
 |                | Sat   Sun   Mon   Tue       |                      |
 | search, filter | 09 [Senso-ji]               |   (1)---(2)          |
-| [Senso-ji  Y P]|    : walk 20 est.           |        \             |
-| [Skytree   Y P]| 11 [Kappabashi]             |        (3)   o  o    |
-| [Museum    Y P]|    : transit 20 est.        |                      |
+| [Senso-ji   3 ]|    : walk 20 est.           |        \             |
+| [Skytree    2 ]| 11 [Kappabashi]             |        (3)   o  o    |
+| [Museum     3 ]|    : transit 20 est.        |                      |
 |   drag  ---------> [Skytree]                 +----------------------+
 |                |                             | Details of selection |
 |                | 3 to check: ...             | title, time, cost... |

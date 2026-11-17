@@ -7,7 +7,7 @@ import { BudgetView, ChecklistView, GuideView, SettingsDialog } from './componen
 import { downloadFile } from './lib/guide'
 import { shortDate } from './lib/time'
 import { sampleTrip } from './sample'
-import { isTrip, useApp } from './store'
+import { readTrip, useApp } from './store'
 
 type View = 'plan' | 'budget' | 'checklist' | 'guide'
 type Pane = 'places' | 'timetable' | 'map'
@@ -29,8 +29,8 @@ export default function App() {
   async function importFile(file: File | undefined) {
     if (!file) return
     try {
-      const parsed: unknown = JSON.parse(await file.text())
-      if (!isTrip(parsed)) throw new Error('not a trip')
+      const parsed = readTrip(JSON.parse(await file.text()))
+      if (!parsed) throw new Error('not a trip')
       if (!window.confirm(`Replace the current trip with "${parsed.name}"? You can undo this.`)) return
       select(null)
       dispatch({ type: 'load', trip: parsed })
@@ -46,7 +46,7 @@ export default function App() {
           <span className="trip-name">{trip.name}</span>
           <span className="trip-meta">
             {days.length ? `${shortDate(days[0])} to ${shortDate(days.at(-1)!)}, ` : ''}
-            {trip.travelers.map((t) => t.name).join(' and ')}, {trip.pace} pace
+            {trip.partySize} travelling, {trip.pace} pace
           </span>
         </button>
         <nav className="views" aria-label="Sections">

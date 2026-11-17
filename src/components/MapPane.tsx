@@ -51,7 +51,15 @@ export function MapPane() {
         id: 'pool',
         type: 'circle',
         source: 'pool',
-        paint: { 'circle-radius': 5, 'circle-color': '#ffffff', 'circle-stroke-color': '#5a6577', 'circle-stroke-width': 2 },
+        // Must Go is a solid dot, Forget fades back, everything else is an open ring.
+        paint: {
+          'circle-radius': ['match', ['get', 'rating'], 3, 6, 5],
+          'circle-color': ['match', ['get', 'rating'], 3, '#18212f', '#ffffff'],
+          'circle-stroke-color': ['match', ['get', 'rating'], 3, '#ffffff', '#5a6577'],
+          'circle-stroke-width': 2,
+          'circle-opacity': ['match', ['get', 'rating'], 1, 0.35, 1],
+          'circle-stroke-opacity': ['match', ['get', 'rating'], 1, 0.35, 1],
+        },
       })
       map.on('click', 'pool', (e) => {
         const id = e.features?.[0]?.properties?.id
@@ -105,7 +113,7 @@ export function MapPane() {
       features: showPool
         ? trip.places
             .filter((p) => !onDay.has(p.id))
-            .map((p) => ({ type: 'Feature' as const, properties: { id: p.id, name: p.name }, geometry: { type: 'Point' as const, coordinates: [p.lng, p.lat] } }))
+            .map((p) => ({ type: 'Feature' as const, properties: { id: p.id, name: p.name, rating: p.rating ?? 0 }, geometry: { type: 'Point' as const, coordinates: [p.lng, p.lat] } }))
         : [],
     })
   }, [trip, activeDay, ready, showPool])

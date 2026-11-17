@@ -8,20 +8,17 @@ Defined in [`src/types.ts`](../src/types.ts). A trip is one JSON document.
 
 ```mermaid
 erDiagram
-  TRIP ||--o{ TRAVELER : has
   TRIP ||--o{ PLACE : "pool of"
   TRIP ||--o{ BLOCK : schedules
   TRIP ||--o{ LEG_OVERRIDE : "checked travel"
   TRIP ||--o{ CHECKLIST_ITEM : has
   BLOCK }o--o| PLACE : "happens at"
-  PLACE ||--o{ WISH : "per traveler"
 ```
 
 | Entity | Key fields | Why the UI needs it |
 | --- | --- | --- |
-| Trip | name, destination, start and end date, pace, currency, home currency, rate and rate date | Day columns, estimates, budget conversion |
-| Traveler | name | Wish markers, party size for totals. A group such as "Parents" can be one entry |
-| Place | name, area, type, lat/lng, usual stay, opening hours, closed weekdays, seasonal tag, source link, wishes | Pool filters, map position, default block length, closure checks |
+| Trip | name, destination, start and end date, party size, pace, currency, home currency, rate and rate date | Day columns, estimates, budget conversion |
+| Place | name, area, type, lat/lng, usual stay, opening hours, closed weekdays, seasonal tag, source link, rating (1 Forget, 2 50-50, 3 Must Go) | Pool filters, map position, default block length, closure checks |
 | Block | day, start, end, title, type, place, fixed, undecided, cost per person, notes | The timetable |
 | Leg override | mode, minutes, fare, notes, keyed by the two blocks it joins | Checked travel replaces the estimate |
 | Checklist item | text, note, done | Pre-trip list |
@@ -30,7 +27,7 @@ Design choices:
 
 - **Travel is derived, not stored.** The spreadsheet had travel rows that had to be re-typed after every change. Here, travel is computed between each pair of consecutive stops, so moving a block never leaves a stale travel row. Only numbers the user confirmed are stored.
 - **A block is separate from a place.** A place can be visited twice, and a block (a flight, free time) may have no place.
-- **Still missing from the model:** lodging candidates with per-platform prices and cancellation deadlines; transfer quotes; passes and whether a leg is covered; budget targets per category; per-person rather than per-group headcount; multiple trips.
+- **Still missing from the model:** lodging candidates with per-platform prices and cancellation deadlines; transfer quotes; passes and whether a leg is covered; budget targets per category; multiple trips. Named travellers with their own ratings were removed on 2026-11-17 to keep the first version simple.
 
 ## Per screen
 
@@ -42,7 +39,7 @@ Design choices:
 | Position from a pasted Google Maps link | Built for full links containing coordinates | Short links (`maps.app.goo.gl`) need a network lookup |
 | Auto-fill name, address, hours from a link or search | Not built | A places provider (Google Places, or OpenStreetMap via Nominatim/Overpass). Needs an API key or a small server |
 | Import from Threads, Instagram, Facebook posts | Not built | These sites block scraping. Realistic route: share the post to an assistant that extracts the place, then confirm it in the app |
-| Wishes per traveller | Built | Family members marking their own wishes needs sharing (see Sync) |
+| Rate each place Forget / 50-50 / Must Go | Built | Forget greys the place out rather than deleting it |
 | Suggested nearby places | Not built | Places provider |
 
 ### Timetable
@@ -100,7 +97,7 @@ Built: per-block cost, fares, totals by type and day, conversion with a dated ma
 | --- | --- | --- |
 | Keep the trip between visits | Built: browser storage, plus save/open as a file | |
 | More than one trip | Not built | A trip list; IndexedDB |
-| Same trip on several devices; family edits | Not built | An account and a backend, or a file-based share. Biggest architectural step; postpone until the single-user flow is right |
+| Same trip on several devices; other people editing | Not built | An account and a backend, or a file-based share. Biggest architectural step; postpone until the single-user flow is right |
 
 ## Platform
 

@@ -1,7 +1,7 @@
 import { dayLegs, estimateLeg, mapsDirectionsUrl, mapsPlaceUrl, placeOf } from '../lib/schedule'
 import { fmtTime, parseTime, shortDate, weekdayName } from '../lib/time'
 import { useApp } from '../store'
-import { CATEGORIES, type Category, type LegMode } from '../types'
+import { CATEGORIES, RATINGS, type Category, type LegMode, type Rating } from '../types'
 
 const numberOrUndefined = (v: string) => (v === '' ? undefined : Number(v))
 
@@ -158,6 +158,17 @@ function PlaceForm({ id }: { id: string }) {
             {CATEGORIES.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="wide">
+          Rating
+          <select value={place.rating ?? ''} onChange={(e) => patch({ rating: e.target.value ? (Number(e.target.value) as Rating) : undefined })}>
+            <option value="">Not rated</option>
+            {RATINGS.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.id} {r.label}
               </option>
             ))}
           </select>

@@ -10,7 +10,7 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 export function BudgetView() {
   const { trip } = useApp()
   const totals = useMemo(() => budget(trip), [trip])
-  const party = trip.travelers.length
+  const party = trip.partySize
   const money = (n: number) => `${trip.currency} ${Math.round(n).toLocaleString('en')}`
   const home = (n: number) => `${trip.homeCurrency} ${Math.round(n * trip.rate).toLocaleString('en')}`
   const label = (id: string) => CATEGORIES.find((c) => c.id === id)?.label ?? id
@@ -160,17 +160,6 @@ export function GuideView() {
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const { trip, dispatch } = useApp()
-  const [names, setNames] = useState(trip.travelers.map((t) => t.name).join(', '))
-
-  function saveTravelers(value: string) {
-    setNames(value)
-    const list = value.split(',').map((n) => n.trim()).filter(Boolean)
-    if (list.length === 0) return
-    // Keep the id of anyone whose name is unchanged so their wishes survive.
-    const travelers = list.map((name, i) => trip.travelers.find((t) => t.name === name) ?? { id: `${slug(name)}-${i}`, name })
-    dispatch({ type: 'updateTrip', patch: { travelers } })
-  }
-
   return (
     <div className="scrim" onClick={onClose}>
       <div className="dialog" role="dialog" aria-modal="true" aria-label="Trip settings" onClick={(e) => e.stopPropagation()}>
@@ -197,11 +186,11 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             Last day
             <input type="date" value={trip.endDate} min={trip.startDate} onChange={(e) => e.target.value && dispatch({ type: 'updateTrip', patch: { endDate: e.target.value } })} />
           </label>
-          <label className="wide">
-            Who is travelling (comma separated; a group such as Parents counts as one)
-            <input value={names} onChange={(e) => saveTravelers(e.target.value)} />
+          <label>
+            People travelling
+            <input type="number" min={1} step={1} value={trip.partySize} onChange={(e) => dispatch({ type: 'updateTrip', patch: { partySize: Math.max(1, Math.round(Number(e.target.value)) || 1) } })} />
           </label>
-          <label className="wide">
+          <label>
             Pace
             <select value={trip.pace} onChange={(e) => dispatch({ type: 'updateTrip', patch: { pace: e.target.value as Pace } })}>
               {Object.entries(PACE).map(([id, p]) => (
@@ -210,8 +199,8 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
                 </option>
               ))}
             </select>
-            <span className="hint">{PACE[trip.pace].hint} Changes the estimated travel times.</span>
           </label>
+          <p className="hint wide">{PACE[trip.pace].hint} Changes the estimated travel times.</p>
           <label>
             Prices in
             <input value={trip.currency} onChange={(e) => dispatch({ type: 'updateTrip', patch: { currency: e.target.value.toUpperCase() } })} />

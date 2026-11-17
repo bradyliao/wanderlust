@@ -3,7 +3,7 @@ import { fmtTime, tripDays, weekday, weekdayName } from './time'
 
 /** How each pace changes the estimates. Walking speed in km/h. */
 export const PACE: Record<Pace, { label: string; walkKmh: number; hint: string }> = {
-  relaxed: { label: 'Relaxed', walkKmh: 3.2, hint: 'Slower walking, fewer stops a day. Good with elders or small children.' },
+  relaxed: { label: 'Relaxed', walkKmh: 3.2, hint: 'Slower walking and more time for connections.' },
   standard: { label: 'Standard', walkKmh: 4.5, hint: 'Average walking speed.' },
   packed: { label: 'Packed', walkKmh: 5.2, hint: 'Brisk walking, tight transfers.' },
 }

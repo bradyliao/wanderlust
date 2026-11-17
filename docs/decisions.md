@@ -14,6 +14,7 @@ These were defaults chosen to get a prototype moving. Any of them can be reverse
 | Trip guide is a standalone HTML file | Works offline, private by default, nothing to host | Low |
 | MapLibre with OpenFreeMap tiles | Free, no API key, grey style with railways | Low: the style URL is one constant |
 | Pace (relaxed, standard, packed) instead of a fixed "elders first" rule | The brief says elder-friendly is one mode, not the default | Low |
+| One rating per place (1 Forget, 2 50-50, 3 Must Go), no named travellers | Brady, 2026-11-17: leave parents and family out for now | Low: old files are upgraded on open |
 | Estimates are always labelled | The brief requires checked data and marked estimates | n/a |
 
 ## Questions for Brady
@@ -22,7 +23,7 @@ From the brief's open list, with a recommendation for each.
 
 1. **Web, iPhone app, or both?** Recommend web plus desktop shell for planning, and the trip guide (later a PWA) for the phone. A native SwiftUI app would be a second codebase; decide after the guide has been used on a real trip.
 2. **Where does data live?** Recommend the app owns the data and exports to CSV for spreadsheets, rather than using a spreadsheet as the database.
-3. **Should family members edit and mark wishes?** Useful, but it requires accounts or sharing. Recommend postponing until the single-planner flow is right; until then the organiser records wishes.
+3. **Should other people edit and rate places?** Parked by Brady on 2026-11-17. It would require accounts or sharing.
 4. **Is a paid maps API acceptable?** This decides how automatic travel times can be. See the options in [requirements.md](requirements.md#travel-and-fares). A small monthly budget figure would settle it.
 5. **Lodging and car-hire comparison in the app?** Recommend lodging candidates first (they affect the map and every day's start and end), car hire later.
 6. **Repository visibility.** Nothing private is in the repository. Public is fine as long as real trip files stay out.
@@ -39,5 +40,5 @@ Ordered by what most improves the workflow per unit of work.
 6. **Budget targets and per-group costs.**
 7. **Multiple trips**, then desktop packaging with Tauri.
 8. **Hosted private trip guide link and PWA install**, which brings in a backend.
-9. **Sharing and collaborative wishes.**
+9. **Sharing and per-person ratings** (parked).
 10. **Pass calculator** (needs fares per leg and pass coverage rules, so it comes after transit data).

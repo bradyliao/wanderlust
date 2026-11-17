@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useReducer, useState, ty
 import { sampleTrip } from './sample'
 import { swapDays } from './lib/schedule'
 import { tripDays } from './lib/time'
-import type { Block, ChecklistItem, LegOverride, Place, Selection, Trip, Wish } from './types'
+import type { Block, ChecklistItem, LegOverride, Place, Selection, Trip } from './types'
 
 const STORAGE_KEY = 'travel-planner:trip:v1'
 const HISTORY_LIMIT = 40
@@ -14,7 +14,6 @@ export type Action =
   | { type: 'addPlace'; place: Place }
   | { type: 'updatePlace'; id: string; patch: Partial<Place> }
   | { type: 'removePlace'; id: string }
-  | { type: 'setWish'; placeId: string; travelerId: string; wish: Wish | undefined }
   | { type: 'addBlock'; block: Block }
   | { type: 'updateBlock'; id: string; patch: Partial<Block> }
   | { type: 'removeBlock'; id: string }
@@ -46,17 +45,6 @@ function apply(trip: Trip, action: Action): Trip {
         ...trip,
         places: trip.places.filter((p) => p.id !== action.id),
         blocks: trip.blocks.map((b) => (b.placeId === action.id ? { ...b, placeId: undefined } : b)),
-      }
-    case 'setWish':
-      return {
-        ...trip,
-        places: trip.places.map((p) => {
-          if (p.id !== action.placeId) return p
-          const wishes = { ...p.wishes }
-          if (action.wish) wishes[action.travelerId] = action.wish
-          else delete wishes[action.travelerId]
-          return { ...p, wishes }
-        }),
       }
     case 'addBlock':
       return { ...trip, blocks: [...trip.blocks, action.block] }
@@ -93,18 +81,30 @@ function reducer(state: State, action: Action): State {
   return { trip, past: [...state.past, state.trip].slice(-HISTORY_LIMIT) }
 }
 
-/** Minimal shape check for stored or imported data. */
-export function isTrip(value: unknown): value is Trip {
-  const t = value as Trip
-  return !!t && typeof t === 'object' && typeof t.name === 'string' && typeof t.startDate === 'string' && Array.isArray(t.places) && Array.isArray(t.blocks) && Array.isArray(t.travelers) && Array.isArray(t.checklist) && typeof t.legs === 'object'
+/**
+ * Checks stored or imported data and brings older files up to the current shape.
+ * Returns undefined when the value is not a trip.
+ */
+export function readTrip(value: unknown): Trip | undefined {
+  const t = value as Trip & { travelers?: unknown[] }
+  const ok = !!t && typeof t === 'object' && typeof t.name === 'string' && typeof t.startDate === 'string' && Array.isArray(t.places) && Array.isArray(t.blocks) && Array.isArray(t.checklist) && !!t.legs && typeof t.legs === 'object'
+  if (!ok) return undefined
+  // Files from before ratings listed travellers by name, each with their own wishes.
+  const { travelers, ...rest } = t
+  const partySize = typeof t.partySize === 'number' && t.partySize >= 1 ? t.partySize : Math.max(1, travelers?.length ?? 1)
+  const places = t.places.map((p) => {
+    const { wishes: _wishes, ...place } = p as Place & { wishes?: unknown }
+    return place
+  })
+  return { ...rest, partySize, places }
 }
 
 function initialTrip(): Trip {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      const parsed: unknown = JSON.parse(raw)
-      if (isTrip(parsed)) return parsed
+      const trip = readTrip(JSON.parse(raw))
+      if (trip) return trip
     }
   } catch {
     // Storage is unavailable or the saved trip is unreadable: start from the sample.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { sampleTrip } from '../sample'
+import { readTrip } from '../store'
 import { buildGuideHtml } from './guide'
 import { budget, dayBlocks, dayLegs, estimateLeg, parseLatLng, swapDays, tripWarnings } from './schedule'
 import { fmtTime, parseTime, tripDays, weekdayName } from './time'
@@ -81,6 +82,22 @@ describe('pasted locations', () => {
     expect(parseLatLng('https://www.google.com/maps/place/X/@35.7148,139.7967,17z')).toEqual({ lat: 35.7148, lng: 139.7967 })
     expect(parseLatLng('https://www.google.com/maps/place/X/@35.1,139.1,17z/data=!3d35.7148!4d139.7967')).toEqual({ lat: 35.7148, lng: 139.7967 })
     expect(parseLatLng('Senso-ji')).toBeUndefined()
+  })
+})
+
+describe('opening a trip file', () => {
+  it('rejects things that are not trips', () => {
+    expect(readTrip({ name: 'x' })).toBeUndefined()
+    expect(readTrip(null)).toBeUndefined()
+  })
+  it('upgrades a file saved before ratings replaced named travellers', () => {
+    const { partySize: _partySize, ...old } = sampleTrip()
+    const legacy = { ...old, travelers: [{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }, { id: 'c', name: 'C' }], places: old.places.map((p) => ({ ...p, wishes: { a: 'want' } })) }
+    const trip = readTrip(legacy)!
+    expect(trip.partySize).toBe(3)
+    expect('travelers' in trip).toBe(false)
+    expect('wishes' in trip.places[0]).toBe(false)
+    expect(trip.places[0].rating).toBe(old.places[0].rating)
   })
 })
 
