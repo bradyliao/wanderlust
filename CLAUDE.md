@@ -27,8 +27,9 @@ The artifacts are private to the owner's claude.ai account.
 
 ## Current state
 
-- **Prototype v0 works but its UI was rejected** ("not what I imagined"). The owner never saw a layout before it was built; that was the mistake. Do not polish the v0 UI.
-- **Next step is choosing a layout** from the Design canvas, then rebuilding the screens to match. The logic in `src/lib/` (schedule checks, travel estimates, budget, trip-guide export) and the data model in `src/types.ts` are independent of the UI and can be kept.
+- **Restarted on 2026-11-18 at layout and behavior.** Read `docs/layout-and-behavior.md` first. Brady sketched two default layouts (Stacked: places left, timetable over map; Three columns: places, timetable, map). Canvas options A, B, C are kept as alternatives only.
+- All 20 behavior questions in that doc were answered on 2026-11-18. **Next: a clickable mock of the two layouts for Brady to react to, before any real build.** Earlier docs (`ux-workflow.md`, `requirements.md`, roadmap in `decisions.md`) went too far ahead and are background, not decisions.
+- Prototype v0 in `src/` was rejected as UI. The logic in `src/lib/` and `src/types.ts` may still be reused once behavior is agreed.
 - `npm test` passes (12 tests). `npm run build` passes.
 
 ## Decisions the owner made
@@ -47,7 +48,9 @@ The artifacts are private to the owner's claude.ai account.
 
 ## Open questions for the owner
 
-1. Which layout: A (week grid plus half-width map), B (one day as a list, like the spreadsheet), C (map first with a timeline along the bottom), or a mix?
+Layout and behavior questions now live in `docs/layout-and-behavior.md`. Older ones:
+
+1. ~~Which layout~~: answered, see above.
 2. Travel as its own row or block, or a label in the gap?
 3. Plan only on a computer, or on the phone too?
 4. What next after the layout: lodging comparison, or faster place entry (search with auto-filled details)?
