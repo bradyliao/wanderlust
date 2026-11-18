@@ -1,0 +1,31 @@
+[package]
+name = "wanderlust-core"
+version = "0.1.0"
+edition = "2021"
+description = "Data model and planning logic for Wanderlust, compiled to Wasm for the browser and natively for Tauri later."
+license = "UNLICENSED"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+# Builds the JavaScript bindings (src/wasm.rs). `wasm-pack build --features wasm`.
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+wasm-bindgen = { version = "0.2", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+
+[profile.release]
+opt-level = "s"
+lto = true
+
+# Keep debug builds small (see the vault note on target/ growth).
+[profile.dev]
+debug = "line-tables-only"
+[profile.dev.package."*"]
+debug = false

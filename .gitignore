@@ -26,3 +26,7 @@ dist-ssr
 # Real trips stay out of the repository
 *.trip.json
 *-guide.html
+
+# Rust build output
+core/target
+core/pkg

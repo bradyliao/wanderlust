@@ -29,7 +29,7 @@ The artifacts are private to the owner's claude.ai account.
 
 - **Restarted on 2026-11-18 at layout and behavior.** Read `docs/layout-and-behavior.md` first. Brady sketched two default layouts (Stacked: places left, timetable over map; Three columns: places, timetable, map). Canvas options A, B, C are kept as alternatives only.
 - About 50 layout and behavior items in that doc are agreed (2026-11-18 to 19), including the map and routing stack (MapLibre with our own grey style, Valhalla), and separate Bookings and Budget pages. A static mock is in `docs/mock/layouts.html` (colours are placeholders). Backend basics are decided (local-first, no key server yet, hosted Valhalla routing; see `docs/decisions.md`). **Next:** update the mock for the newest items, then build. Earlier docs (`ux-workflow.md`, `requirements.md`, roadmap in `decisions.md`) went too far ahead and are background, not decisions.
-- Prototype v0 in `src/` was rejected as UI. The logic in `src/lib/` and `src/types.ts` may still be reused once behavior is agreed.
+- Prototype v0 in `src/` was rejected, UI and logic both: do not reuse or port it (Brady, 2026-11-19). It will be replaced in phase 2.
 - `npm test` passes (12 tests). `npm run build` passes.
 
 ## Decisions the owner made

@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Browser first, Tauri later as the desktop shell | Fastest way to try the agreed layouts. Tauri wraps the same web UI, so nothing is rewritten. Tauri uses the system web view, so it needs much less memory than Electron | Low now |
 | Not UniFFI + SwiftUI | Wanderlust is separate from the Plan B app. SwiftUI would mean a Mac-only UI rewrite and no web version | n/a |
-| Core logic in Rust | Brady's choice. One Rust crate holds the data model and logic (schedule checks, travel estimates, budget, trip-guide export). It compiles to Wasm for the browser and runs natively inside Tauri later, so the same core serves both. The UI (React + TypeScript, MapLibre GL JS) calls it through a small API with plain data types and few, larger calls. The TypeScript logic in `src/lib/` and `src/types.ts` is the reference for porting | High once the UI is built on it |
+| Core logic in Rust | Brady's choice. One Rust crate holds the data model and logic (schedule checks, travel estimates, budget, trip-guide export). It compiles to Wasm for the browser and runs natively inside Tauri later, so the same core serves both. The UI (React + TypeScript, MapLibre GL JS) calls it through a small API with plain data types and few, larger calls. The v0 TypeScript in `src/` is **not** a reference (Brady, 2026-11-19): the core is designed from `layout-and-behavior.md` and `import-format.md` | High once the UI is built on it |
 | Map: MapLibre with our own muted grey style on free map data; routes from Valhalla (Brady, 2026-11-19) | Free and open, full control of a calm map, routes can be drawn on any map. Google's Routes API results must be shown on a Google map, and Google has no Japanese transit anyway | Medium once the map is styled and routing is wired up |
 
 ## Backend (decided by Brady, 2026-11-19)
@@ -22,7 +22,7 @@ Exchange rates are typed in by the user, one per currency; no rate service is ne
 
 Data model (Brady, 2026-11-19): one **item** record with three optional parts, a time slot, a booking and a cost (estimated or booked, with an amount, currency, and per-night / per-person flags). Plan, Bookings and Budget are views of the same items. See items 58–64 in [layout-and-behavior.md](layout-and-behavior.md).
 
-Defaults I'll use while building (not user decisions): each day stores its local date and the city's time zone (IANA name, for example `Asia/Tokyo`); undo history is kept per session; attachments stay on the device.
+Defaults I'll use while building (not user decisions): each day stores its local date and the city's time zone (IANA name, for example `Asia/Tokyo`); undo uses the change log saved with the trip (item 76); attachments stay on the device.
 
 Order of work: review the UI decisions in [layout-and-behavior.md](layout-and-behavior.md), then build a clickable mock, then the real code.
 

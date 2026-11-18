@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–71 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–76 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -167,6 +167,14 @@ The format and the AI prompt are in [import-format.md](import-format.md).
 69. **Unverified details.** Every detail that came from the file is marked unverified until the user checks it.
 70. **Preview, then merge.** Import first shows new places and possible duplicates (same Google Maps link, or same name and area). A duplicate only fills in details the existing place is missing.
 71. **Source kept, not shown.** The source post (platform, link, account, date saved) is stored with the place but not shown in the app.
+
+### AI control (agreed 2026-11-19)
+
+72. **One set of commands.** Every change in the app (add place, rate, schedule, move, resize, set cost, set people, add currency, …) is a command in the Rust core. The UI and AI use the same commands, and every command can be undone.
+73. **Now: change files (route A).** The AI writes a list of commands into a change file (the format is defined with the core). Importing it applies the changes **live**, with no approval step; the change log (item 76) is the safety net. The AI reads the trip from an export the user gives it.
+74. **Later: MCP (route C).** Claude Desktop or Claude Code runs the same commands directly through MCP, reading the trip itself. This needs a small local helper, or comes with the Tauri desktop app. An in-app chat panel (route B, with an Anthropic API key) is not planned for now.
+75. **What the AI may change:** everything the user can: places and ratings, the timetable, bookings, costs and currencies, including deleting things.
+76. **Change log.** Every change, by the user or by AI, is logged with who made it and when (for example "AI (dinner-ideas.json): scheduled Koffee Mameya 12/03 15:00"). A change file is one group in the log. Undo goes back step by step, or back to any point in the log (which also undoes everything after it). The log is saved with the trip, so undo works after reopening. Undoing one old change while keeping later ones is left for later.
 
 ### Bookings page (agreed 2026-11-19)
 
