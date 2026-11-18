@@ -18,7 +18,7 @@ erDiagram
 | Entity | Key fields | Why the UI needs it |
 | --- | --- | --- |
 | Trip | name, destination, start and end date, party size, pace, currency, home currency, rate and rate date | Day columns, estimates, budget conversion |
-| Place | name, area, type, lat/lng, usual stay, opening hours, closed weekdays, seasonal tag, source link, rating (1 Forget, 2 50-50, 3 Must Go) | Pool filters, map position, default block length, closure checks |
+| Place | name, area, type, lat/lng, usual stay, opening hours, closed weekdays, seasonal tag, source link, rating (1 Forget, 2 So-So, 3 Must Go) | Pool filters, map position, default block length, closure checks |
 | Block | day, start, end, title, type, place, fixed, undecided, cost per person, notes | The timetable |
 | Leg override | mode, minutes, fare, notes, keyed by the two blocks it joins | Checked travel replaces the estimate |
 | Checklist item | text, note, done | Pre-trip list |
@@ -39,7 +39,7 @@ Design choices:
 | Position from a pasted Google Maps link | Built for full links containing coordinates | Short links (`maps.app.goo.gl`) need a network lookup |
 | Auto-fill name, address, hours from a link or search | Not built | A places provider (Google Places, or OpenStreetMap via Nominatim/Overpass). Needs an API key or a small server |
 | Import from Threads, Instagram, Facebook posts | Not built | These sites block scraping. Realistic route: share the post to an assistant that extracts the place, then confirm it in the app |
-| Rate each place Forget / 50-50 / Must Go | Built | Forget greys the place out rather than deleting it |
+| Rate each place Forget / So-So / Must Go | Built | Forget greys the place out rather than deleting it |
 | Suggested nearby places | Not built | Places provider |
 
 ### Timetable

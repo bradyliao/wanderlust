@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All 20 were agreed with Brady on 2026-11-18.
+All of them were agreed with Brady on 2026-11-18 (items 1–49 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -73,8 +73,10 @@ All 20 were agreed with Brady on 2026-11-18.
 
 ### Place List
 
-16. **[Agreed 2026-11-18] What one row shows.** Type icon, name, rating (Forget / 50-50 / Must Go), area, usual stay, and which day(s) it is scheduled on.
-17. **[Agreed 2026-11-18] Narrowing the list.** Grouped into collapsible sections rather than search and filter chips. Grouped by rating by default (Must Go, 50-50, Forget); a small menu switches the grouping to area or type.
+16. **[Agreed 2026-11-18] What one row shows.** Type icon, name, a rating chip (Must Go / So-So / Forget, shown on every row so it stays visible in any grouping), area, usual stay, opening hours and closed days in short form (for example "9:30–17:00 · closed Fri"), and the date(s) it is scheduled on as numbers ("12/02"), or "Not scheduled".
+17. **[Agreed 2026-11-18] Narrowing the list.** Grouped into collapsible sections rather than search and filter chips. A small menu offers four groupings: **Area** (the default; Forget places stay in their area, greyed out), **Rating** (Must Go, So-So, Forget, with Forget collapsed), **Type**, and **Scheduled or not** (not scheduled first, then one section per date).
+17a. **[Agreed 2026-11-18] Rating names.** Must Go / So-So / Forget (So-So replaces "50-50").
+17b. **[Agreed 2026-11-18] Place types.** Seven separate types, each with its own icon and colour: Sight (temples, landmarks), Food, Café, Shop (including markets), Museum (including galleries), Nature (parks, gardens), Nightlife (bars, night spots).
 18. **[Agreed 2026-11-18] Details.** The selected row expands in the list to show hours, notes and link. No extra panel.
 
 ### Travel between stops
@@ -85,6 +87,94 @@ All 20 were agreed with Brady on 2026-11-18.
 
 20. **[Agreed 2026-11-18] Narrow screens.** The planner is for a computer only, for now. On a phone you use the trip guide.
 
+### Timetable look: daylight and weather
+
+- **[Agreed 2026-11-18] Day labels.** Day headers (multi-day and list view) show the date first, then the weekday, in a different style so the two are easy to tell apart: the date in bold, the weekday small, uppercase and muted ("**12/02** WED").
+- **[Agreed 2026-11-18] Date format.** Dates are written as numbers, month/day ("12/02"), everywhere in the app.
+
+21. **[Agreed 2026-11-18] Daylight background.** Each day column's background follows the real daylight for that date, as a smooth vertical gradient. Matte and muted, never eye-catching: it sits behind the blocks and must not compete with them.
+22. **[Agreed 2026-11-18] Whose daylight.** Sunrise and sunset come from that day's own location (its first stop or lodging), so a multi-city trip shows each city's real daylight.
+23. **[Agreed 2026-11-18] Stages in the gradient.** Night (muted dark blue-grey), twilight (soft dawn and dusk tones), golden hour (a faint warm band in the hour after sunrise and before sunset), and day (light neutral), blended smoothly.
+24. **[Agreed 2026-11-18] Weather in the day header.** An icon, high and low temperature, and chance of rain in each day's header. No hourly weather in the grid.
+25. **[Agreed 2026-11-18] Dates too far ahead to forecast.** Show the typical weather for that place and time of year from past years, labelled "typical". It is replaced by the real forecast once the date is close enough.
+26. **[Agreed 2026-11-18] Daylight in list view.** List view shows the same daylight gradient as a thin strip beside the times, not behind the whole list.
+
+Notes for building (not yet checked against current docs):
+
+- Sun times can be calculated in the app from date and coordinates, with no service and no network. This fits the Rust core.
+- Open-Meteo looks like a candidate for weather: free with no API key for non-commercial use, a forecast of about 16 days, and a historical archive for "typical" values. Check its terms and limits before relying on it.
+
+
+### Opening hours, travel time and fixed blocks
+
+27. **[Agreed 2026-11-18] Closed hours.** While you drag a place, or when one is selected, every day column hatches out the hours it is closed. A day it is closed all day is hatched top to bottom. Otherwise the grid stays calm. The hatching is drawn on top of blocks already in the timetable, so you can see which of them fall in closed hours. Its edge is not a hard stop: it fades out over about 30 minutes into the open hours, and a small tag marks the exact opening or closing time.
+28. **[Agreed 2026-11-18] Blocks outside opening hours.** A block placed when the place is closed always shows a small warning mark.
+29. **[Agreed 2026-11-18] Travel time while dragging.** While dragging, the app shows the travel time needed from the stop before and to the stop after, using a fast estimate it calculates itself (instant, offline). On drop, it asks a routing service once for a better number and stores it.
+30. **[Agreed 2026-11-18] Not enough time to travel.** The drop is allowed. The gap turns red with a message such as "needs 25 min, has 10". Estimates can be wrong, so the user stays in control.
+31. **[Agreed 2026-11-18] Fixed blocks.** One fixed state, shown with a lock, with an optional reason (for example "Ticket booked" or "Must be there"). All fixed blocks behave the same: they cannot be dragged, and other blocks cannot be dropped over them.
+32. **[Agreed 2026-11-18] Moving a fixed block.** Click the lock to unlock it, then drag it like any block. This prevents accidental moves.
+
+### Travel modes
+
+33. **[Agreed 2026-11-18] Mode list follows Google Maps.** Drive, Transit, Walk, Two-wheeler, Cycle, Ride / taxi. "Scooter" is Two-wheeler (motor scooter or moped) or Cycle (shared e-scooter or bike-share).
+34. **[Agreed 2026-11-18] Defaults.** The trip has a default mode (for example Transit). Each day can override it (for example Drive on a road-trip day). The day header shows the mode only when it differs from the trip default.
+35. **[Agreed 2026-11-18] Walk suggestion.** For a short leg (under about 1 km) the leg keeps its mode, and its label adds a hint such as "· walk 5 min?". One click switches it to Walk.
+36. **[Agreed 2026-11-18] Changing one leg.** Click its travel label to open a small picker with every mode and its estimated time; pick one. Any leg can be changed.
+37. **[Agreed 2026-11-18] How modes show.** The gap label shows the mode icon and minutes. On the map each leg's line has its own style (for example solid for Transit, dotted for Walk, dashed for Drive).
+
+Notes for building (checked 2026-11-18 unless marked):
+
+- **Live while dragging** means the app's own instant estimate during the drag, then one routing request on drop (item 29). Drive routes from Google or Mapbox can include live traffic.
+- **Google Routes API** modes: `DRIVE`, `WALK`, `BICYCLE`, `TWO_WHEELER`, `TRANSIT`. Transit does not cover Japan (see `requirements.md`). `TWO_WHEELER` covers about 40 countries, including Taiwan, but **not Japan**, and is billed higher than other modes. Google requires a warning to be shown on walking, cycling and two-wheeler routes. [Coverage list](https://developers.google.com/maps/documentation/routes/coverage-two-wheeled), [two-wheeler guide](https://developers.google.com/maps/documentation/routes/route_two_wheel).
+- **Open routers (free, self-hostable):** Valhalla has `auto`, `pedestrian`, `bicycle` and a beta `motor_scooter` costing, plus multimodal transit from GTFS feeds (pedestrian and transit only). OSRM covers car, foot and bike. [Transitland on Valhalla costing](https://www.transit.land/documentation/concepts/routing-graph-and-costing).
+- **Japanese transit:** NAVITIME offers a route API (transit plus walking, with fares) on RapidAPI as "NAVITIME Route (totalnavi)"; its train times are NAVITIME's own estimates, not the actual timetable; the main product is for business, with no public price found. [RapidAPI listing](https://rapidapi.com/navitimejapan-navitimejapan/api/navitime-route-totalnavi). Ekispert (駅すぱあと) API has timetable-based route search and fares, a free trial, and partly translated English docs; price not checked. [Ekispert docs](https://docs.ekispert.com/v1/en/).
+- **Ride / taxi** can reuse the Drive time; prices need a separate source (not checked).
+- **Decided 2026-11-19:** routes come from Valhalla (walk, drive, cycle, scooter). Japanese trains: a paid Japanese API is still undecided; until then train legs are drawn as straight lines with a "check in Google Maps" link.
+- Train times in Japan are the gap. Google's API has no Japanese transit (see `requirements.md`). Japanese providers such as NAVITIME offer it but are paid; terms and price not checked. Until then, train times stay estimates that the user confirms, with a "check in Google Maps" link.
+
+### Map (agreed 2026-11-19)
+
+38. **All places on the map.** Every place in the pool shows as a small matte grey pin with its type icon. Forget places are not shown. Highlighted places get colour; nothing else does.
+39. **Real routes.** Each leg is drawn along the actual route returned by the routing service. While dragging, a straight dashed line shows until the route arrives. Train legs in Japan stay straight lines until a Japanese transit source is chosen.
+40. **Highlight toggles.** Chips on the map choose which days and which types are highlighted. The default is the day selected in the timetable; more days can be switched on to compare.
+41. **A calm map.** Not colourful: our own muted, matte grey map style. Colour is kept for the highlighted day's stops and routes.
+42. **Map and routing stack.** MapLibre with our own grey style on free map data (OpenFreeMap or Protomaps), and Valhalla for routes. Not Google: Google's policy says Routes API results shown on a map must be on a Google map ([Routes API policies](https://developers.google.cn/maps/documentation/routes/policies)).
+
+### Timetable size and scrolling (agreed 2026-11-19)
+
+43. **Scrolling.** The timetable scrolls up and down through the hours and sideways through the days.
+44. **Resizing by dragging.** Drag the edge of a day header to change the column width; drag the edge of an hour in the time column to change the hour height. The app remembers the sizes.
+
+### Top bar and pages (agreed 2026-11-19)
+
+45. **Trip transport default** is picked from a small mode menu in the top bar.
+46. **Layout switch** in the top right uses two icons (Stacked, Three columns) instead of words.
+47. **Pages.** Tabs in the top bar: Plan · Bookings · Budget. The planning screen stays as it is.
+48. **Budget.** Its own page. Costs are entered on blocks and bookings; the top bar shows a small running total.
+49. **Bookings.** Their own records on the Bookings page: type (hotel, flight, train, ticket, restaurant, car), times, address, confirmation number, price, cancellation deadline, and an attached file or link. A timed booking can create a fixed block ("Ticket booked"). A hotel sets each night's base, so the next morning's first route and the day's location (for daylight and weather) start there.
+
+### Backend questions this raises (answered 2026-11-19, see [decisions.md](decisions.md#backend-decided-by-brady-2026-11-19))
+
+- **Where trip data lives:** decided: local-first, sync later.
+- **A small server for API keys:** decided: none yet; keys are entered in settings and kept on the device.
+- **Time zones:** each day stores its local date and the city's time zone; flights cross zones.
+- **Attachments** (ticket PDFs) need file storage; confirmation numbers are private and need encryption if stored in the cloud.
+- **Data-source terms** limit what may be cached or where it may be shown.
+- **Opening hours and special closures:** which source (Google Places or OpenStreetMap).
+- **Currency rates** for the budget: source and refresh.
+- **Offline during the trip:** the guide needs routes, the map area and bookings stored on the phone.
+- **Undo history, several trips, sharing** later.
+
+Still open:
+
+- **Long place names** get cut short once the rating chip is on the row (for example "Ueno museum …"). To be solved later.
+
+## Mock
+
+A static mock of both layouts is in [mock/layouts.html](mock/layouts.html), rendered as [mock/layouts.png](mock/layouts.png). It uses invented sample data.
+
+**Its colours, fonts and map style are placeholders, not a chosen theme.** Only the direction for the daylight background is agreed (item 21: muted, matte, never eye-catching); its exact shades are still open. The visual theme is a separate step, after layout and behavior feel right.
+
 ## Not discussed yet (parked)
 
-Budget, checklist, lodging, place search with auto-fill, trip guide export. These come after layout and behavior are agreed.
+Checklist, lodging comparison, place search with auto-fill, trip guide export. The Budget and Bookings pages are agreed in outline (items 47–49) but their screens are not designed yet.

@@ -27,7 +27,7 @@ Other commands: `npm test` (unit tests), `npm run build` (static site in `dist/`
 
 | Area | Status |
 | --- | --- |
-| Place pool: search, filter by area and type, add from a Google Maps link or coordinates, rate each place Forget / 50-50 / Must Go | Built |
+| Place pool: search, filter by area and type, add from a Google Maps link or coordinates, rate each place Forget / So-So / Must Go | Built |
 | Timetable: drag to move across times and days, drag the bottom edge to resize, drop a place onto a day, fixed blocks, undecided blocks, swap two days, undo | Built |
 | Checks: overlaps, closed days, opening hours, connections that are too tight | Built |
 | Travel between stops | Estimated from straight-line distance and pace, always labelled as an estimate. You can replace it with numbers you checked. No routing provider yet. |

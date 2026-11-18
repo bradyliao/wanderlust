@@ -1,5 +1,27 @@
 # Decisions, open questions and roadmap
 
+## Platform (decided by Brady, 2026-11-18)
+
+| Decision | Why | Cost of reversing |
+| --- | --- | --- |
+| Browser first, Tauri later as the desktop shell | Fastest way to try the agreed layouts. Tauri wraps the same web UI, so nothing is rewritten. Tauri uses the system web view, so it needs much less memory than Electron | Low now |
+| Not UniFFI + SwiftUI | Wanderlust is separate from the Plan B app. SwiftUI would mean a Mac-only UI rewrite and no web version | n/a |
+| Core logic in Rust | Brady's choice. One Rust crate holds the data model and logic (schedule checks, travel estimates, budget, trip-guide export). It compiles to Wasm for the browser and runs natively inside Tauri later, so the same core serves both. The UI (React + TypeScript, MapLibre GL JS) calls it through a small API with plain data types and few, larger calls. The TypeScript logic in `src/lib/` and `src/types.ts` is the reference for porting | High once the UI is built on it |
+| Map: MapLibre with our own muted grey style on free map data; routes from Valhalla (Brady, 2026-11-19) | Free and open, full control of a calm map, routes can be drawn on any map. Google's Routes API results must be shown on a Google map, and Google has no Japanese transit anyway | Medium once the map is styled and routing is wired up |
+
+## Backend (decided by Brady, 2026-11-19)
+
+| Decision | Why | Cost of reversing |
+| --- | --- | --- |
+| Local-first: trip data lives in the browser (IndexedDB) with export to a file; cloud sync added later | Private, free, works offline. Every record gets a stable id and a "last changed" time from the start, so sync can be added without reworking the data | Low: sync is designed for, not built |
+| Just Brady for now, others later | Records are shaped so a trip can be shared later; no accounts are built yet | Medium when sharing is added |
+| Routing from a hosted Valhalla-based service first; own server only if limits or terms don't fit | Nothing to run. Stadia Maps (checked 2026-11-19): free plan of 200,000 credits a month, **no commercial use**, "temp storage" only (so results can't be kept long-term on the free plan). The page does not say which routing endpoints the free plan includes; check before wiring it up. [Pricing](https://stadiamaps.com/pricing/) | Low: Valhalla requests look the same on our own server |
+| No key server yet: API keys are entered in the app's settings and stored only on this device | Fine for a personal tool. Keys never go in the repository or in exported trip files. A key server (serverless functions or a Rust server) is needed before anyone else uses the app or before a Tauri build is shared | Low |
+
+Defaults I'll use while building (not user decisions): each day stores its local date and the city's time zone (IANA name, for example `Asia/Tokyo`); undo history is kept per session; attachments stay on the device.
+
+Order of work: review the UI decisions in [layout-and-behavior.md](layout-and-behavior.md), then build a clickable mock, then the real code.
+
 ## Decisions made so far
 
 These were defaults chosen to get a prototype moving. Any of them can be reversed.
@@ -14,7 +36,7 @@ These were defaults chosen to get a prototype moving. Any of them can be reverse
 | Trip guide is a standalone HTML file | Works offline, private by default, nothing to host | Low |
 | MapLibre with OpenFreeMap tiles | Free, no API key, grey style with railways | Low: the style URL is one constant |
 | Pace (relaxed, standard, packed) instead of a fixed "elders first" rule | The brief says elder-friendly is one mode, not the default | Low |
-| One rating per place (1 Forget, 2 50-50, 3 Must Go), no named travellers | Brady, 2026-11-17: leave parents and family out for now | Low: old files are upgraded on open |
+| One rating per place (1 Forget, 2 So-So, 3 Must Go), no named travellers | Brady, 2026-11-17: leave parents and family out for now | Low: old files are upgraded on open |
 | Estimates are always labelled | The brief requires checked data and marked estimates | n/a |
 
 ## Questions for Brady

@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wanderlust layout mock</title>
+<style>
+  :root {
+    --ink: #2b2f36;
+    --ink-2: #5d636d;
+    --ink-3: #8b9099;
+    --line: #e2e0da;
+    --paper: #fbfaf7;
+    --panel: #f6f5f1;
+    --accent: #3f6b86;
+    --accent-soft: rgba(63, 107, 134, 0.12);
+    --sight: #86a394;
+    --food: #c79a80;
+    --shop: #c4ad7c;
+    --move: #8c95a6;
+    --must: #3f6b86;
+    --maybe: #a08a5c;
+    --forget: #a6a9ae;
+    --hour: 26px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #e9e7e1; color: var(--ink);
+    font: 13px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  .page { padding: 24px; }
+  .caption { max-width: 1440px; margin: 0 0 10px; }
+  .caption h2 { margin: 0 0 4px; font-size: 18px; }
+  .caption p { margin: 0; color: var(--ink-2); }
+  .scaler { margin-bottom: 40px; }
+  .frame {
+    width: 1440px; height: 900px; background: var(--paper);
+    border-radius: 10px; overflow: hidden; display: grid;
+    grid-template-rows: 52px 1fr; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 8px 30px rgba(0,0,0,.08);
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex; align-items: center; gap: 16px; padding: 0 18px;
+    border-bottom: 1px solid var(--line); background: var(--paper);
+  }
+  .brand { font-weight: 650; letter-spacing: .2px; }
+  .trip { color: var(--ink-2); }
+  .trip b { color: var(--ink); font-weight: 600; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 2px; }
+  .seg span { padding: 4px 10px; border-radius: 5px; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+  .seg span.on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .seg-label { color: var(--ink-3); font-size: 12px; margin-right: 6px; }
+
+  /* Panes */
+  .body { display: grid; min-height: 0; }
+  .pane { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--paper); }
+  .pane-head {
+    height: 40px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+    border-bottom: 1px solid var(--line); font-weight: 600;
+  }
+  .pane-head .muted { font-weight: 400; color: var(--ink-3); font-size: 12px; }
+  .collapse { margin-left: auto; color: var(--ink-3); font-size: 12px; border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; line-height: 18px; }
+  .divider-v { width: 6px; background: var(--line); position: relative; }
+  .divider-h { height: 6px; background: var(--line); position: relative; }
+  .divider-v::after, .divider-h::after { content: ""; position: absolute; background: #c8c5bd; border-radius: 2px; }
+  .divider-v::after { width: 2px; height: 28px; left: 2px; top: calc(50% - 14px); }
+  .divider-h::after { height: 2px; width: 28px; top: 2px; left: calc(50% - 14px); }
+
+  /* Place list */
+  .places { overflow: hidden; }
+  .group-by { font-weight: 400; font-size: 12px; color: var(--ink-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 7px; }
+  .group { border-bottom: 1px solid var(--line); }
+  .group-head { display: flex; align-items: center; gap: 6px; padding: 8px 12px 6px; font-size: 11px; font-weight: 650; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-2); }
+  .group-head .n { color: var(--ink-3); font-weight: 500; }
+  .row { display: grid; grid-template-columns: 22px 1fr auto; gap: 2px 8px; padding: 6px 12px; align-items: center; }
+  .row .icon { grid-row: span 2; width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; }
+  .row .name { font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .meta { color: var(--ink-3); font-size: 11.5px; grid-column: 2; }
+  .row .days { grid-row: span 2; font-size: 11px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+  .row .days.none { color: var(--ink-3); background: transparent; border-style: dashed; }
+  .row.sel { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+  .row.forget { opacity: .5; }
+  .details { grid-column: 2 / 4; margin-top: 6px; font-size: 12px; color: var(--ink-2); display: grid; gap: 3px; }
+  .details a { color: var(--accent); text-decoration: none; }
+  .rate { display: inline-block; font-size: 10.5px; font-weight: 600; padding: 0 5px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; }
+  .rate.must { color: var(--must); background: rgba(63,107,134,.1); }
+  .rate.maybe { color: var(--maybe); background: rgba(160,138,92,.12); }
+  .rate.forget { color: var(--forget); background: rgba(0,0,0,.05); }
+
+  /* Timetable: multi-day */
+  .tt { overflow: hidden; }
+  .tt-grid { display: grid; flex: 1; min-height: 0; }
+  .days-head { display: grid; border-bottom: 1px solid var(--line); }
+  .dh { padding: 6px 8px; border-left: 1px solid var(--line); min-width: 0; }
+  .dh .d { font-weight: 600; }
+  .date { font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .wd { font-size: 10.5px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--ink-3); margin-left: 3px; }
+  .dh .w { display: flex; align-items: center; gap: 5px; color: var(--ink-2); font-size: 11.5px; margin-top: 2px; white-space: nowrap; }
+  .dh .typical { font-size: 10px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; }
+  .dh .city { color: var(--ink-3); font-weight: 400; font-size: 11.5px; }
+  .cols { display: grid; position: relative; }
+  .gutter { position: relative; }
+  .gutter div { position: absolute; right: 6px; font-size: 10.5px; color: var(--ink-3); transform: translateY(-50%); }
+  .col { position: relative; border-left: 1px solid rgba(0,0,0,.06); overflow: visible; }
+  .col .sky, .strip .sky { position: absolute; inset: 0; }
+  .grain { position: absolute; inset: 0; opacity: .5; mix-blend-mode: multiply; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .hline { position: absolute; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,.35); }
+  .sunmark { position: absolute; left: 4px; font-size: 9.5px; color: rgba(43,47,54,.55); transform: translateY(-50%); }
+  .block {
+    position: absolute; left: 5px; right: 5px; border-radius: 5px; padding: 3px 6px 3px 8px;
+    background: rgba(255,255,255,.86); box-shadow: 0 0 0 1px rgba(0,0,0,.06); overflow: hidden; z-index: 1;
+  }
+  .block::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--c); }
+  .block .t { font-weight: 600; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .block .tm { font-size: 10.5px; color: var(--ink-2); white-space: nowrap; }
+  .block.sel { box-shadow: 0 0 0 2px var(--accent); background: #fff; }
+  .lock { font-size: 9px; color: var(--ink-3); margin-left: 3px; }
+  .travel {
+    position: absolute; left: 50%; transform: translate(-50%, -50%); z-index: 2; white-space: nowrap;
+    font-size: 10px; color: var(--ink-2); background: rgba(251,250,247,.92); border: 1px solid var(--line);
+    border-radius: 8px; padding: 0 6px; line-height: 15px;
+  }
+
+  /* Timetable: list view */
+  .lv-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  .lv-head .arrow { color: var(--ink-3); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px; }
+  .lv-head .d { font-weight: 600; font-size: 14px; }
+  .lv-head .sun { color: var(--ink-3); font-size: 11.5px; }
+  .lv { padding: 6px 0; overflow: hidden; }
+  .lv-row { display: grid; grid-template-columns: 74px 8px 1fr; gap: 0 10px; padding: 0 14px; }
+  .lv-time { text-align: right; font-size: 11.5px; color: var(--ink-2); padding-top: 9px; font-variant-numeric: tabular-nums; }
+  .strip { position: relative; overflow: hidden; }
+  .lv-card { margin: 4px 0; border-radius: 6px; padding: 8px 10px 8px 12px; background: #fff; box-shadow: 0 0 0 1px var(--line); position: relative; overflow: hidden; }
+  .lv-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--c); }
+  .lv-card .t { font-weight: 600; }
+  .lv-card .s { font-size: 12px; color: var(--ink-3); }
+  .lv-card.sel { box-shadow: 0 0 0 2px var(--accent); }
+  .lv-travel { font-size: 11.5px; color: var(--ink-2); padding: 5px 0 5px 2px; }
+  .lv-travel::before { content: "↓ "; color: var(--ink-3); }
+  .lv-travel.open { color: var(--ink); font-weight: 600; }
+
+  /* Map */
+  .map { position: relative; overflow: hidden; }
+  .map-slot svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-legend { position: absolute; left: 12px; bottom: 12px; background: rgba(251,250,247,.94); border: 1px solid var(--line); border-radius: 7px; padding: 6px 9px; font-size: 11.5px; color: var(--ink-2); display: flex; gap: 12px; align-items: center; }
+  .map-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+  .zoom { position: absolute; right: 12px; top: 12px; display: grid; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--paper); }
+  .zoom span { width: 26px; height: 24px; display: grid; place-items: center; color: var(--ink-2); }
+  .zoom span + span { border-top: 1px solid var(--line); }
+
+  .lockic { display: inline-block; vertical-align: -1px; margin-left: 4px; }
+  .block .tm.fx { color: #6c6f76; }
+  .block.warn { box-shadow: 0 0 0 1px rgba(176,122,58,.55); }
+  .warnmark { color: #a8742f; font-weight: 600; }
+  .closed { position: absolute; left: 0; right: 0; z-index: 2; pointer-events: none;
+    background-color: rgba(90,94,104,.07);
+    background-image: repeating-linear-gradient(135deg, rgba(70,74,84,.17) 0 1.1px, transparent 1.1px 7px); }
+  .closedtag { position: absolute; right: 6px; z-index: 3; transform: translateY(-50%); font-size: 10px; color: #5d636d; background: rgba(251,250,247,.94); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; line-height: 14px; }
+  .block.tiny { padding: 0 6px 0 8px; }
+  .block.tiny .t { font-size: 10.5px; line-height: 13px; }
+  .closed span { position: absolute; left: 6px; top: 4px; font-size: 10px; color: #5d636d; background: rgba(251,250,247,.85); border-radius: 3px; padding: 0 4px; }
+  .block.ghost { z-index: 4; background: rgba(255,255,255,.94); box-shadow: 0 0 0 1.5px var(--accent), 0 8px 18px rgba(0,0,0,.16); transform: translate(3px, -2px); }
+  .need { position: absolute; left: 5px; right: 5px; z-index: 3; border-radius: 4px; pointer-events: none; }
+  .need.bad { background: rgba(190,84,70,.16); box-shadow: inset 0 0 0 1px rgba(190,84,70,.55); }
+  .need.ok { background: rgba(63,107,134,.10); box-shadow: inset 0 0 0 1px rgba(63,107,134,.35); }
+  .needlab { position: absolute; left: 50%; transform: translate(-50%, -50%); z-index: 5; white-space: nowrap; font-size: 10px; line-height: 15px; padding: 0 6px; border-radius: 8px; }
+  .needlab.bad { background: #f6e3df; color: #9b3f33; border: 1px solid rgba(190,84,70,.5); font-weight: 600; }
+  .needlab.ok { background: #e6eef3; color: #34596f; border: 1px solid rgba(63,107,134,.35); }
+  .row.dragging { opacity: .55; box-shadow: inset 0 0 0 1.5px var(--accent); background: var(--accent-soft); }
+  .row .hrs { grid-column: 2; font-size: 11px; color: var(--ink-3); }
+  .cursor { position: absolute; z-index: 6; pointer-events: none; }
+  .mi { display: inline-block; vertical-align: -2px; margin-right: 3px; }
+  .hint { color: var(--accent); font-weight: 600; margin-left: 4px; }
+  .daymode { display: inline-flex; align-items: center; gap: 2px; font-size: 10.5px; color: var(--ink-2); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; background: #fff; }
+  .picker { margin: 2px 0 6px; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.10); padding: 6px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .picker div { white-space: nowrap; border-radius: 6px; padding: 5px 6px; font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 4px; }
+  .picker div b { color: var(--ink); font-weight: 600; margin-left: auto; font-variant-numeric: tabular-nums; }
+  .picker div.on { background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); color: var(--ink); }
+  .picker div.na { opacity: .45; }
+  .picker .ph { grid-column: 1 / -1; font-size: 10.5px; color: var(--ink-3); padding: 0 4px 2px; }
+  .gmenu { position: absolute; left: 0; top: 22px; z-index: 10; background: #fff; border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 8px 20px rgba(0,0,0,.12); padding: 4px; min-width: 150px; }
+  .gmenu div { padding: 5px 9px; border-radius: 5px; color: var(--ink); white-space: nowrap; }
+  .gmenu div.on { background: var(--accent-soft); font-weight: 600; }
+  .rate.maybe { color: var(--maybe); }
+  .note { max-width: 1440px; color: var(--ink-2); font-size: 12.5px; margin: -28px 0 40px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="caption">
+    <h2>Layout 1 · Stacked (default)</h2>
+    <p>Place List on the left; timetable in multi-day view above the map. Senso-ji is selected, so it is highlighted in all three panes. The map shows the focus day (12/02) as numbered stops; other places are grey dots. Travel labels show the mode icon; 12/03 has a walk suggestion ("· walk 5 min?"), and 12/05 uses Drive as its day default.</p>
+  </div>
+  <div class="scaler"><div class="frame" id="f1"></div></div>
+
+  <div class="caption">
+    <h2>Layout 2 · Three columns</h2>
+    <p>Same trip and selection. The timetable is switched to list view (one day), with the daylight shown as a thin strip beside the times. The second leg's travel label is clicked open, showing the mode picker with each mode's estimated time. The Place List's group-by menu is open.</p>
+  </div>
+  <div class="scaler"><div class="frame" id="f2"></div></div>
+
+  <div class="caption">
+    <h2>Layout 1 · While dragging a place</h2>
+    <p>Dragging "Ueno museum" from the Place List onto 12/03 at 13:45. Its closed hours are hatched in every column (it is closed on Fridays, so 12/04 is hatched all day). The red band shows the train time it needs from Ichiran: 35 min, but only 10 min are free. The drop is still allowed. The blue band after it shows the travel to Shibuya Sky fits. Fixed blocks show a lock and their reason; Omoide Yokocho on 12/04 has a warning because it is scheduled before opening time.</p>
+  </div>
+  <div class="scaler"><div class="frame" id="f3"></div></div>
+  <p class="note">Static mock with invented sample data. All colours, fonts and the map style are placeholders, not a chosen theme. Weather values and opening hours are made up. 12/02–12/03 are within forecast range; 12/04–12/06 show "typical" weather. Sun times are approximate for Tokyo and Kyoto in early December.</p>
+</div>
+
+<script>
+// ---------- sample data (invented) ----------
+const TYPES = {
+  sight: { c: 'var(--sight)', bg: '#e3ebe6', glyph: '<path d="M3 13h10M4 13V8m8 5V8M2.5 8h11L8 4z" stroke="#5f7d6d" stroke-width="1.4" fill="none" stroke-linejoin="round"/>' },
+  food:  { c: 'var(--food)',  bg: '#f1e4dc', glyph: '<path d="M2.5 8h11a5.5 5 0 0 1-11 0zM6 3v3M8.5 3v3" stroke="#a9765b" stroke-width="1.4" fill="none" stroke-linecap="round"/>' },
+  shop:  { c: 'var(--shop)',  bg: '#efe8d8', glyph: '<path d="M3.5 6h9l-.8 7.5H4.3zM6 6V4.8a2 2 0 0 1 4 0V6" stroke="#9b8450" stroke-width="1.4" fill="none" stroke-linejoin="round"/>' },
+  cafe:  { c: '#b8a08c', bg: '#efe7df', glyph: '<path d="M3 6h8v3.5a3.5 3.5 0 0 1-3.5 3.5h-1A3.5 3.5 0 0 1 3 9.5zM11 7h1a1.5 1.5 0 0 1 0 3h-1M6 2.5v2M8.5 2.5v2" stroke="#8a7156" stroke-width="1.3" fill="none" stroke-linecap="round"/>' },
+  museum:{ c: '#9a94b0', bg: '#e8e6ef', glyph: '<path d="M2.5 6 8 3l5.5 3zM3.5 6.5v5.5M6.5 6.5v5.5M9.5 6.5v5.5M12.5 6.5v5.5M2.5 13h11" stroke="#6f6889" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+  nature:{ c: '#8fae7e', bg: '#e4ecdf', glyph: '<path d="M8 2.5 4 9h2.5L4.5 12.5h7L9.5 9H12zM8 12.5V14" stroke="#5d7f4c" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+  night: { c: '#8a8fb0', bg: '#e3e4ee', glyph: '<path d="M10.5 3.5a4.5 4.5 0 1 0 2 7.5 4 4 0 0 1-2-7.5z" stroke="#5f6488" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+  move:  { c: 'var(--move)',  bg: '#e4e6ea', glyph: '<path d="M4 3.5h8v7H4zM4 8h8M5.5 12.5l-1 1.5m7-1.5 1 1.5" stroke="#6c7587" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+};
+const icon = t => `<span class="icon" style="background:${TYPES[t].bg}"><svg width="16" height="16" viewBox="0 0 16 16">${TYPES[t].glyph}</svg></span>`;
+
+const P = {
+  uenomus:   { n: 'Ueno museum', t: 'museum', r: 'must', area: 'Ueno', stay: '1 h', days: '', ll: [139.7765, 35.7188], open: [9.5, 17], closed: 'Fri', hoursText: '9:30–17:00 · closed Fri' },
+  sensoji:   { n: 'Senso-ji', t: 'sight', r: 'must', area: 'Asakusa', stay: '1.5 h', days: '12/02', ll: [139.7967, 35.7148], hoursText: '6:00–17:00' },
+  kappabashi:{ n: 'Kappabashi Street', t: 'shop', r: 'maybe', area: 'Asakusa', stay: '1 h', days: '12/02', ll: [139.7887, 35.7128], labelLeft: true, hoursText: '10:00–17:00 · closed Sun' },
+  skytree:   { n: 'Tokyo Skytree', t: 'sight', r: 'maybe', area: 'Oshiage', stay: '1.5 h', days: '12/02', ll: [139.8107, 35.7101], hoursText: '10:00–21:00' },
+  teamlab:   { n: 'teamLab Planets', t: 'museum', r: 'must', area: 'Toyosu', stay: '2 h', days: '12/02', ll: [139.7840, 35.6491], hoursText: '9:00–22:00' },
+  monja:     { n: 'Monja dinner, Tsukishima', t: 'food', r: 'maybe', area: 'Tsukishima', stay: '1.5 h', days: '12/02', ll: [139.7820, 35.6630], hoursText: '17:00–22:00' },
+  tsukiji:   { n: 'Tsukiji Outer Market', t: 'food', r: 'must', area: 'Tsukiji', stay: '1.5 h', days: '12/03', ll: [139.7706, 35.6654], hoursText: '6:00–14:00 · closed Wed' },
+  meiji:     { n: 'Meiji Jingu', t: 'sight', r: 'must', area: 'Harajuku', stay: '1 h', days: '12/03', ll: [139.6993, 35.6764], hoursText: 'sunrise–sunset' },
+  nezu:      { n: 'Nezu Museum', t: 'museum', r: 'maybe', area: 'Aoyama', stay: '1.25 h', days: '12/03', ll: [139.7170, 35.6622], dy: -12, hoursText: '10:00–17:00 · closed Mon' },
+  ichiran:   { n: 'Ichiran Shibuya', t: 'food', r: 'maybe', area: 'Shibuya', stay: '45 min', days: '12/03', ll: [139.7010, 35.6610], labelLeft: true, dy: -8, hoursText: 'open 24 h' },
+  shibsky:   { n: 'Shibuya Sky (sunset ticket)', t: 'sight', r: 'must', area: 'Shibuya', stay: '1 h', days: '12/03', ll: [139.7020, 35.6585], dy: 10, hoursText: '10:00–22:30' },
+  ghibli:    { n: 'Ghibli Museum', t: 'museum', r: 'must', area: 'Mitaka', stay: '2 h', days: '12/04', ll: null, hoursText: '10:00–18:00 · closed Tue' },
+  omoide:    { n: 'Omoide Yokocho', t: 'night', r: 'maybe', area: 'Shinjuku', stay: '1.5 h', days: '12/04', ll: [139.6996, 35.6930], open: [17, 24], hoursText: '17:00–24:00' },
+  koffee:    { n: 'Koffee Mameya', t: 'cafe', r: 'maybe', area: 'Omotesando', stay: '30 min', days: '', ll: [139.7118, 35.6668], hoursText: '10:00–18:00' },
+  ueno:      { n: 'Ueno Park', t: 'nature', r: 'maybe', area: 'Ueno', stay: '1 h', days: '', ll: [139.7714, 35.7148], hoursText: '5:00–23:00' },
+  akiba:     { n: 'Akihabara', t: 'shop', r: 'maybe', area: 'Akihabara', stay: '1.5 h', days: '', ll: [139.7731, 35.6984], hoursText: '10:00–20:00' },
+  ginza:     { n: 'Ginza Itoya', t: 'shop', r: 'maybe', area: 'Ginza', stay: '45 min', days: '', ll: [139.7670, 35.6720], hoursText: '10:00–20:00' },
+  fushimi:   { n: 'Fushimi Inari', t: 'sight', r: 'must', area: 'Kyoto', stay: '2.5 h', days: '12/06', ll: null, hoursText: 'open 24 h' },
+  kiyomizu:  { n: 'Kiyomizu-dera', t: 'sight', r: 'must', area: 'Kyoto', stay: '2 h', days: '12/05', ll: null, hoursText: '6:00–18:00' },
+  nishiki:   { n: 'Nishiki Market', t: 'food', r: 'maybe', area: 'Kyoto', stay: '1.5 h', days: '12/05', ll: null, hoursText: '9:00–17:00 · closed Wed' },
+  odaiba:    { n: 'Odaiba Seaside Park', t: 'nature', r: 'forget', area: 'Odaiba', stay: '1.5 h', days: '', ll: [139.7745, 35.6295], hoursText: 'open 24 h' },
+  robot:     { n: 'Robot show', t: 'night', r: 'forget', area: 'Shinjuku', stay: '1.5 h', days: '', ll: [139.7030, 35.6940], hoursText: '17:00–23:00' },
+};
+
+const h = s => { const [a, b] = s.split(':').map(Number); return a + b / 60; };
+const DAYS = [
+  { d: 'Wed 2 Dec', city: 'Tokyo', sr: '6:35', ss: '16:28', wx: ['sun', '15° / 7°', '10%'], typical: false, blocks: [
+    ['sensoji', '9:00', '10:30', 'walk 10 min'], ['kappabashi', '10:40', '11:40', 'transit 25 min'], ['skytree', '12:05', '13:35', 'transit 35 min'],
+    ['teamlab', '14:10', '16:10', 'transit 20 min'], ['monja', '18:00', '19:30']] },
+  { d: 'Thu 3 Dec', city: 'Tokyo', sr: '6:36', ss: '16:28', wx: ['part', '13° / 6°', '20%'], typical: false, blocks: [
+    ['tsukiji', '8:00', '9:30', 'transit 30 min'], ['meiji', '10:00', '11:00', 'walk 15 min'], ['nezu', '11:15', '12:30', 'walk 20 min'],
+    ['ichiran', '12:50', '13:35'], ['shibsky', '15:45', '16:45', 'fixed:Ticket booked']] },
+  { d: 'Fri 4 Dec', city: 'Tokyo', sr: '6:37', ss: '16:28', wx: ['cloud', '12° / 5°', '30%'], typical: true, blocks: [
+    ['ghibli', '10:00', '12:00', 'fixed:Ticket booked'], ['omoide', '16:00', '17:30']] },
+  { d: 'Sat 5 Dec', city: 'Kyoto', sr: '6:53', ss: '16:44', wx: ['cloud', '11° / 3°', '30%'], typical: true, blocks: [
+    ['__train', '9:00', '11:15', 'fixed:Ticket booked'], ['nishiki', '12:00', '13:30', 'drive 15 min'], ['kiyomizu', '14:30', '16:30']] },
+  { d: 'Sun 6 Dec', city: 'Kyoto', sr: '6:54', ss: '16:44', wx: ['part', '11° / 3°', '25%'], typical: true, blocks: [
+    ['fushimi', '7:00', '9:30', 'transit 25 min'], ['__checkout', '10:00', '10:30', 'fixed:Must be there']]},
+];
+P.__train = { n: 'Shinkansen to Kyoto', t: 'move', ll: null };
+P.__checkout = { n: 'Hotel check-out', t: 'move', ll: null };
+// travel labels: stored on the earlier block (index 3), except "fixed" markers
+DAYS.forEach(day => day.blocks.forEach(b => { if (b[3] && b[3].startsWith('fixed')) { b.fixed = b[3].slice(6); b[3] = undefined; } }));
+DAYS[2].blocks[1].warn = 'Opens 17:00';
+DAYS[1].blocks[3][3] = 'transit 10 min|walk 5 min'; // Ichiran -> Shibuya Sky: walk suggested
+DAYS[3].mode = 'drive'; // per-day default for 5 Dec
+
+// ---------- daylight colour model ----------
+const C = { night: [164,172,189], twi: [201,192,204], rise: [226,208,200], gold: [236,220,194], day: [243,241,234] };
+function skyAt(t, sr, ss) {
+  const m = 1/60;
+  const keys = [
+    [sr - 75*m, C.night], [sr - 30*m, C.twi], [sr, C.rise], [sr + 50*m, C.gold], [sr + 100*m, C.day],
+    [ss - 100*m, C.day], [ss - 50*m, C.gold], [ss, C.rise], [ss + 30*m, C.twi], [ss + 75*m, C.night],
+  ];
+  if (t <= keys[0][0]) return keys[0][1];
+  if (t >= keys[keys.length - 1][0]) return keys[keys.length - 1][1];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [a, ca] = keys[i], [b, cb] = keys[i + 1];
+    if (t >= a && t <= b) { const k = b === a ? 0 : (t - a) / (b - a); return ca.map((v, j) => Math.round(v + (cb[j] - v) * k)); }
+  }
+}
+const rgb = c => `rgb(${c.join(',')})`;
+function skyGradient(from, to, sr, ss) {
+  const stops = [];
+  for (let t = from; t <= to + 1e-9; t += 1/12) stops.push(`${rgb(skyAt(t, sr, ss))} ${((t - from) / (to - from) * 100).toFixed(2)}%`);
+  return `linear-gradient(180deg, ${stops.join(',')})`;
+}
+
+// ---------- weather icons ----------
+const WX = {
+  sun: '<circle cx="8" cy="8" r="3" fill="#d2b06a"/><g stroke="#d2b06a" stroke-width="1.2" stroke-linecap="round"><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/></g>',
+  part: '<circle cx="6" cy="6" r="2.6" fill="#d2b06a"/><path d="M5 13h6.5a2.5 2.5 0 0 0 0-5 3.5 3.5 0 0 0-6.6 1A2 2 0 0 0 5 13z" fill="#b8bec9"/>',
+  cloud: '<path d="M4.5 12.5h7a2.8 2.8 0 0 0 0-5.6 3.8 3.8 0 0 0-7.2 1A2.3 2.3 0 0 0 4.5 12.5z" fill="#b0b6c1"/>',
+};
+const wxIcon = k => `<svg width="15" height="15" viewBox="0 0 16 16">${WX[k]}</svg>`;
+const rain = '<svg width="9" height="11" viewBox="0 0 10 12"><path d="M5 1C3 4 2 5.6 2 7.2A3 3 0 0 0 8 7.2C8 5.6 7 4 5 1z" fill="#8fa3b8"/></svg>';
+
+// ---------- pieces ----------
+let SEL = 'sensoji', DRAG = null, FOCUS = 0, MENU = false;
+const LOCK = '<svg class="lockic" width="9" height="10" viewBox="0 0 9 10"><rect x=".5" y="4.2" width="8" height="5.3" rx="1.2" fill="#6c6f76"/><path d="M2.3 4.4V3a2.2 2.2 0 0 1 4.4 0v1.4" stroke="#6c6f76" stroke-width="1.2" fill="none"/></svg>';
+const MODES = {
+  drive:   { name: 'Drive', g: '<path d="M2.5 9.5 4 6h8l1.5 3.5v3h-11zM2.5 12.5v1.2M13.5 12.5v1.2" stroke="CC" stroke-width="1.4" fill="none" stroke-linejoin="round"/><circle cx="5" cy="10.5" r=".9" fill="CC"/><circle cx="11" cy="10.5" r=".9" fill="CC"/>' },
+  transit: { name: 'Transit', g: '<rect x="4" y="2.5" width="8" height="9" rx="2" stroke="CC" stroke-width="1.4" fill="none"/><path d="M4 7.5h8M5.5 14l1-2.5m4 2.5-1-2.5" stroke="CC" stroke-width="1.4" fill="none" stroke-linecap="round"/>' },
+  walk:    { name: 'Walk', g: '<circle cx="8.5" cy="3" r="1.4" fill="CC"/><path d="M8 5.5 6.5 9l2 1.5L9 14M7.8 5.5l2.4 2.2 1.8.3M6.5 9 5 13.5" stroke="CC" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' },
+  twowheel:{ name: 'Two-wheeler', g: '<circle cx="4" cy="11.5" r="2" stroke="CC" stroke-width="1.3" fill="none"/><circle cx="12" cy="11.5" r="2" stroke="CC" stroke-width="1.3" fill="none"/><path d="M4 11.5 7 7h3l2 4.5M9 4.5h2L10 7" stroke="CC" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+  cycle:   { name: 'Cycle', g: '<circle cx="4" cy="11" r="2.4" stroke="CC" stroke-width="1.3" fill="none"/><circle cx="12" cy="11" r="2.4" stroke="CC" stroke-width="1.3" fill="none"/><path d="M4 11l2.5-5h4L12 11M6.5 6 8 11h-4M9.5 4h1.5" stroke="CC" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' },
+  ride:    { name: 'Ride / taxi', g: '<path d="M2.5 9.5 4 6h8l1.5 3.5v3h-11z" stroke="CC" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M6.5 6 7 4h2l.5 2" stroke="CC" stroke-width="1.3" fill="none"/>' },
+};
+const mIcon = (m, c = '#5d636d') => `<svg class="mi" width="13" height="13" viewBox="0 0 16 16">${MODES[m].g.replaceAll('CC', c)}</svg>`;
+const legMode = str => str.split(' ')[0];
+function travelLabel(str) {
+  const [main, hint] = str.split('|');
+  const m = legMode(main), mins = main.split(' ').slice(1).join(' ');
+  let out = `${mIcon(m)}${mins}`;
+  if (hint) out += `<span class="hint">· ${mIcon('walk', '#3f6b86')}${hint.split(' ').slice(1).join(' ')}?</span>`;
+  return out;
+}
+const md = day => '12/' + day.d.split(' ')[1].padStart(2, '0');
+const dayLabel = day => `<span class="date">${md(day)}</span><span class="wd">${day.d.slice(0, 3)}</span>`;
+const rateLabel = { must: 'Must Go', maybe: 'So-So', forget: 'Forget' };
+
+function placeList() {
+  const groups = [['must', 'Must Go'], ['maybe', 'So-So'], ['forget', 'Forget']];
+  let html = `<div class="pane-head">Places <span class="muted">${Object.values(P).filter(p => p.r).length}</span>
+    <span class="group-by" style="position:relative">Group: Area ▾${MENU ? `<div class="gmenu"><div>Rating</div><div class="on">✓ Area</div><div>Type</div><div>Scheduled or not</div></div>` : ''}</span><span class="collapse">‹</span></div><div class="places">`;
+  // grouped by area (default); Forget rows stay in their area, greyed out
+  const areas = [...new Set(Object.values(P).filter(p => p.r).map(p => p.area))].sort();
+  for (const area of areas) {
+    const items = Object.entries(P).filter(([id, p]) => p.r && p.area === area);
+    html += `<div class="group"><div class="group-head">▾ ${area} <span class="n">${items.length}</span></div>`;
+    for (const [id, p] of items) {
+      const sel = id === SEL;
+      html += `<div class="row ${sel ? 'sel' : ''} ${DRAG && DRAG.id === id ? 'dragging' : ''} ${p.r === 'forget' ? 'forget' : ''}">${icon(p.t)}
+        <div class="name">${p.n} <span class="rate ${p.r}">${rateLabel[p.r]}</span></div>
+        <span class="days ${p.days ? '' : 'none'}">${p.days || 'Not scheduled'}</span>
+        <div class="meta">${p.stay}${p.hoursText ? ' · ' + p.hoursText : ''}</div>
+        ${sel ? `<div class="details">
+            <div><b style="color:var(--ink)">Hours</b> 6:00–17:00 (main hall); grounds open 24 h</div>
+            <div><b style="color:var(--ink)">Notes</b> Go early before the crowds; Nakamise for snacks.</div>
+            <div><a href="#">Open in Google Maps ↗</a></div></div>` : ''}
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  return html + `</div>`;
+}
+
+const RANGE = [6, 22];
+function multiDay() {
+  const n = DAYS.length, gut = 44;
+  const tmpl = `${gut}px repeat(${n}, 1fr)`;
+  let head = `<div class="days-head" style="grid-template-columns:${tmpl}"><div></div>`;
+  for (const day of DAYS) {
+    head += `<div class="dh"><div class="d">${dayLabel(day)} <span class="city">· ${day.city}</span>${day.mode ? `<span class="daymode">${mIcon(day.mode)}${MODES[day.mode].name}</span>` : ''}</div>
+      <div class="w">${wxIcon(day.wx[0])} ${day.wx[1]} ${rain} ${day.wx[2]} ${day.typical ? '<span class="typical">typical</span>' : ''}</div></div>`;
+  }
+  head += `</div>`;
+  const H = (RANGE[1] - RANGE[0]);
+  const y = t => (t - RANGE[0]) * 100 / H;
+  let gutter = `<div class="gutter">`;
+  for (let t = RANGE[0] + 1; t < RANGE[1]; t++) gutter += `<div style="top:${y(t)}%">${t}:00</div>`;
+  gutter += `</div>`;
+  let cols = '';
+  DAYS.forEach((day, di) => {
+    const sr = h(day.sr), ss = h(day.ss);
+    let c = `<div class="col"><div class="sky" style="background:${skyGradient(RANGE[0], RANGE[1], sr, ss)}"></div><div class="grain"></div>`;
+    if (DRAG) {
+      const dp = P[DRAG.id];
+      if (day.d.startsWith(dp.closed)) c += `<div class="closed" style="top:0;height:100%"></div><div class="closedtag" style="top:${y(12)}%">Closed all day</div>`;
+      else {
+        const F = 0.5; // fade 30 min into the open hours
+        const fadeTop = (y(dp.open[0] + F) - y(dp.open[0])) / y(dp.open[0] + F) * 100;
+        const fadeBot = (y(dp.open[1]) - y(dp.open[1] - F)) / (100 - y(dp.open[1] - F)) * 100;
+        if (dp.open[0] > RANGE[0]) c += `<div class="closed" style="top:0;height:${y(dp.open[0] + F)}%;-webkit-mask-image:linear-gradient(180deg,#000 ${100 - fadeTop}%,transparent);mask-image:linear-gradient(180deg,#000 ${100 - fadeTop}%,transparent)"></div><div class="closedtag" style="top:${y(dp.open[0])}%">Opens 9:30</div>`;
+        if (dp.open[1] < RANGE[1]) c += `<div class="closed" style="top:${y(dp.open[1] - F)}%;bottom:0;-webkit-mask-image:linear-gradient(0deg,#000 ${100 - fadeBot}%,transparent);mask-image:linear-gradient(0deg,#000 ${100 - fadeBot}%,transparent)"></div><div class="closedtag" style="top:${y(dp.open[1])}%">Closes 17:00</div>`;
+      }
+    }
+    for (let t = RANGE[0] + 1; t < RANGE[1]; t++) c += `<div class="hline" style="top:${y(t)}%"></div>`;
+    c += `<div class="sunmark" style="top:${y(sr)}%">↑ ${day.sr}</div><div class="sunmark" style="top:${y(ss)}%">↓ ${day.ss}</div>`;
+    day.blocks.forEach((b, i) => {
+      const p = P[b[0]], s = h(b[1]), e = h(b[2]);
+      const short = (e - s) <= 1.1;
+      const tiny = (e - s) <= 0.5;
+      let sub = short ? '' : `${b[1]}–${b[2]}`;
+      if (b.fixed) sub = tiny ? '' : short ? b.fixed : `${sub} · ${b.fixed}`;
+      if (b.warn) sub = `<span class="warnmark">⚠ ${b.warn}</span>` + (short ? '' : ` · ${b[1]}`);
+      c += `<div class="block ${b[0] === SEL ? 'sel' : ''} ${b.warn ? 'warn' : ''} ${tiny ? 'tiny' : ''}" style="--c:${TYPES[p.t].c};top:${y(s)}%;height:${y(e) - y(s)}%">
+        <div class="t">${p.n}${b.fixed ? LOCK : ''}</div>${sub ? `<div class="tm ${b.fixed ? 'fx' : ''}">${sub}</div>` : ''}</div>`;
+      const next = day.blocks[i + 1];
+      const skip = DRAG && DRAG.day === di && DRAG.after === i;
+      if (b[3] && next && !skip) c += `<div class="travel" style="top:${(y(e) + y(h(next[1]))) / 2}%">${travelLabel(b[3])}</div>`;
+    });
+    if (DRAG && DRAG.day === di) {
+      const s = h(DRAG.start), e = h(DRAG.end), dp = P[DRAG.id];
+      const bs = s - DRAG.before.needs / 60, ae = e + DRAG.afterInfo.needs / 60;
+      c += `<div class="need bad" style="top:${y(bs)}%;height:${y(s) - y(bs)}%"></div>
+        <div class="needlab bad" style="top:${(y(bs) + y(s)) / 2}%">needs ${DRAG.before.needs} min, has ${DRAG.before.has}</div>
+        <div class="need ok" style="top:${y(e)}%;height:${y(ae) - y(e)}%"></div>
+        <div class="needlab ok" style="top:${(y(e) + y(ae)) / 2}%">${DRAG.afterInfo.label}</div>
+        <div class="block ghost" style="--c:${TYPES[dp.t].c};top:${y(s)}%;height:${y(e) - y(s)}%"><div class="t">${dp.n} <span style="font-weight:400;color:var(--ink-2)">${DRAG.start}–${DRAG.end}</span></div></div>
+        <svg class="cursor" style="left:62%;top:calc(${y(s)}% + 14px)" width="16" height="20" viewBox="0 0 16 20"><path d="M1 1v15l4-3.5 2.6 5.6 2.4-1.1-2.6-5.4H13z" fill="#2b2f36" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
+    }
+    cols += c + `</div>`;
+  });
+  return `<div class="pane-head">Timetable <span class="seg"><span class="on">Multi-day</span><span>List</span></span>
+      <span class="muted">5 days · 6:00–22:00 · Trip default ${mIcon('transit', '#8b9099')}Transit</span><span class="collapse">˄</span></div>
+    <div class="tt-grid" style="grid-template-rows:auto 1fr">${head}
+      <div class="cols" style="grid-template-columns:${tmpl}">${gutter}${cols}</div></div>`;
+}
+
+function listView() {
+  const day = DAYS[0], sr = h(day.sr), ss = h(day.ss);
+  const strip = (a, b) => `<div class="strip"><div class="sky" style="background:${skyGradient(a, b, sr, ss)}"></div><div class="grain"></div></div>`;
+  let rows = '';
+  day.blocks.forEach((b, i) => {
+    const p = P[b[0]], s = h(b[1]), e = h(b[2]);
+    rows += `<div class="lv-row"><div class="lv-time">${b[1]}<br><span style="color:var(--ink-3)">${b[2]}</span></div>${strip(s, e)}
+      <div class="lv-card ${b[0] === SEL ? 'sel' : ''}" style="--c:${TYPES[p.t].c}"><div class="t">${p.n}</div>
+      <div class="s">${p.area} · ${rateLabel[p.r]}</div></div></div>`;
+    const next = day.blocks[i + 1];
+    if (next) {
+      const gapEnd = h(next[1]);
+      const open = i === 1;
+      const picker = open ? `<div class="picker"><div class="ph">How to get to Tokyo Skytree (estimates)</div>
+          <div>${mIcon('drive')}Drive<b>15</b></div><div class="on">${mIcon('transit', '#3f6b86')}Transit<b>25</b></div><div>${mIcon('walk')}Walk<b>32</b></div>
+          <div>${mIcon('twowheel')}Two-wheeler<b>14</b></div><div>${mIcon('cycle')}Cycle<b>12</b></div><div>${mIcon('ride')}Ride / taxi<b>15</b></div></div>` : '';
+      rows += `<div class="lv-row"><div></div>${strip(e, gapEnd)}<div><div class="lv-travel ${open ? 'open' : ''}">${b[3] ? travelLabel(b[3]) : 'free time'}${open ? ' ▾' : ''}</div>${picker}</div></div>`;
+    }
+  });
+  return `<div class="pane-head">Timetable <span class="seg"><span>Multi-day</span><span class="on">List</span></span><span class="collapse">‹ ›</span></div>
+    <div class="lv-head"><span class="arrow">‹</span><span class="d">${dayLabel(day)}</span><span class="arrow">›</span>
+      <span class="dh" style="border:0;padding:0"><span class="w" style="margin:0">${wxIcon(day.wx[0])} ${day.wx[1]} ${rain} ${day.wx[2]}</span></span>
+      <span class="spacer"></span><span class="sun">Sunrise ${day.sr} · Sunset ${day.ss}</span></div>
+    <div class="lv">${rows}</div>`;
+}
+
+// map projection: lon 139.68..139.83, lat 35.625..35.725 into 1000 x 720
+const proj = ([lon, lat]) => [ (lon - 139.68) / 0.15 * 1000, (35.725 - lat) / 0.10 * 720 ];
+function mapSvg(W, H) {
+  const day1 = DAYS[FOCUS].blocks.map(b => b[0]).filter(id => P[id].ll);
+  const raw = day1.map(id => proj(P[id].ll)).concat(DRAG ? [proj(P[DRAG.id].ll)] : []);
+  // fit the focus day's stops into the pane, in pixels, so labels keep a readable size
+  const xs = raw.map(p => p[0]), ys = raw.map(p => p[1]);
+  const pad = { l: 60, r: 200, t: 40, b: 60 };
+  const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
+  const sc = Math.min((W - pad.l - pad.r) / bw, (H - pad.t - pad.b) / bh);
+  const cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2;
+  const ox = pad.l + (W - pad.l - pad.r) / 2, oy = pad.t + (H - pad.t - pad.b) / 2;
+  const tp = ll => { const [x, y] = proj(ll); return [ox + (x - cx) * sc, oy + (y - cy) * sc]; };
+  const pt = ll => tp(ll).map(v => v.toFixed(1)).join(',');
+  const yamanote = [[139.7006,35.6896],[139.7016,35.7100],[139.7110,35.7295],[139.7387,35.7318],[139.7608,35.7277],[139.7774,35.7138],[139.7742,35.6984],[139.7671,35.6812],[139.7586,35.6665],[139.7454,35.6457],[139.7387,35.6285],[139.7236,35.6339],[139.7158,35.6467],[139.7016,35.6580],[139.7027,35.6702],[139.7006,35.6896]];
+  const sumida = [[139.8050,35.7350],[139.8020,35.7180],[139.7990,35.7090],[139.7930,35.6990],[139.7880,35.6900],[139.7860,35.6800],[139.7800,35.6700],[139.7760,35.6560],[139.7700,35.6400]];
+  const bay = [[139.68,35.60],[139.725,35.618],[139.752,35.640],[139.768,35.652],[139.778,35.640],[139.795,35.650],[139.80,35.640],[139.83,35.655],[139.98,35.66],[139.98,35.40],[139.40,35.40],[139.40,35.60]];
+  let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${W}" height="${H}" fill="#eeede7"/><g stroke="#e4e2da" stroke-width="1">`;
+  const step = Math.max(26, 46 * sc);
+  for (let i = -H; i < W + H; i += step) s += `<path d="M${i} 0 L${i + H * .35} ${H}"/>`;
+  for (let j = -W; j < H + W; j += step * 1.15) s += `<path d="M0 ${j + W * .2} L${W} ${j}"/>`;
+  const park = (ll, w, h) => { const [x, y] = tp(ll); return `<rect x="${x}" y="${y}" width="${w * sc}" height="${h * sc}" rx="${8}" fill="#dfe6da"/>`; };
+  const lab = (ll, t, extra = '') => { const [x, y] = tp(ll); return `<text x="${x}" y="${y}" ${extra}>${t}</text>`; };
+  s += `</g>${park([139.690,35.682], 38, 44)}${park([139.765,35.720], 40, 30)}
+    <path d="M ${bay.map(pt).join(' L ')} Z" fill="#d9e2e6"/>
+    <polyline points="${sumida.map(pt).join(' ')}" fill="none" stroke="#d9e2e6" stroke-width="${Math.max(6, 12 * sc)}" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${yamanote.map(pt).join(' ')}" fill="none" stroke="#c3c7cc" stroke-width="2.2" stroke-dasharray="7 4"/>
+    ${lab([139.706,35.6455], 'JR Yamanote', 'font-size="11" fill="#9aa0a8"')}
+    ${lab([139.735,35.6245], 'Tokyo Bay', 'font-size="12" fill="#9fb1ba" font-style="italic"')}`;
+  // other places: grey dots
+  for (const [id, p] of Object.entries(P)) {
+    if (!p.ll || day1.includes(id) || (DRAG && DRAG.id === id)) continue;
+    const [x, y] = tp(p.ll);
+    s += `<g opacity="${p.r === 'forget' ? .45 : 1}"><circle cx="${x}" cy="${y}" r="4.5" fill="#b4b8be" stroke="#fff" stroke-width="1.5"/>
+      <text x="${x + 8}" y="${y + 4}" font-size="11" fill="#8b9099">${p.n.replace(' (sunset ticket)', '')}</text></g>`;
+  }
+  // focus-day route
+  const pts = day1.map(id => tp(P[id].ll));
+  const DASH = { walk: '1.5 5', transit: '', drive: '9 5', twowheel: '9 3 2 3', cycle: '4 4', ride: '9 5' };
+  const legs = DAYS[FOCUS].blocks.filter(b => P[b[0]].ll);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const m = legMode((legs[i][3] || 'transit').split('|')[0]);
+    const skipLeg = DRAG && DRAG.after === i;
+    if (skipLeg) continue;
+    s += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+1][0]}" y2="${pts[i+1][1]}" stroke="#3f6b86" stroke-width="${m === 'walk' ? 3 : 2.5}" stroke-opacity=".6" stroke-linecap="round" stroke-dasharray="${DASH[m]}"/>`;
+  }
+  if (DRAG) {
+    const g = tp(P[DRAG.id].ll), a = pts[DRAG.after], b = pts[DRAG.after + 1];
+    s += `<polyline points="${a.join(',')} ${g.join(',')} ${b.join(',')}" fill="none" stroke="#3f6b86" stroke-width="2" stroke-dasharray="5 4"/>
+      <circle cx="${g[0]}" cy="${g[1]}" r="10.5" fill="#fbfaf7" stroke="#3f6b86" stroke-width="2" stroke-dasharray="3 2"/>
+      <text x="${g[0]}" y="${g[1] + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#3f6b86">+</text>
+      <text x="${g[0] - 16}" y="${g[1] + 4}" text-anchor="end" font-size="12" font-weight="600" fill="#3f6b86" paint-order="stroke" stroke="#eeede7" stroke-width="3">${P[DRAG.id].n} (dragging)</text>`;
+  }
+  day1.forEach((id, i) => {
+    const [x, y] = pts[i], sel = id === SEL, left = P[id].labelLeft;
+    if (sel) s += `<circle cx="${x}" cy="${y}" r="18" fill="rgba(63,107,134,.16)"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="10.5" fill="${sel ? '#3f6b86' : '#fbfaf7'}" stroke="#3f6b86" stroke-width="2"/>
+      <text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="${sel ? '#fff' : '#3f6b86'}">${i + 1}</text>
+      <text x="${left ? x - 16 : x + 16}" y="${y + 4 + (P[id].dy || 0)}" text-anchor="${left ? 'end' : 'start'}" font-size="12" font-weight="600" fill="#2b2f36" paint-order="stroke" stroke="#eeede7" stroke-width="3">${P[id].n}</text>`;
+  });
+  return s + `</svg>`;
+}
+function mapPane(head = true) {
+  const fd = DAYS[FOCUS];
+  return `<div class="pane-head">Map <span class="muted">Focus: ${md(fd)} ${fd.d.slice(0, 3)} · ${fd.blocks.length} stops</span><span class="collapse">${head ? '˅' : '›'}</span></div>
+    <div class="map" style="flex:1"><div class="map-slot" data-sel="${SEL || ''}" data-focus="${FOCUS}" data-drag="${DRAG ? 1 : 0}" style="position:absolute;inset:0"></div>
+      <div class="zoom"><span>+</span><span>−</span></div>
+      <div class="map-legend"><span><i style="background:#3f6b86"></i>Focus day, in order</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5"/></svg> Transit</span><span><svg width="22" height="6"><line x1="2" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="3" stroke-dasharray="1.5 5" stroke-linecap="round"/></svg> Walk</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5" stroke-dasharray="9 5"/></svg> Drive</span><span><i style="background:#b4b8be"></i>Other places</span></div></div>`;
+}
+function topbar(active) {
+  return `<div class="topbar"><span class="brand">Wanderlust</span><span class="trip"><b>Tokyo &amp; Kyoto</b> · 12/02–12/06/2026 · 3 people</span>
+    <span class="spacer"></span><span class="seg-label">Layout</span>
+    <span class="seg"><span class="${active === 1 ? 'on' : ''}">Stacked</span><span class="${active === 2 ? 'on' : ''}">Three columns</span></span></div>`;
+}
+
+// ---------- assemble ----------
+document.getElementById('f1').innerHTML = topbar(1) + `
+  <div class="body" style="grid-template-columns:300px 6px 1fr">
+    <div class="pane">${placeList()}</div><div class="divider-v"></div>
+    <div style="display:grid;grid-template-rows:540px 6px 1fr;min-height:0">
+      <div class="pane tt">${multiDay()}</div><div class="divider-h"></div>
+      <div class="pane">${mapPane(true)}</div>
+    </div>
+  </div>`;
+MENU = true;
+document.getElementById('f2').innerHTML = topbar(2) + `
+  <div class="body" style="grid-template-columns:300px 6px 470px 6px 1fr">
+    <div class="pane">${placeList()}</div><div class="divider-v"></div>
+    <div class="pane tt">${listView()}</div><div class="divider-v"></div>
+    <div class="pane">${mapPane(false)}</div>
+  </div>`;
+MENU = false;
+
+const DRAG3 = { id: 'uenomus', day: 1, after: 3, start: '13:45', end: '14:45',
+  before: { needs: 35, has: 10 }, afterInfo: { needs: 35, label: 'train 35 min · fits' } };
+SEL = null; DRAG = DRAG3; FOCUS = 1;
+document.getElementById('f3').innerHTML = topbar(1) + `
+  <div class="body" style="grid-template-columns:300px 6px 1fr">
+    <div class="pane">${placeList()}</div><div class="divider-v"></div>
+    <div style="display:grid;grid-template-rows:540px 6px 1fr;min-height:0">
+      <div class="pane tt">${multiDay()}</div><div class="divider-h"></div>
+      <div class="pane">${mapPane(true)}</div>
+    </div>
+  </div>`;
+// draw maps at their real pixel size
+document.querySelectorAll('.map-slot').forEach(el => {
+  SEL = el.dataset.sel; FOCUS = +el.dataset.focus; DRAG = el.dataset.drag === '1' ? DRAG3 : null;
+  el.innerHTML = mapSvg(el.clientWidth, el.clientHeight);
+});
+
+// fit frames to the window width
+function fit() {
+  const w = Math.min(1, (document.documentElement.clientWidth - 48) / 1440);
+  document.querySelectorAll('.scaler').forEach(s => { s.style.zoom = w; });
+}
+addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

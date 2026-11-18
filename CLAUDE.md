@@ -28,7 +28,7 @@ The artifacts are private to the owner's claude.ai account.
 ## Current state
 
 - **Restarted on 2026-11-18 at layout and behavior.** Read `docs/layout-and-behavior.md` first. Brady sketched two default layouts (Stacked: places left, timetable over map; Three columns: places, timetable, map). Canvas options A, B, C are kept as alternatives only.
-- All 20 behavior questions in that doc were answered on 2026-11-18. **Next: a clickable mock of the two layouts for Brady to react to, before any real build.** Earlier docs (`ux-workflow.md`, `requirements.md`, roadmap in `decisions.md`) went too far ahead and are background, not decisions.
+- About 50 layout and behavior items in that doc are agreed (2026-11-18 to 19), including the map and routing stack (MapLibre with our own grey style, Valhalla), and separate Bookings and Budget pages. A static mock is in `docs/mock/layouts.html` (colours are placeholders). Backend basics are decided (local-first, no key server yet, hosted Valhalla routing; see `docs/decisions.md`). **Next:** update the mock for the newest items, then build. Earlier docs (`ux-workflow.md`, `requirements.md`, roadmap in `decisions.md`) went too far ahead and are background, not decisions.
 - Prototype v0 in `src/` was rejected as UI. The logic in `src/lib/` and `src/types.ts` may still be reused once behavior is agreed.
 - `npm test` passes (12 tests). `npm run build` passes.
 
@@ -36,7 +36,7 @@ The artifacts are private to the owner's claude.ai account.
 
 - Interface in **English**.
 - **No named travellers or family / elder mode for now.** The trip has only a head count (`partySize`) for budget totals.
-- **One rating per place**: 1 Forget (greyed out, not deleted), 2 50-50, 3 Must Go.
+- **One rating per place**: 1 Forget (greyed out, not deleted), 2 So-So, 3 Must Go.
 - Website first, desktop app later (the build uses relative paths so it can be wrapped in Tauri or Electron).
 - After planning, the output is a convenient trip guide for use during the trip.
 

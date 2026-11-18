@@ -38,7 +38,7 @@ The dotted arrows are the important part. Every later step can send you back to 
 | --- | --- | --- | --- | --- |
 | 1 | Frame the trip | Names the trip, sets dates, how many people, and a pace | Creates the empty days. Pace sets walking speed and how tight connections may be | Built (Trip settings) |
 | 2 | Collect places | Saves ideas over weeks, from posts, links or by hand. Not all will be used | Keeps a pool. Fills in position, hours and usual stay | Manual add with a Maps link or coordinates. No auto-fill yet |
-| 3 | Pick and assign | Rates each place: 1 Forget, 2 50-50, 3 Must Go. Filters by area and rating. Seasonal items go first | Greys out Forget without deleting it, shows what is already scheduled, and marks Must Go on the map | Built |
+| 3 | Pick and assign | Rates each place: 1 Forget, 2 So-So, 3 Must Go. Filters by area and rating. Seasonal items go first | Greys out Forget without deleting it, shows what is already scheduled, and marks Must Go on the map | Built |
 | 4 | Build the timetable | Drags places onto days, moves and resizes blocks, marks fixed ones (flights, sunset, timed tickets) | Inserts travel between consecutive stops. Flags overlaps, closures, tight connections | Built |
 | 5 | Check travel and fares | For each connection, confirms route, time and fare | Opens the exact route in Google Maps. Stores the confirmed numbers and stops calling it an estimate | Built as a manual check. No routing provider |
 | 6 | Lodging and transfers | Compares candidates on total price, walk to station, cancellation | Comparison table and candidates on the map | Not built |
