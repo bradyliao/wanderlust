@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Option C: map first</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2357D8}a:hover{color:#1A43AA}
+</style>
+</helmet>
+<div style="height: 900px; display: flex; flex-direction: column; background: #F2F3F5; color: #161B26; font-family: Inter, system-ui, sans-serif; font-size: 13px">
+
+  <header style="height: 60px; flex: none; display: flex; align-items: center; gap: 24px; padding: 0 20px; background: #FFFFFF; border-bottom: 1px solid #DADDE3; flex-wrap: wrap">
+    <div style="display: flex; flex-direction: column">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Tokyo in late autumn</span>
+      <span style="font-size: 12px; color: #5B6474">Nov 28 to Dec 1, 2 travelling</span>
+    </div>
+    <nav style="display: flex; gap: 4px; margin-left: auto; background: #F2F3F5; border-radius: 10px; padding: 3px">
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; background: #FFFFFF; color: #161B26; font-weight: 600; text-decoration: none">Plan</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Budget</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Checklist</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Trip guide</a>
+    </nav>
+  </header>
+
+  <div style="position: relative; flex: 1; min-height: 0; overflow: hidden; background: #E8E9EC">
+    <svg aria-hidden="true" viewBox="0 0 1440 580" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+      <rect x="0" y="0" width="1440" height="580" fill="#E8E9EC"></rect>
+      <path d="M1150 0 C 1100 160, 1250 300, 1180 580" fill="none" stroke="#CDD7E3" stroke-width="30"></path>
+      <rect x="560" y="70" width="130" height="70" rx="8" fill="#DCE3D9"></rect>
+      <rect x="820" y="190" width="100" height="60" rx="8" fill="#DCE3D9"></rect>
+      <rect x="560" y="370" width="150" height="90" rx="8" fill="#DCE3D9"></rect>
+      <path d="M0 220 L1440 250 M0 360 L1440 340 M700 0 L720 580 M980 0 L960 580 M0 480 L1440 500 M440 0 L470 580" fill="none" stroke="#FFFFFF" stroke-width="8"></path>
+      <path d="M0 130 L1440 160 M1220 0 L1260 580 M0 540 L1440 560 M600 0 L590 580" fill="none" stroke="#FFFFFF" stroke-width="4"></path>
+      <ellipse cx="780" cy="290" rx="300" ry="220" fill="none" stroke="#8C95A4" stroke-width="3"></ellipse>
+      <path d="M0 280 L1440 300 M860 0 L1010 580" fill="none" stroke="#8C95A4" stroke-width="3"></path>
+      <polyline points="1000,230 950,240 1110,262 650,105" fill="none" stroke="#161B26" stroke-width="3" stroke-dasharray="6 6"></polyline>
+    </svg>
+    <span style="position: absolute; left: 69.4%; top: 39.7%; width: 32px; height: 32px; margin: -16px 0 0 -16px; border-radius: 50%; background: #2357D8; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #2357D8">1</span>
+    <span style="position: absolute; left: 66%; top: 41.4%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">2</span>
+    <span style="position: absolute; left: 77.1%; top: 45.2%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">3</span>
+    <span style="position: absolute; left: 45.1%; top: 18.1%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">4</span>
+    <span style="position: absolute; left: 60%; top: 30%; width: 12px; height: 12px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+    <span style="position: absolute; left: 57%; top: 36%; width: 12px; height: 12px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+    <span style="position: absolute; left: 49%; top: 62%; width: 12px; height: 12px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+    <span style="position: absolute; left: 53%; top: 70%; width: 12px; height: 12px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+    <span style="position: absolute; left: 63%; top: 75%; width: 12px; height: 12px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+    <span style="position: absolute; left: 72%; top: 66%; width: 12px; height: 12px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474; opacity: 0.4"></span>
+
+    <aside style="position: absolute; left: 16px; top: 16px; bottom: 16px; width: 300px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 6px 24px rgba(22,27,38,0.16); display: flex; flex-direction: column; overflow: hidden">
+      <div style="padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #E8EAEE">
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 17px">Places</h2>
+          <button style="height: 32px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Add place</button>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">All</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #2357D8; background: #2357D8; color: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">Must Go</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">50-50</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">Forget</button>
+        </div>
+      </div>
+      <div style="flex: 1; overflow: hidden">
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; justify-content: space-between; align-items: center; gap: 8px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">Tokyo National Museum</span><span style="font-size: 12px; color: #5B6474">Ueno, 2 h. Closed Mondays</span></div><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add to Sun</button></div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; justify-content: space-between; align-items: center; gap: 8px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">Ueno Park</span><span style="font-size: 12px; color: #5B6474">Ueno, 1 h. On Sat 28</span></div><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add to Sun</button></div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; justify-content: space-between; align-items: center; gap: 8px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">Tsukiji Outer Market</span><span style="font-size: 12px; color: #5B6474">Tsukiji, 1 h 30 min. On Tue 1</span></div><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add to Sun</button></div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; justify-content: space-between; align-items: center; gap: 8px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">Meiji Jingu</span><span style="font-size: 12px; color: #5B6474">Harajuku, 1 h 15 min. On Mon 30</span></div><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add to Sun</button></div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; justify-content: space-between; align-items: center; gap: 8px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">Roppongi winter lights</span><span style="font-size: 12px; color: #5B6474">Roppongi, 45 min. Evenings</span></div><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add to Sun</button></div>
+      </div>
+    </aside>
+
+    <div style="position: absolute; right: 16px; top: 16px; width: 320px; background: #FFFFFF; border-radius: 12px; padding: 14px 16px; box-shadow: 0 6px 24px rgba(22,27,38,0.16); display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700">1. Senso-ji</span>
+        <span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span>
+      </div>
+      <span style="color: #5B6474">Sun 29, 09:00–10:30. Asakusa.</span>
+      <span style="color: #B4410E; font-weight: 600">Walk to stop 2 takes about 20 min; the plan leaves 15.</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button style="height: 34px; padding: 0 12px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Open in Google Maps</button>
+        <button style="height: 34px; padding: 0 12px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <section style="flex: none; height: 270px; background: #FFFFFF; border-top: 1px solid #DADDE3; display: flex; flex-direction: column; padding: 10px 20px 14px; box-sizing: border-box">
+    <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); height: 22px; flex: none">
+      <span></span>
+      <div style="position: relative; font-size: 11px; color: #5B6474">
+        <span style="position: absolute; left: 0%">08</span>
+        <span style="position: absolute; left: 16.67%">10</span>
+        <span style="position: absolute; left: 33.33%">12</span>
+        <span style="position: absolute; left: 50%">14</span>
+        <span style="position: absolute; left: 66.67%">16</span>
+        <span style="position: absolute; left: 83.33%">18</span>
+        <span style="position: absolute; right: 0">20</span>
+      </div>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px; background-image: repeating-linear-gradient(90deg, transparent 0 96px, transparent 96px); ">
+      <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; height: 48px">
+        <span style="font-weight: 700">Sat 28</span>
+        <div style="position: relative; height: 40px; background: #F5F6F8; border-radius: 8px">
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 41.67%; width: 8.33%; background: #161B26; color: #FFFFFF; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Haneda</div>
+          <div style="position: absolute; top: 19px; height: 2px; left: 50%; width: 6.94%; background: #8A919D"></div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 58.33%; width: 8.33%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Hotel</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 68.75%; width: 8.33%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Ueno Park</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 79.17%; width: 12.5%; background: #F7F8FA; border: 1.5px dashed #8A919D; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Dinner?</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; height: 48px">
+        <span style="font-weight: 700; color: #2357D8">Sun 29</span>
+        <div style="position: relative; height: 40px; background: #EEF3FD; border-radius: 8px; box-shadow: 0 0 0 2px #2357D8">
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 8.33%; width: 12.5%; background: #FFFFFF; border: 2px solid #2357D8; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">1 Senso-ji</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 22.92%; width: 8.33%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">2 Kappabashi</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 41.67%; width: 12.5%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">3 Skytree</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 66.67%; width: 10.42%; background: #FFFFFF; border: 2px solid #B4410E; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">4 Rikugien</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; height: 48px">
+        <span style="font-weight: 700">Mon 30</span>
+        <div style="position: relative; height: 40px; background: #F5F6F8; border-radius: 8px">
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 12.5%; width: 10.42%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Meiji Jingu</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 27.08%; width: 6.25%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Ginkgo</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 45.83%; width: 12.5%; background: #FFFFFF; border: 2px solid #B4410E; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Shinjuku Gyoen</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 64.58%; width: 10.42%; background: #161B26; color: #FFFFFF; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Shibuya Sky</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; height: 48px">
+        <span style="font-weight: 700">Tue 1</span>
+        <div style="position: relative; height: 40px; background: #F5F6F8; border-radius: 8px">
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 4.17%; width: 12.5%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Tsukiji</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 20.83%; width: 10.42%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">East Gardens</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 35.42%; width: 6.25%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Station</div>
+          <div style="position: absolute; top: 4px; bottom: 4px; left: 79.17%; width: 6.25%; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 0 8px; display: flex; align-items: center; font-weight: 600; white-space: nowrap; overflow: hidden; box-sizing: border-box">Lights</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin: 6px 0 0; font-size: 12px; color: #5B6474">Click a day to show it on the map. Drag bars to change times; drag between rows to move a stop to another day. Orange outline: needs a look. Dark: fixed time.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Option A: week timetable and map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2357D8}a:hover{color:#1A43AA}
+</style>
+</helmet>
+<div style="height: 900px; display: flex; flex-direction: column; background: #F2F3F5; color: #161B26; font-family: Inter, system-ui, sans-serif; font-size: 13px">
+
+  <header style="height: 60px; flex: none; display: flex; align-items: center; gap: 24px; padding: 0 20px; background: #FFFFFF; border-bottom: 1px solid #DADDE3; flex-wrap: wrap">
+    <div style="display: flex; flex-direction: column">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Tokyo in late autumn</span>
+      <span style="font-size: 12px; color: #5B6474">Nov 28 to Dec 1, 2 travelling</span>
+    </div>
+    <nav style="display: flex; gap: 4px; margin-left: auto; background: #F2F3F5; border-radius: 10px; padding: 3px">
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; background: #FFFFFF; color: #161B26; font-weight: 600; text-decoration: none">Plan</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Budget</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Checklist</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Trip guide</a>
+    </nav>
+    <button style="height: 36px; padding: 0 14px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Undo</button>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: flex; flex-wrap: wrap">
+
+    <aside style="width: 260px; flex: none; display: flex; flex-direction: column; background: #FFFFFF; border-right: 1px solid #DADDE3">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 8px">
+        <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 17px">Places</h2>
+        <button style="height: 32px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Add place</button>
+      </div>
+      <div style="padding: 0 14px 10px; display: flex; flex-direction: column; gap: 8px">
+        <label style="display: flex; flex-direction: column"><span style="position: absolute; left: -9999px">Search places</span><input placeholder="Search places" style="height: 34px; border: 1px solid #DADDE3; border-radius: 8px; padding: 0 10px; font: inherit"></label>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #161B26; background: #161B26; color: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">All 20</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">Must Go 9</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">50-50 9</button>
+          <button style="height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #DADDE3; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 600">Forget 2</button>
+        </div>
+      </div>
+      <div style="flex: 1; overflow: hidden; border-top: 1px solid #E8EAEE">
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px; background: #EEF3FD">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Senso-ji</span><span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span></div>
+          <span style="font-size: 12px; color: #5B6474">Asakusa, 1 h 30 min. On Sun 29</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Tokyo National Museum</span><span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span></div>
+          <span style="font-size: 12px; color: #5B6474">Ueno, 2 h. Not scheduled</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Jingu Gaien Ginkgo Avenue</span><span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span></div>
+          <span style="font-size: 12px; color: #5B6474">Aoyama, 45 min. Ginkgo season. On Mon 30</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Tokyo Skytree</span><span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px">50-50</span></div>
+          <span style="font-size: 12px; color: #5B6474">Oshiage, 1 h 30 min. On Sun 29</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Tokyo Tower</span><span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px">50-50</span></div>
+          <span style="font-size: 12px; color: #5B6474">Shiba, 1 h 15 min. Not scheduled</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600">Shinjuku Gyoen</span><span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px">50-50</span></div>
+          <span style="font-size: 12px; color: #5B6474">Shinjuku, 1 h 30 min. On Mon 30</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px; color: #8A919D">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600; text-decoration: line-through">teamLab Planets</span><span style="font-size: 11px; font-weight: 700; color: #5B6474; background: #E8EAEE; border-radius: 4px; padding: 1px 6px">Forget</span></div>
+          <span style="font-size: 12px">Toyosu, 2 h</span>
+        </div>
+        <div style="padding: 10px 14px; border-bottom: 1px solid #E8EAEE; display: flex; flex-direction: column; gap: 2px; color: #8A919D">
+          <div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-weight: 600; text-decoration: line-through">Omoide Yokocho</span><span style="font-size: 11px; font-weight: 700; color: #5B6474; background: #E8EAEE; border-radius: 4px; padding: 1px 6px">Forget</span></div>
+          <span style="font-size: 12px">Shinjuku, 1 h 15 min</span>
+        </div>
+      </div>
+      <p style="margin: 0; padding: 10px 14px; font-size: 12px; color: #5B6474; border-top: 1px solid #E8EAEE">Drag a place onto a day.</p>
+    </aside>
+
+    <section style="flex: 1 1 560px; min-width: 0; display: flex; flex-direction: column">
+      <div style="display: grid; grid-template-columns: 44px repeat(4, minmax(0, 1fr)); height: 48px; flex: none; border-bottom: 1px solid #DADDE3; background: #F2F3F5">
+        <div></div>
+        <div style="padding: 8px 10px; border-left: 1px solid #DADDE3"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700">Sat 28</div><div style="font-size: 11px; color: #5B6474">Arrival</div></div>
+        <div style="padding: 8px 10px; border-left: 1px solid #DADDE3; background: #FFFFFF; box-shadow: inset 0 -3px 0 #2357D8"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700">Sun 29</div><div style="font-size: 11px; color: #B4410E; font-weight: 600">2 to check</div></div>
+        <div style="padding: 8px 10px; border-left: 1px solid #DADDE3"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700">Mon 30</div><div style="font-size: 11px; color: #B4410E; font-weight: 600">1 to check</div></div>
+        <div style="padding: 8px 10px; border-left: 1px solid #DADDE3"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700">Tue 1</div><div style="font-size: 11px; color: #5B6474">Central Tokyo</div></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 44px repeat(4, minmax(0, 1fr)); height: 720px; flex: none; background-image: repeating-linear-gradient(#E3E5E9 0 1px, transparent 1px 60px)">
+        <div style="position: relative; font-size: 11px; color: #5B6474">
+          <span style="position: absolute; top: 2px; right: 8px">08</span>
+          <span style="position: absolute; top: 62px; right: 8px">09</span>
+          <span style="position: absolute; top: 122px; right: 8px">10</span>
+          <span style="position: absolute; top: 182px; right: 8px">11</span>
+          <span style="position: absolute; top: 242px; right: 8px">12</span>
+          <span style="position: absolute; top: 302px; right: 8px">13</span>
+          <span style="position: absolute; top: 362px; right: 8px">14</span>
+          <span style="position: absolute; top: 422px; right: 8px">15</span>
+          <span style="position: absolute; top: 482px; right: 8px">16</span>
+          <span style="position: absolute; top: 542px; right: 8px">17</span>
+          <span style="position: absolute; top: 602px; right: 8px">18</span>
+          <span style="position: absolute; top: 662px; right: 8px">19</span>
+        </div>
+
+        <div style="position: relative; border-left: 1px solid #DADDE3">
+          <div style="position: absolute; left: 4px; right: 4px; top: 300px; height: 60px; box-sizing: border-box; background: #161B26; color: #FFFFFF; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; opacity: 0.8">13:00–14:00 · Fixed</div><div style="font-weight: 600; line-height: 1.2">Land at Haneda</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 362px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 50 min · checked</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 420px; height: 60px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">15:00–16:00</div><div style="font-weight: 600; line-height: 1.2">Drop bags at hotel</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 480px; font-size: 11px; line-height: 15px; color: #5B6474; white-space: nowrap; overflow: hidden">Walk 15 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 495px; height: 60px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">16:15–17:15</div><div style="font-weight: 600; line-height: 1.2">Ueno Park</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 555px; font-size: 11px; line-height: 15px; color: #5B6474; white-space: nowrap; overflow: hidden">Walk 15 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 570px; height: 90px; box-sizing: border-box; background: #F7F8FA; border: 1.5px dashed #8A919D; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">17:30–19:00 · Not decided</div><div style="font-weight: 600; line-height: 1.2">Dinner at Ameyoko</div></div>
+        </div>
+
+        <div style="position: relative; border-left: 1px solid #DADDE3; background: rgba(255,255,255,0.55)">
+          <div style="position: absolute; left: 4px; right: 4px; top: 60px; height: 90px; box-sizing: border-box; background: #FFFFFF; border: 2px solid #2357D8; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">09:00–10:30</div><div style="font-weight: 600; line-height: 1.2">Senso-ji</div><div style="font-size: 11px; color: #2357D8; font-weight: 600; margin-top: 2px">Must Go</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 150px; font-size: 11px; line-height: 15px; color: #B4410E; font-weight: 600; white-space: nowrap; overflow: hidden">Walk 20 min · only 15 left</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 165px; height: 60px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">10:45–11:45</div><div style="font-weight: 600; line-height: 1.2">Kappabashi Kitchen Street</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 228px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 20 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 300px; height: 90px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">13:00–14:30</div><div style="font-weight: 600; line-height: 1.2">Tokyo Skytree</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 395px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 30 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 480px; height: 75px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">16:00–17:15</div><div style="font-weight: 600; line-height: 1.2">Rikugien Garden</div><div style="font-size: 11px; color: #B4410E; font-weight: 600; margin-top: 2px">Closes at 17:00</div></div>
+        </div>
+
+        <div style="position: relative; border-left: 1px solid #DADDE3">
+          <div style="position: absolute; left: 4px; right: 4px; top: 90px; height: 75px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">09:30–10:45</div><div style="font-weight: 600; line-height: 1.2">Meiji Jingu</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 168px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 20 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 195px; height: 45px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">11:15–12:00</div><div style="font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Jingu Gaien Ginkgo</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 243px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 20 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 330px; height: 90px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">13:30–15:00</div><div style="font-weight: 600; line-height: 1.2">Shinjuku Gyoen</div><div style="font-size: 11px; color: #B4410E; font-weight: 600; margin-top: 2px">Closed on Mondays</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 424px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 25 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 465px; height: 75px; box-sizing: border-box; background: #161B26; color: #FFFFFF; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; opacity: 0.8">15:45–17:00 · Fixed</div><div style="font-weight: 600; line-height: 1.2">Shibuya Sky at sunset</div></div>
+        </div>
+
+        <div style="position: relative; border-left: 1px solid #DADDE3">
+          <div style="position: absolute; left: 4px; right: 4px; top: 30px; height: 90px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">08:30–10:00</div><div style="font-weight: 600; line-height: 1.2">Breakfast at Tsukiji</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 124px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 25 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 150px; height: 75px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">10:30–11:45</div><div style="font-weight: 600; line-height: 1.2">Imperial Palace East Gardens</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 228px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Walk 20 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 255px; height: 45px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">12:15–13:00</div><div style="font-weight: 600; line-height: 1.2">Tokyo Station</div></div>
+          <div style="position: absolute; left: 12px; right: 4px; top: 548px; font-size: 11px; color: #5B6474; white-space: nowrap; overflow: hidden">Train 25 min · est.</div>
+          <div style="position: absolute; left: 4px; right: 4px; top: 570px; height: 45px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #C9CED6; border-radius: 6px; padding: 4px 8px; overflow: hidden"><div style="font-size: 11px; color: #5B6474">17:30–18:15</div><div style="font-weight: 600; line-height: 1.2">Roppongi winter lights</div></div>
+        </div>
+      </div>
+
+      <div style="flex: 1; display: flex; gap: 18px; align-items: center; padding: 0 16px; border-top: 1px solid #DADDE3; background: #FFFFFF; font-size: 12px; color: #5B6474; flex-wrap: wrap">
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border: 1px solid #C9CED6; background: #FFFFFF; border-radius: 3px"></span>A stay</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; background: #161B26; border-radius: 3px"></span>Fixed time</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border: 1.5px dashed #8A919D; border-radius: 3px"></span>Not decided</span>
+        <span>Grey lines: travel (est. = not checked yet)</span>
+        <span style="color: #B4410E; font-weight: 600">Orange: needs a look</span>
+      </div>
+    </section>
+
+    <section style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DADDE3">
+      <div style="height: 48px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid #E8EAEE">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700">Sun 29 route</span>
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5B6474"><input type="checkbox" checked>Show other places</label>
+      </div>
+      <div style="position: relative; flex: 1; min-height: 0; overflow: hidden; background: #E8E9EC">
+        <svg aria-hidden="true" viewBox="0 0 600 700" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+          <rect x="0" y="0" width="600" height="700" fill="#E8E9EC"></rect>
+          <path d="M500 0 C 470 180, 560 330, 520 700" fill="none" stroke="#CDD7E3" stroke-width="26"></path>
+          <rect x="140" y="90" width="90" height="60" rx="6" fill="#DCE3D9"></rect>
+          <rect x="300" y="210" width="70" height="50" rx="6" fill="#DCE3D9"></rect>
+          <rect x="150" y="430" width="110" height="80" rx="6" fill="#DCE3D9"></rect>
+          <path d="M0 260 L600 300 M0 420 L600 400 M240 0 L260 700 M400 0 L380 700 M0 560 L600 600" fill="none" stroke="#FFFFFF" stroke-width="7"></path>
+          <path d="M0 160 L600 200 M120 0 L160 700 M0 640 L600 660" fill="none" stroke="#FFFFFF" stroke-width="4"></path>
+          <ellipse cx="280" cy="340" rx="190" ry="250" fill="none" stroke="#8C95A4" stroke-width="3"></ellipse>
+          <path d="M0 330 L600 350 M330 0 L420 700" fill="none" stroke="#8C95A4" stroke-width="3"></path>
+          <polyline points="372,266 330,280 468,308 180,126" fill="none" stroke="#161B26" stroke-width="3" stroke-dasharray="6 6"></polyline>
+        </svg>
+        <span style="position: absolute; left: 45%; top: 55%; width: 10px; height: 10px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+        <span style="position: absolute; left: 40%; top: 63%; width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+        <span style="position: absolute; left: 33%; top: 72%; width: 10px; height: 10px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+        <span style="position: absolute; left: 52%; top: 77%; width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+        <span style="position: absolute; left: 66%; top: 70%; width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474; opacity: 0.4"></span>
+        <span style="position: absolute; left: 46%; top: 30%; width: 10px; height: 10px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+        <span style="position: absolute; left: 62%; top: 38%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #2357D8; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #2357D8">1</span>
+        <span style="position: absolute; left: 55%; top: 40%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">2</span>
+        <span style="position: absolute; left: 78%; top: 44%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">3</span>
+        <span style="position: absolute; left: 30%; top: 18%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">4</span>
+
+        <div style="position: absolute; left: 16px; right: 16px; bottom: 16px; background: #FFFFFF; border-radius: 12px; padding: 14px 16px; box-shadow: 0 6px 24px rgba(22,27,38,0.18); display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+            <span style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700">1. Senso-ji</span>
+            <span style="font-size: 12px; color: #5B6474">Sun 29, 09:00–10:30</span>
+          </div>
+          <span style="color: #5B6474">Asakusa. Usually 1 h 30 min. Rated Must Go.</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button style="height: 34px; padding: 0 12px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Open in Google Maps</button>
+            <button style="height: 34px; padding: 0 12px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-weight: 600">Edit details</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

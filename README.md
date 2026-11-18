@@ -9,7 +9,7 @@ A travel planner in two halves:
 
 ![Trip guide preview](docs/img/trip-guide.png)
 
-This is prototype v0. It exists to test the user workflow before investing in routing data, accounts or a desktop shell. Read [docs/ux-workflow.md](docs/ux-workflow.md) first.
+This is prototype v0. Its interface is being redesigned: three layout options are in [docs/design](docs/design) (view them on the Claude Design canvas linked from [CLAUDE.md](CLAUDE.md)). Start with [CLAUDE.md](CLAUDE.md), then [docs/ux-workflow.md](docs/ux-workflow.md).
 
 ## Run it
 

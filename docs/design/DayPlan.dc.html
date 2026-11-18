@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Option B: one day at a time</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2357D8}a:hover{color:#1A43AA}
+</style>
+</helmet>
+<div style="height: 900px; display: flex; flex-direction: column; background: #F2F3F5; color: #161B26; font-family: Inter, system-ui, sans-serif; font-size: 14px">
+
+  <header style="height: 60px; flex: none; display: flex; align-items: center; gap: 24px; padding: 0 20px; background: #FFFFFF; border-bottom: 1px solid #DADDE3; flex-wrap: wrap">
+    <div style="display: flex; flex-direction: column">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Tokyo in late autumn</span>
+      <span style="font-size: 12px; color: #5B6474">Nov 28 to Dec 1, 2 travelling</span>
+    </div>
+    <nav style="display: flex; gap: 4px; margin-left: auto; background: #F2F3F5; border-radius: 10px; padding: 3px">
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; background: #FFFFFF; color: #161B26; font-weight: 600; text-decoration: none">Plan</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Places</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Budget</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Checklist</a>
+      <a href="#" style="padding: 7px 14px; border-radius: 8px; color: #5B6474; font-weight: 600; text-decoration: none">Trip guide</a>
+    </nav>
+  </header>
+
+  <div style="flex: 1; min-height: 0; display: flex; flex-wrap: wrap">
+
+    <section style="flex: 0 1 640px; min-width: 0; display: flex; flex-direction: column; background: #FFFFFF; border-right: 1px solid #DADDE3">
+      <div style="display: flex; gap: 6px; padding: 14px 20px 0; flex-wrap: wrap">
+        <button style="min-width: 92px; height: 52px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 10px; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-weight: 700">Sat 28</span><span style="font-size: 11px; color: #5B6474">4 stops</span></button>
+        <button style="min-width: 92px; height: 52px; border: 1px solid #161B26; background: #161B26; color: #FFFFFF; border-radius: 10px; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-weight: 700">Sun 29</span><span style="font-size: 11px; opacity: 0.8">4 stops · 2 to check</span></button>
+        <button style="min-width: 92px; height: 52px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 10px; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-weight: 700">Mon 30</span><span style="font-size: 11px; color: #B4410E; font-weight: 600">1 to check</span></button>
+        <button style="min-width: 92px; height: 52px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 10px; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-weight: 700">Tue 1</span><span style="font-size: 11px; color: #5B6474">4 stops</span></button>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px 10px">
+        <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px">Sunday, Nov 29</h2>
+        <div style="display: flex; gap: 8px">
+          <button style="height: 34px; padding: 0 12px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600">Swap with another day</button>
+          <button style="height: 34px; padding: 0 12px; border: 1px solid #161B26; background: #161B26; color: #FFFFFF; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600">Add a stop</button>
+        </div>
+      </div>
+
+      <div style="flex: 1; min-height: 0; overflow: hidden; padding: 0 20px">
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; padding: 8px 0; border-bottom: 1px solid #DADDE3; font-size: 12px; color: #5B6474; font-weight: 600">
+          <span></span><span>Time</span><span>What</span><span style="text-align: right">Per person</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #E8EAEE; background: #EEF3FD; box-shadow: inset 3px 0 0 #2357D8">
+          <svg aria-hidden="true" width="12" height="18" viewBox="0 0 12 18" style="margin: 3px 0 0 8px"><circle cx="3" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="15" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="15" r="1.5" fill="#8A919D"></circle></svg>
+          <span style="font-variant-numeric: tabular-nums; font-weight: 600">09:00–10:30</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">1. Senso-ji <span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px; margin-left: 4px">Must Go</span></span><span style="font-size: 13px; color: #5B6474">Asakusa. Go early, it fills up by 10.</span></div>
+          <span style="text-align: right; color: #5B6474">Free</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid #E8EAEE; font-size: 13px; color: #B4410E">
+          <span></span>
+          <span style="font-variant-numeric: tabular-nums">10:30–10:45</span>
+          <span style="font-weight: 600">Walk 20 min (estimate). Only 15 min left. <a href="#">Check route</a></span>
+          <span></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #E8EAEE">
+          <svg aria-hidden="true" width="12" height="18" viewBox="0 0 12 18" style="margin: 3px 0 0 8px"><circle cx="3" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="15" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="15" r="1.5" fill="#8A919D"></circle></svg>
+          <span style="font-variant-numeric: tabular-nums; font-weight: 600">10:45–11:45</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">2. Kappabashi Kitchen Street <span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px; margin-left: 4px">50-50</span></span><span style="font-size: 13px; color: #5B6474">Kitchenware shops. Most open at 10:00.</span></div>
+          <span style="text-align: right; color: #5B6474">–</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid #E8EAEE; font-size: 13px; color: #5B6474">
+          <span></span>
+          <span style="font-variant-numeric: tabular-nums">11:45–12:05</span>
+          <span>Train 20 min (estimate). <a href="#">Check route</a></span>
+          <span></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #E8EAEE">
+          <svg aria-hidden="true" width="12" height="18" viewBox="0 0 12 18" style="margin: 3px 0 0 8px"><circle cx="3" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="15" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="15" r="1.5" fill="#8A919D"></circle></svg>
+          <span style="font-variant-numeric: tabular-nums; font-weight: 600">12:05–13:00</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; color: #5B6474">Lunch, not decided</span><span style="font-size: 13px; color: #5B6474">Near Oshiage station.</span></div>
+          <span style="text-align: right; color: #5B6474">–</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #E8EAEE">
+          <svg aria-hidden="true" width="12" height="18" viewBox="0 0 12 18" style="margin: 3px 0 0 8px"><circle cx="3" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="15" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="15" r="1.5" fill="#8A919D"></circle></svg>
+          <span style="font-variant-numeric: tabular-nums; font-weight: 600">13:00–14:30</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">3. Tokyo Skytree <span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px; margin-left: 4px">50-50</span></span><span style="font-size: 13px; color: #5B6474">Rain plan: skip and go to the museum instead.</span></div>
+          <span style="text-align: right; font-variant-numeric: tabular-nums">JPY 2,400</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid #E8EAEE; font-size: 13px; color: #5B6474">
+          <span></span>
+          <span style="font-variant-numeric: tabular-nums">14:30–15:00</span>
+          <span>Train 30 min (estimate). Then 60 min free. <a href="#">Check route</a></span>
+          <span></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 28px 104px minmax(0, 1fr) 92px; column-gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #E8EAEE">
+          <svg aria-hidden="true" width="12" height="18" viewBox="0 0 12 18" style="margin: 3px 0 0 8px"><circle cx="3" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="3" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="9" r="1.5" fill="#8A919D"></circle><circle cx="3" cy="15" r="1.5" fill="#8A919D"></circle><circle cx="9" cy="15" r="1.5" fill="#8A919D"></circle></svg>
+          <span style="font-variant-numeric: tabular-nums; font-weight: 600">16:00–17:15</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">4. Rikugien Garden <span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px; margin-left: 4px">Must Go</span></span><span style="font-size: 13px; color: #B4410E; font-weight: 600">Closes at 17:00. Start by 15:45 or cut the visit short.</span></div>
+          <span style="text-align: right; font-variant-numeric: tabular-nums">JPY 300</span>
+        </div>
+      </div>
+
+      <div style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-top: 1px solid #DADDE3; flex-wrap: wrap">
+        <span style="color: #5B6474">Day total <strong style="color: #161B26; font-variant-numeric: tabular-nums">JPY 2,700</strong> per person, about TWD 570</span>
+        <button style="height: 36px; padding: 0 14px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600">Suggest a better order</button>
+      </div>
+    </section>
+
+    <section style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column">
+      <div style="position: relative; flex: 1; min-height: 0; overflow: hidden; background: #E8E9EC">
+        <svg aria-hidden="true" viewBox="0 0 600 700" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+          <rect x="0" y="0" width="600" height="700" fill="#E8E9EC"></rect>
+          <path d="M500 0 C 470 180, 560 330, 520 700" fill="none" stroke="#CDD7E3" stroke-width="26"></path>
+          <rect x="140" y="90" width="90" height="60" rx="6" fill="#DCE3D9"></rect>
+          <rect x="300" y="210" width="70" height="50" rx="6" fill="#DCE3D9"></rect>
+          <rect x="150" y="430" width="110" height="80" rx="6" fill="#DCE3D9"></rect>
+          <path d="M0 260 L600 300 M0 420 L600 400 M240 0 L260 700 M400 0 L380 700 M0 560 L600 600" fill="none" stroke="#FFFFFF" stroke-width="7"></path>
+          <path d="M0 160 L600 200 M120 0 L160 700 M0 640 L600 660" fill="none" stroke="#FFFFFF" stroke-width="4"></path>
+          <ellipse cx="280" cy="340" rx="190" ry="250" fill="none" stroke="#8C95A4" stroke-width="3"></ellipse>
+          <path d="M0 330 L600 350 M330 0 L420 700" fill="none" stroke="#8C95A4" stroke-width="3"></path>
+          <polyline points="372,266 330,280 468,308 180,126" fill="none" stroke="#161B26" stroke-width="3" stroke-dasharray="6 6"></polyline>
+        </svg>
+        <span style="position: absolute; left: 62%; top: 38%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #2357D8; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #2357D8">1</span>
+        <span style="position: absolute; left: 55%; top: 40%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">2</span>
+        <span style="position: absolute; left: 78%; top: 44%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">3</span>
+        <span style="position: absolute; left: 30%; top: 18%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #161B26; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF">4</span>
+        <span style="position: absolute; left: 46%; top: 30%; width: 12px; height: 12px; border-radius: 50%; background: #2357D8; border: 2px solid #FFFFFF"></span>
+        <span style="position: absolute; left: 40%; top: 34%; width: 12px; height: 12px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+        <span style="position: absolute; left: 70%; top: 30%; width: 12px; height: 12px; border-radius: 50%; background: #FFFFFF; border: 2px solid #5B6474"></span>
+      </div>
+
+      <div style="flex: none; background: #FFFFFF; border-top: 1px solid #DADDE3; padding: 14px 20px 18px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px">
+          <h3 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 16px">Near this day, not yet planned</h3>
+          <a href="#" style="font-size: 13px; font-weight: 600">All places</a>
+        </div>
+        <div style="display: flex; gap: 10px; overflow: hidden">
+          <div style="flex: 0 0 210px; border: 1px solid #DADDE3; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-weight: 600">Tokyo National Museum</span>
+            <span style="font-size: 12px; color: #5B6474">Ueno, 2 h. 12 min from stop 1</span>
+            <span style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px"><span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add</button></span>
+          </div>
+          <div style="flex: 0 0 210px; border: 1px solid #DADDE3; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-weight: 600">Ameyoko Market</span>
+            <span style="font-size: 12px; color: #5B6474">Ueno, 1 h. 15 min from stop 1</span>
+            <span style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px"><span style="font-size: 11px; font-weight: 700; color: #5B6474; border: 1px solid #C9CED6; border-radius: 4px; padding: 0 6px">50-50</span><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add</button></span>
+          </div>
+          <div style="flex: 0 0 210px; border: 1px solid #DADDE3; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-weight: 600">Ueno Park</span>
+            <span style="font-size: 12px; color: #5B6474">Ueno, 1 h. 14 min from stop 1</span>
+            <span style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px"><span style="font-size: 11px; font-weight: 700; color: #FFFFFF; background: #2357D8; border-radius: 4px; padding: 1px 6px">Must Go</span><button style="height: 30px; padding: 0 10px; border: 1px solid #DADDE3; background: #FFFFFF; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600">Add</button></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

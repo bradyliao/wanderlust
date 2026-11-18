@@ -1,0 +1,18 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-18T09:00:00Z" },
+  "title": "Wanderlust layout options",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 900, "title": "A. Week timetable + half-width map", "expand": "fill" },
+    "DayPlan.dc.html": { "x": 1520, "y": 0, "w": 1440, "h": 900, "title": "B. One day at a time, like the spreadsheet", "expand": "fill" },
+    "MapFirst.dc.html": { "x": 3040, "y": 0, "w": 1440, "h": 900, "title": "C. Map first, timeline along the bottom", "expand": "fill" },
+    "TripGuide.dc.html": { "x": 4560, "y": 0, "w": 390, "h": 844, "title": "Trip guide on the phone" }
+  },
+  "order": ["Main.dc.html", "DayPlan.dc.html", "MapFirst.dc.html", "TripGuide.dc.html"],
+  "notes": {
+    "heading": { "x": 0, "y": -300, "text": "Three planner layouts and the trip guide", "kind": "title1", "maxW": 4950 }
+  },
+  "designSystems": []
+}
