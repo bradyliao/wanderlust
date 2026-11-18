@@ -556,8 +556,9 @@ function topbar(active) {
   const on = '#2b2f36', off = '#8b9099';
   return `<div class="topbar"><span class="brand">Wanderlust</span>
     <span class="tabs"><span class="on">Plan</span><span>Bookings</span><span>Budget</span></span>
-    <span class="trip"><b>Tokyo &amp; Kyoto</b> · 12/02–12/06/2026 · 3 people</span>
+    <span class="trip"><b>Tokyo &amp; Kyoto</b> · 12/02–12/06/2026</span>
     <span class="spacer"></span>
+    <span class="tb-item"><span class="tb-l">People</span><span class="tb-btn">3 ▾</span></span>
     <span class="tb-item"><span class="tb-l">Transport</span><span class="tb-btn">${mIcon('transit')}Transit ▾</span></span>
     <span class="tb-item"><span class="tb-l">Budget</span><span class="tb-btn tb-total"><b>NT$79,464</b> / NT$110,000</span></span>
     <span class="seg seg-ic" title="Layout"><span class="${active === 1 ? 'on' : ''}" title="Stacked">${stackIc(active === 1 ? on : off)}</span><span class="${active === 2 ? 'on' : ''}" title="Three columns">${colsIc(active === 2 ? on : off)}</span></span></div>`;

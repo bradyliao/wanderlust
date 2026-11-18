@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–64 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–71 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -75,7 +75,7 @@ All of them were agreed with Brady on 2026-11-18 (items 1–64 plus the day-labe
 
 16. **[Agreed 2026-11-18] What one row shows.** Type icon, name, a rating chip (Must Go / So-So / Forget, shown on every row so it stays visible in any grouping), area, usual stay, opening hours and closed days in short form (for example "9:30–17:00 · closed Fri"), and the date(s) it is scheduled on as numbers ("12/02"), or "Not scheduled".
 17. **[Agreed 2026-11-18] Narrowing the list.** Grouped into collapsible sections rather than search and filter chips. A small menu offers four groupings: **Area** (the default; Forget places stay in their area, greyed out), **Rating** (Must Go, So-So, Forget, with Forget collapsed), **Type**, and **Scheduled or not** (not scheduled first, then one section per date).
-17a. **[Agreed 2026-11-18] Rating names.** Must Go / So-So / Forget (So-So replaces "50-50").
+17a. **[Agreed 2026-11-18] Rating names.** Must Go / So-So / Forget (So-So replaces "50-50"). Imported places the user didn't rate start Unrated (item 68).
 17b. **[Agreed 2026-11-18] Place types.** Seven separate types, each with its own icon and colour: Sight (temples, landmarks), Food, Café, Shop (including markets), Museum (including galleries), Nature (parks, gardens), Nightlife (bars, night spots).
 18. **[Agreed 2026-11-18] Details.** The selected row expands in the list to show hours, notes and link. No extra panel.
 
@@ -153,6 +153,21 @@ Notes for building (checked 2026-11-18 unless marked):
 48. **Budget.** Its own page. Costs are entered on blocks and bookings; the top bar shows a small running total.
 49. **Bookings.** Their own records on the Bookings page: type (hotel, flight, train, ticket, restaurant, car), times, address, confirmation number, price, cancellation deadline, and an attached file or link. A timed booking can create a fixed block ("Ticket booked"). A hotel sets each night's base, so the next morning's first route and the day's location (for daylight and weather) start there.
 
+### People on the trip (agreed 2026-11-19)
+
+65. **Number of people is a trip-wide setting** in the top bar, changed from a menu like Transport ("3 people ▾"). People may join while the trip is being planned, so it can change at any time. Per-person amounts and bookings set to "everyone on the trip" follow it; a booking with its own head count (for example one room for 2) keeps its number.
+
+### Importing places (agreed 2026-11-19)
+
+The format and the AI prompt are in [import-format.md](import-format.md).
+
+66. **Import from an AI-made file.** Saved social posts are turned by an AI into one JSON file in the Wanderlust format, which the app imports into the Place List. A ready-made prompt comes with the format. Places can still be added by hand at any time.
+67. **A Google Maps link alone is allowed but not enough.** Offline, the app cannot look up the details, so a link-only place is imported as "details missing" until the user fills them in.
+68. **Rating before import.** The AI lists the places it found and asks the user to rate each one (Must Go, So-So, Forget) before it writes the file; those ratings come in with the import. A place the user skipped comes in **Unrated**, a fourth state next to the three ratings. Any rating can be changed or added in the app later.
+69. **Unverified details.** Every detail that came from the file is marked unverified until the user checks it.
+70. **Preview, then merge.** Import first shows new places and possible duplicates (same Google Maps link, or same name and area). A duplicate only fills in details the existing place is missing.
+71. **Source kept, not shown.** The source post (platform, link, account, date saved) is stored with the place but not shown in the app.
+
 ### Bookings page (agreed 2026-11-19)
 
 50. **Layout.** Bookings in date order, grouped under each date, with type filter chips on top (Hotel, Flight, Train, Ticket, Restaurant, Car) and an "Add booking" button. A hotel stay shows as a span across its nights. Clicking a booking opens its details on the right.
@@ -217,4 +232,4 @@ A static mock of both layouts is in [mock/layouts.html](mock/layouts.html), rend
 
 ## Not discussed yet (parked)
 
-Checklist, lodging comparison, place search with auto-fill, trip guide export. The Bookings and Budget pages are designed in outline (items 50–57).
+Checklist, lodging comparison, place search with auto-fill. **Trip guide: parked (2026-11-19)**; it is a question of export format, to decide later. The Bookings and Budget pages are designed in outline (items 50–57).
