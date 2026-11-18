@@ -6,6 +6,12 @@ import type { GroupBy } from './places'
 
 export type Layout = 'stacked' | 'columns'
 export type PaneId = 'places' | 'timetable' | 'map'
+/** Timetable view (item 3). */
+export type TimetableView = 'days' | 'list'
+
+/** Timetable size limits (item 44). */
+export const COLUMN_WIDTH = { min: 96, max: 420, default: 150 }
+export const HOUR_HEIGHT = { min: 24, max: 120, default: 44 }
 
 export interface Prefs {
   layout: Layout
@@ -20,6 +26,11 @@ export interface Prefs {
   placesGroup: GroupBy
   /** The trip open last time. */
   lastTripId: string | null
+  timetableView: TimetableView
+  /** Smallest day column width in multi-day view, px (item 44). */
+  columnWidth: number
+  /** Height of one hour, px (item 44). */
+  hourHeight: number
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -30,9 +41,17 @@ export const DEFAULT_PREFS: Prefs = {
   collapsed: { places: false, timetable: false, map: false },
   placesGroup: 'area',
   lastTripId: null,
+  timetableView: 'days',
+  columnWidth: COLUMN_WIDTH.default,
+  hourHeight: HOUR_HEIGHT.default,
 }
 
 const KEY = 'wanderlust.prefs'
+
+/** Keep a size within its limits. */
+export function clampTo(v: number, limits: { min: number; max: number }): number {
+  return Math.round(Math.min(limits.max, Math.max(limits.min, v)))
+}
 
 /** Merge stored values over the defaults, ignoring anything malformed. */
 export function parsePrefs(text: string | null): Prefs {
@@ -53,6 +72,9 @@ export function parsePrefs(text: string | null): Prefs {
     collapsed: { places: c.places === true, timetable: c.timetable === true, map: c.map === true },
     placesGroup: (['area', 'rating', 'type', 'scheduled'] as const).find((g) => g === raw.placesGroup) ?? 'area',
     lastTripId: typeof raw.lastTripId === 'string' ? raw.lastTripId : null,
+    timetableView: raw.timetableView === 'list' ? 'list' : 'days',
+    columnWidth: clampTo(num(raw.columnWidth, COLUMN_WIDTH.default), COLUMN_WIDTH),
+    hourHeight: clampTo(num(raw.hourHeight, HOUR_HEIGHT.default), HOUR_HEIGHT),
   }
 }
 

@@ -4,7 +4,7 @@
 
 import init, * as wasm from '../core/pkg/wanderlust_core.js'
 import wasmUrl from '../core/pkg/wanderlust_core_bg.wasm?url'
-import type { BudgetSummary, Command, ImportPreview, PlanDay, Stamp, Trip } from './types'
+import type { BudgetSummary, Command, DragPreview, ImportPreview, PlanDay, Stamp, Trip } from './types'
 
 export class CoreError extends Error {
   /** Index of the failing command, when a list of commands failed. */
@@ -60,6 +60,18 @@ function call<T>(run: () => string): Ok<T> {
 
 const json = (value: unknown) => JSON.stringify(value)
 
+// The trip is sent as JSON on every call; while dragging that is many calls
+// for the same trip, so its text is kept per trip object.
+const tripTexts = new WeakMap<Trip, string>()
+function tripJson(trip: Trip): string {
+  let text = tripTexts.get(trip)
+  if (text == null) {
+    text = JSON.stringify(trip)
+    tripTexts.set(trip, text)
+  }
+  return text
+}
+
 /** A stamp for a change made by the user now. */
 export function userStamp(label: string): Stamp {
   return { groupId: crypto.randomUUID(), at: new Date().toISOString(), label }
@@ -100,7 +112,17 @@ export function undoTo(trip: Trip, groupId: string): { trip: Trip; steps: number
 }
 
 export function planView(trip: Trip): PlanDay[] {
-  return call<{ days: PlanDay[] }>(() => wasm.planView(json(trip))).days
+  return call<{ days: PlanDay[] }>(() => wasm.planView(tripJson(trip))).days
+}
+
+/** Dragging a place from the Place List over a slot (items 27, 29, 30). Changes nothing. */
+export function dragPreview(trip: Trip, placeId: string, date: string, start: number, end: number): DragPreview {
+  return call<DragPreview>(() => wasm.dragPreview(tripJson(trip), placeId, date, start, end))
+}
+
+/** Moving or resizing a block (`blockKey`) to a slot. Changes nothing. */
+export function movePreview(trip: Trip, blockKey: string, date: string, start: number, end: number): DragPreview {
+  return call<DragPreview>(() => wasm.movePreview(tripJson(trip), blockKey, date, start, end))
 }
 
 export function budgetSummary(trip: Trip): BudgetSummary {

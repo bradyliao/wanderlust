@@ -43,6 +43,15 @@ describe('prefs', () => {
     expect(p.collapsed).toEqual({ places: false, timetable: false, map: true })
   })
 
+  it('keeps the timetable view and sizes within limits (item 44)', () => {
+    const p = parsePrefs(JSON.stringify({ timetableView: 'list', columnWidth: 9999, hourHeight: 3 }))
+    expect(p.timetableView).toBe('list')
+    expect(p.columnWidth).toBe(420)
+    expect(p.hourHeight).toBe(24)
+    expect(parsePrefs(JSON.stringify({ timetableView: 'week', columnWidth: 200.4 })).timetableView).toBe('days')
+    expect(parsePrefs(JSON.stringify({ columnWidth: 200.4 })).columnWidth).toBe(200)
+  })
+
   it('works when localStorage is not available', () => {
     expect(() => savePrefs(DEFAULT_PREFS)).not.toThrow()
     expect(loadPrefs()).toEqual(DEFAULT_PREFS)

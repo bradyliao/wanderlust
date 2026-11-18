@@ -1,6 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { CollapsedBar, Divider, Pane, SepLine } from '../components/Panes'
 import { AddPlaceDialog, PlaceList, PlaceListTools } from '../components/PlaceList'
+import { Timetable, TimetableTools } from '../components/Timetable'
 import type { PaneId, Prefs } from '../prefs'
 import { useSelection } from '../selection'
 import type { Command, PlanDay, Trip } from '../types'
@@ -17,7 +18,7 @@ interface Props {
 const MIN_PANE = 200
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi))
 
-/** The Plan page in either layout (items 1–4). Pane contents come in phases 3–5. */
+/** The Plan page in either layout (items 1–4). The map comes in phase 5. */
 export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: Props) {
   const [adding, setAdding] = useState(false)
   const sel = useSelection()
@@ -86,8 +87,13 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
     />
   )
 
-  const timetableBody = <TimetablePlaceholder days={days} />
-  const timetableInfo = days ? `${days.length} ${days.length === 1 ? 'day' : 'days'}` : undefined
+  const timetableBody = days ? (
+    <Timetable trip={trip} days={days} prefs={prefs} onPrefs={onPrefs} apply={apply} />
+  ) : (
+    <Note>The days could not be read.</Note>
+  )
+  const timetableInfo = days && prefs.timetableView === 'days' ? `${days.length} ${days.length === 1 ? 'day' : 'days'}` : undefined
+  const timetableTools = <TimetableTools view={prefs.timetableView} onView={(timetableView) => onPrefs((p) => ({ ...p, timetableView }))} />
 
   if (prefs.layout === 'columns') {
     const placesFill = c.timetable && c.map
@@ -105,6 +111,7 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
           <Pane
             title="Timetable"
             info={timetableInfo}
+            tools={timetableTools}
             fold="left"
             fill={c.map}
             style={c.map ? undefined : { width: prefs.timetableWidth, flex: 'none' }}
@@ -154,6 +161,7 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
           <Pane
             title="Timetable"
             info={timetableInfo}
+            tools={timetableTools}
             fold="up"
             fill={c.map}
             style={c.map ? undefined : { flex: `0 0 ${prefs.timetableShare * 100}%` }}
@@ -188,25 +196,6 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
 
 function Note({ children }: { children: ReactNode }) {
   return <p className="placeholder">{children}</p>
-}
-
-/** Trip days from the core's plan view, so the wiring is visible (phase 4 replaces this). */
-function TimetablePlaceholder({ days }: { days: PlanDay[] | null }) {
-  if (!days) return <Note>The days could not be read.</Note>
-  return (
-    <>
-      <ul className="day-list">
-        {days.map((d) => (
-          <li key={d.date} className="day-chip">
-            <span className="date">{d.label}</span>
-            <span className="weekday">{d.weekday.toUpperCase()}</span>
-            <div className="city">{d.city ?? 'No city yet'}</div>
-          </li>
-        ))}
-      </ul>
-      <Note>The timetable comes in phase 4.</Note>
-    </>
-  )
 }
 
 function MapPlaceholder() {

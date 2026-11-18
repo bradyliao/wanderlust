@@ -22,6 +22,7 @@ import {
   type Section,
 } from '../places'
 import { shortId } from '../core'
+import { endListDrag, startListDrag } from '../dragging'
 import { useSelection } from '../selection'
 import type { Command, Item, Kind, Place, Rating, Trip } from '../types'
 import { BookmarkIcon, Caret, ExternalIcon, ImportIcon, KindIcon, PlusIcon } from './icons'
@@ -263,6 +264,7 @@ function dragStart(e: DragEvent, type: string, id: string, name: string) {
   e.dataTransfer.setData(type, id)
   e.dataTransfer.setData('text/plain', name)
   e.dataTransfer.effectAllowed = 'copyMove'
+  startListDrag({ type: type === PLACE_DRAG_TYPE ? 'place' : 'item', id })
 }
 
 interface RowProps {
@@ -289,6 +291,7 @@ function PlaceRow({ place: p, schedule, showArea, selected, hovered, onSelect, o
       data-place-id={p.id}
       draggable
       onDragStart={(e) => dragStart(e, PLACE_DRAG_TYPE, p.id, p.name)}
+      onDragEnd={endListDrag}
       onMouseEnter={() => onHover(p.id)}
       onMouseLeave={() => onHover(null)}
     >
@@ -313,7 +316,7 @@ function PlaceRow({ place: p, schedule, showArea, selected, hovered, onSelect, o
 /** A booking with a date but no time and no place (item 64). Drag it onto the timetable in phase 4. */
 function ItemRow({ item }: { item: Item }) {
   return (
-    <li className="place-row item-row" data-item-id={item.id} draggable onDragStart={(e) => dragStart(e, ITEM_DRAG_TYPE, item.id, item.title)}>
+    <li className="place-row item-row" data-item-id={item.id} draggable onDragStart={(e) => dragStart(e, ITEM_DRAG_TYPE, item.id, item.title)} onDragEnd={endListDrag}>
       <div className="row-main">
         <KindBadge kind={item.kind} />
         <span className="row-text">

@@ -181,6 +181,132 @@ export type Command =
   | { op: 'updatePlace'; id: string; set: Record<string, unknown> }
   | { op: 'ratePlace'; id: string; rating: Rating }
   | { op: 'removePlace'; id: string }
+  | { op: 'schedulePlace'; placeId: string; itemId: string; date: string; start: number; end?: number | null }
+  | { op: 'moveItem'; id: string; part?: BlockPart; date: string; start: number; end: number }
+  | { op: 'unschedule'; id: string }
+  | { op: 'setFixed'; id: string; part?: BlockPart; fixed: boolean; reason?: string | null }
+  /** `mode: null` goes back to the day's mode. */
+  | { op: 'setLegMode'; from: string; to: string; mode: Mode | null }
+
+export type BlockPart = 'main' | 'checkIn' | 'checkOut'
+
+/** A block on the timetable (schedule.rs `Block`). `key` is the item id, or `<id>#checkIn` / `<id>#checkOut`. */
+export interface Block {
+  key: string
+  itemId: string
+  part: BlockPart
+  title: string
+  date: string
+  start: number
+  end: number
+  fixed: boolean
+  reason: string | null
+  placeId: string | null
+}
+
+export type TravelSource = 'estimate' | 'routed' | 'confirmed'
+
+export interface ModeOption {
+  mode: Mode
+  minutes: number | null
+  source: TravelSource
+}
+
+/** Travel for one leg (travel.rs `LegTravel`). */
+export interface LegTravel {
+  mode: Mode
+  minutes: number | null
+  source: TravelSource
+  distanceKm: number | null
+  /** Walking minutes, when the leg is short and not already Walk (item 35). */
+  walkHint: number | null
+  options: ModeOption[]
+  line: [number, number][]
+  mapsUrl: string | null
+}
+
+/** Travel between two consecutive blocks (schedule.rs `LegView`). */
+export interface LegView {
+  date: string
+  fromKey: string
+  toKey: string
+  fromPlaceId: string
+  toPlaceId: string
+  fromEnd: number
+  toStart: number
+  gapMinutes: number
+  travel: LegTravel
+  tight: boolean
+}
+
+/** The stay covering a night (schedule.rs `Night`, item 63). */
+export interface Night {
+  itemId: string
+  title: string
+  placeId: string | null
+  checkInDate: string
+  checkOutDate: string
+  night: number
+  nights: number
+}
+
+export type WarningKind = 'overlap' | 'closed' | 'outsideHours' | 'tooTight'
+
+export interface Warning {
+  date: string
+  blockKey: string
+  kind: WarningKind
+  message: string
+  otherKey: string | null
+}
+
+export interface SunTimes {
+  dawn: number | null
+  sunrise: number | null
+  sunset: number | null
+  dusk: number | null
+}
+
+export type Stage = 'night' | 'twilight' | 'goldenHour' | 'day'
+
+/** From `minute` on, the sky is `stage` (sun.rs `Stop`). */
+export interface DaylightStop {
+  minute: number
+  stage: Stage
+}
+
+export interface DayClosed {
+  date: string
+  /** Closed ranges; null = hours unknown. */
+  ranges: [number, number][] | null
+  allDay: boolean
+}
+
+export interface Neighbour {
+  key: string
+  title: string
+  placeId: string | null
+  start: number
+  end: number
+  travel: LegTravel | null
+  needs: number | null
+  has: number
+  fits: boolean | null
+  message: string | null
+}
+
+/** `dragPreview` / `movePreview` (schedule.rs `DragPreview`, items 27–31). */
+export interface DragPreview {
+  date: string
+  start: number
+  end: number
+  closed: DayClosed[]
+  before: Neighbour | null
+  after: Neighbour | null
+  inClosedHours: boolean | null
+  hoursMessage: string | null
+  overFixed: string[]
+}
 
 /** One day of `planView`. */
 export interface PlanDay {
@@ -192,11 +318,14 @@ export interface PlanDay {
   city: string | null
   mode: Mode
   modeIsOverride: boolean
-  blocks: unknown[]
-  legs: unknown[]
-  night: unknown
-  warnings: unknown[]
+  blocks: Block[]
+  legs: LegView[]
+  night: Night | null
+  warnings: Warning[]
   location: [number, number] | null
+  sun: SunTimes | null
+  /** Gradient stops; empty when the day has no location or UTC offset. */
+  daylight: DaylightStop[]
 }
 
 export interface GroupLine {

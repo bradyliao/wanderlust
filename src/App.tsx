@@ -39,6 +39,11 @@ export default function App() {
   // Selected and hovered place, shared by the panes (items 5–8).
   const [selected, setSelected] = useState<{ id: string | null; from: SelectFrom | null }>({ id: null, from: null })
   const [hovered, setHovered] = useState<string | null>(null)
+  // The day in focus (item 10), kept per trip; falls back to the first day.
+  const [focus, setFocus] = useState<{ tripId: string; date: string } | null>(null)
+  const focusDate =
+    trip && focus?.tripId === trip.id && focus.date >= trip.startDate && focus.date <= trip.endDate ? focus.date : (trip?.startDate ?? null)
+  const tripId = trip?.id
   const selection = useMemo<Selection>(
     () => ({
       selectedPlaceId: selected.id,
@@ -46,8 +51,12 @@ export default function App() {
       hoveredPlaceId: hovered,
       select: (id, from) => setSelected({ id, from }),
       hover: setHovered,
+      focusDate,
+      setFocusDate: (date) => {
+        if (tripId) setFocus({ tripId, date })
+      },
     }),
-    [selected, hovered],
+    [selected, hovered, focusDate, tripId],
   )
 
   useEffect(() => savePrefs(prefs), [prefs])

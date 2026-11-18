@@ -14,6 +14,9 @@ export interface Selection {
   hoveredPlaceId: string | null
   select: (id: string | null, from: SelectFrom) => void
   hover: (id: string | null) => void
+  /** The day in focus (item 10): the last day clicked in multi-day view, the day shown in list view. The map reads it (phase 5). */
+  focusDate: string | null
+  setFocusDate: (date: string) => void
 }
 
 export const NO_SELECTION: Selection = {
@@ -22,6 +25,8 @@ export const NO_SELECTION: Selection = {
   hoveredPlaceId: null,
   select: () => {},
   hover: () => {},
+  focusDate: null,
+  setFocusDate: () => {},
 }
 
 export const SelectionContext = createContext<Selection>(NO_SELECTION)

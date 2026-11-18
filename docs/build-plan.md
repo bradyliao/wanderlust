@@ -31,7 +31,7 @@ Each phase ends with something that can be tried.
 | 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | Done 2026-11-19 |
 | 2 | Core updated to items 81–83 (done, see below). **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Shell done 2026-11-19 (see below) |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Done 2026-11-19 |
-| 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Not started |
+| 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Done 2026-11-19 |
 | 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Not started |
 | 6 | **Bookings page, then Budget page** | Not started |
 | 7 | **Online extras**: routing, weather, sun times per city (needs the user's keys) | Not started |
@@ -59,6 +59,13 @@ Update this table and the status above when a phase or module is finished.
 
 - **Place List and import done** by a sub-agent, checked by the main session in the browser with `docs/samples/sample-trip.changes.json`: grouping by Area / Rating / Type / Scheduled, rows with sub-category icon in its group colour, rating chip, stay and hours, dates; Forget greyed; selected row expands (rating control, hours by weekday, details, unverified marks with "Mark as checked", Maps link, Edit, Remove); add and edit form; import preview then one change-log step. Rows are drag sources for phase 4. Shared selected and hovered place in `src/selection.ts`. 30 web tests, build and lint clean.
 - Choices to confirm with Brady: Rating grouping order Must Go, So-So, Unrated, Forget (Forget collapsed); hours that differ by day show "· varies"; a booking with a date but no place is its own row under No area; the date chip sits on the row's second line; new places start Unrated (no rating in the add form); editing a field clears its unverified mark; the So-So chip is neutral grey, not butter, so it isn't mistaken for Shopping.
+
+## Phase 4 status (2026-11-19)
+
+- **Timetable done** by a sub-agent, checked by the main session in the browser with the sample trip: multi-day view (daylight gradient with grain, sunrise and sunset marks, blocks in group colours, warnings, locks with reasons, hotel blocks, night band, travel labels with mode icons, red when tight, walk hint), drag from the Place List with live closed-hours hatching and needs/has bands, move and resize with both edges, drag back to unschedule, mode picker, list view, resizable columns and hours, focus day in shared state. 48 web tests, build and lint clean. Real hand-drag from the list was only simulated (the browser tool can't do HTML5 drag).
+- Core gaps found (in `core/README.md` known gaps): leg JSON doesn't say if the mode is the leg's own; no command to unschedule a check-in or check-out block; no call for a place's closed hours alone (the UI uses `dragPreview` with a dummy slot).
+- Choices to confirm with Brady: dropping a place that has a booking waiting for a time on that date places the booking instead of adding a visit; travel labels draw above the hatching; list view has no drag in or out; the night band is pinned to the bottom of the visible area; a dropped place's top lands at the pointer.
+- Known UI issue: the top bar overflows at about 1100 px wide.
 
 ## Core changes for items 81–83 (done 2026-11-19)
 

@@ -106,6 +106,8 @@ A review sub-agent found 10 bugs with failing inputs (home currency switch, fixe
 
 ## Known gaps (to do)
 
+- Found in phase 4: `LegView.travel` doesn't say whether the mode is the leg's own or the day's; there is no command to unschedule a check-in or check-out block; there is no call for a place's closed hours on their own.
+
 - No leg is drawn from the hotel to the first block of a morning unless the day has a check-out block (item 49). Needs a "leave the base" block key. (The day's location already follows the night before.)
 - Two stays covering the same night: `night_on` takes the first, with no warning.
 - A place with no type in an import comes in as Other (Sight before items 81–83), marked unverified. `Place.kind` could become optional if that proves confusing.
