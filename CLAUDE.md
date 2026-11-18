@@ -11,11 +11,11 @@ A travel planner used on a computer: a Place List of collected places, a timetab
 | What | Where |
 | --- | --- |
 | **Build plan, phases, status, how to start sub-sessions** | `docs/build-plan.md` |
-| **Every UI and behavior decision, numbered (items 1–76)** | `docs/layout-and-behavior.md` |
+| **Every UI and behavior decision, numbered (items 1–83)** | `docs/layout-and-behavior.md` |
 | Platform, map, backend, data model decisions | `docs/decisions.md` (the roadmap section at its end is old background) |
 | Place import file format and AI prompt | `docs/import-format.md` |
 | AI change file format and AI prompt | `docs/change-file-format.md` |
-| Static mocks (colours are placeholders) | `docs/mock/layouts.html`, `docs/mock/pages.html`, rendered as `.png` next to them |
+| Static mocks (older colours; theme is items 77–80) | `docs/mock/layouts.html`, `docs/mock/pages.html`, rendered as `.png` next to them |
 | Brady's layout sketch | `docs/img/layout-sketch.png` |
 | **Rust core** (data model, commands, all logic) | `core/`, see `core/README.md` |
 | Web app (React + TypeScript + Vite), file map in `src/README.md` | `src/` |
