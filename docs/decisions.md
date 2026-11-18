@@ -18,6 +18,8 @@
 | Routing from a hosted Valhalla-based service first; own server only if limits or terms don't fit | Nothing to run. Stadia Maps (checked 2026-11-19): free plan of 200,000 credits a month, **no commercial use**, "temp storage" only (so results can't be kept long-term on the free plan). The page does not say which routing endpoints the free plan includes; check before wiring it up. [Pricing](https://stadiamaps.com/pricing/) | Low: Valhalla requests look the same on our own server |
 | No key server yet: API keys are entered in the app's settings and stored only on this device | Fine for a personal tool. Keys never go in the repository or in exported trip files. A key server (serverless functions or a Rust server) is needed before anyone else uses the app or before a Tauri build is shared | Low |
 
+Exchange rates are typed in by the user, one per currency; no rate service is needed (Brady, 2026-11-19).
+
 Defaults I'll use while building (not user decisions): each day stores its local date and the city's time zone (IANA name, for example `Asia/Tokyo`); undo history is kept per session; attachments stay on the device.
 
 Order of work: review the UI decisions in [layout-and-behavior.md](layout-and-behavior.md), then build a clickable mock, then the real code.

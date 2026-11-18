@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–49 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–57 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -153,6 +153,31 @@ Notes for building (checked 2026-11-18 unless marked):
 48. **Budget.** Its own page. Costs are entered on blocks and bookings; the top bar shows a small running total.
 49. **Bookings.** Their own records on the Bookings page: type (hotel, flight, train, ticket, restaurant, car), times, address, confirmation number, price, cancellation deadline, and an attached file or link. A timed booking can create a fixed block ("Ticket booked"). A hotel sets each night's base, so the next morning's first route and the day's location (for daylight and weather) start there.
 
+### Bookings page (agreed 2026-11-19)
+
+50. **Layout.** Bookings in date order, grouped under each date, with type filter chips on top (Hotel, Flight, Train, Ticket, Restaurant, Car) and an "Add booking" button. A hotel stay shows as a span across its nights. Clicking a booking opens its details on the right.
+51. **Details panel.** Check-in and check-out (or time), confirmation number (hidden until "Show"), address with a Google Maps link, price, cancellation deadline, where it was booked, the nights it sets as the base (hotels), attached files, notes.
+
+Shown in the mock, still to confirm:
+
+- A warning strip for cancellation deadlines coming up soon.
+- Each row says whether the booking is on the timetable, and whether it counts in the budget.
+- A "Count in trip budget" checkbox per booking (on by default).
+
+### Budget page (agreed 2026-11-19)
+
+52. **Plan.** One trip budget, in the home currency, split into categories, each with its own limit: Flights, Lodging, Transport, Food, Tickets, Shopping, Other. Planned, budget and left at the top, then a bar per category.
+53. **Planned now, actual later.** The page shows planned costs. An "Actual" column is kept as a placeholder for spending logged during the trip, added later.
+54. **Currencies.** Each cost is entered in the local currency it is paid in. A trip can use several currencies; each one gets its own column in the category table and the cost list (for example ¥ JPY, and $ USD for flights), added the first time a cost uses it. Totals and the budget are in the home currency.
+55. **Home currency.** Chosen from a menu: TWD or USD for now. The top bar's running total uses it.
+56. **Exchange rates are typed in by the user**, one per currency (for example "1 JPY = 0.21 TWD"). Nothing is fetched from the internet.
+57. **Flights count in the budget**, under their own Flights category.
+
+Shown in the mock, still to confirm:
+
+- A per-day chart of planned spending, stacked by category.
+- A cost list, largest first, saying where each cost comes from (booking, timetable block, or travel legs) and the amount per person.
+
 ### Backend questions this raises (answered 2026-11-19, see [decisions.md](decisions.md#backend-decided-by-brady-2026-11-19))
 
 - **Where trip data lives:** decided: local-first, sync later.
@@ -171,10 +196,10 @@ Still open:
 
 ## Mock
 
-A static mock of both layouts is in [mock/layouts.html](mock/layouts.html), rendered as [mock/layouts.png](mock/layouts.png). It uses invented sample data.
+A static mock of both layouts is in [mock/layouts.html](mock/layouts.html), rendered as [mock/layouts.png](mock/layouts.png). It uses invented sample data. The Bookings and Budget pages are in [mock/pages.html](mock/pages.html), rendered as [mock/pages.png](mock/pages.png).
 
 **Its colours, fonts and map style are placeholders, not a chosen theme.** Only the direction for the daylight background is agreed (item 21: muted, matte, never eye-catching); its exact shades are still open. The visual theme is a separate step, after layout and behavior feel right.
 
 ## Not discussed yet (parked)
 
-Checklist, lodging comparison, place search with auto-fill, trip guide export. The Budget and Bookings pages are agreed in outline (items 47–49) but their screens are not designed yet.
+Checklist, lodging comparison, place search with auto-fill, trip guide export. The Bookings and Budget pages are designed in outline (items 50–57).
