@@ -54,6 +54,13 @@
   .catt .bar { height: 8px; border-radius: 4px; background: #ecebe6; overflow: hidden; }
   .catt .bar span { display: block; height: 100%; border-radius: 4px; }
   .catt tr.sum td { border-top: 1px solid var(--line); border-bottom: 0; }
+  .pricebox { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .tgl { font-size: 12px; border: 1px solid #cfccc4; border-radius: 14px; padding: 3px 10px; color: var(--ink-2); background: #fff; }
+  .tgl.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .calc { color: #a3a59f !important; font-size: 11.5px; }
+  .tag.booked { color: #35664f; background: rgba(95,125,109,.14); }
+  .tag.est { color: #8a6a3a; border: 1px dashed #d4bf98; }
+  .was { color: #b3b0a8; text-decoration: line-through; font-size: 11px; }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .chip { font-size: 11.5px; color: var(--ink-2); border: 1px solid var(--line); border-radius: 12px; padding: 2px 9px; background: #fff; display: inline-flex; align-items: center; gap: 4px; }
   .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -138,13 +145,13 @@
 <div class="page">
   <div class="caption">
     <h2>Bookings page</h2>
-    <p>Bookings in date order, with type filters on top. Hotel stays show as a span across their nights. The selected hotel's details open on the right: confirmation, check-in and check-out, the nights it sets as the base, cancellation deadline, attached file, and whether it counts in the budget. Bookings with a time are linked to a fixed block in the timetable.</p>
+    <p>Bookings in date order, with type filters on top. Hotel stays show as a span across their nights. A reservation with only a date (Sushi dinner) is not on the timetable yet and waits in the Place List. The selected hotel's details open on the right: confirmation, check-in and check-out, the nights it sets as the base, cancellation deadline, attached file, and whether it counts in the budget. The price is the whole booking by default; Per night and Per person are toggles (both on = per person per night), and the other forms are shown as calculated. Bookings with a time are linked to a fixed block in the timetable.</p>
   </div>
   <div class="scaler"><div class="frame" id="b"></div></div>
 
   <div class="caption">
     <h2>Budget page</h2>
-    <p>One trip budget, in the home currency, split into categories with their own limits. Each cost stays in the currency it is paid in, and each currency has its own column (here ¥ JPY and $ USD for the flights). Totals are in the home currency (a TWD / USD menu, open in the mock) using rates the user types in. Flights are included. The day chart shows planned spending per day in TWD. The "Actual" column is greyed out: it is a placeholder for spending logged during the trip later.</p>
+    <p>One trip budget, in the home currency, split into categories with their own limits. Each cost stays in the currency it is paid in, and each currency has its own column (here ¥ JPY and $ USD for the flights). Totals are in the home currency (a TWD / USD menu, open in the mock) using rates the user types in. Flights are included. Every cost is marked Booked or Estimated; estimates can be added for things not booked yet. The day chart shows planned spending per day in TWD. The "Actual" column is greyed out: it is a placeholder for spending logged during the trip later.</p>
   </div>
   <div class="scaler"><div class="frame" id="g"></div></div>
   <p class="note">Static mock with invented bookings, prices and confirmation numbers. The exchange rates (1 JPY = 0.21 TWD, 1 USD = 32 TWD) are sample values a user would type in, not real rates. Colours, fonts and icons are placeholders, not a chosen theme.</p>
@@ -184,7 +191,8 @@ const BK = [
   ]},
   { d: ['12/05', 'Sat', 'Kyoto'], items: [
     { t: 'train', n: 'Shinkansen Tokyo → Kyoto', sub: 'Reserved seats · car 7', when: '12/05 09:00–11:15', tags: [['linked', 'On timetable']], price: '¥42,510', small: '¥14,170 each' },
-    { t: 'hotel', n: 'Hotel in Kyoto (sample)', sub: '1 night · check-out 10:00', when: '12/05 → 12/06', tags: [['linked', 'Base 12/05'], ['warn', 'Free cancel until 11/27']], price: '¥18,000', small: '1 night', span: 1 },
+    { t: 'hotel', n: 'Hotel in Kyoto (sample)', sub: '1 night · check-out 10:00', when: '12/05 → 12/06', tags: [['linked', 'Base 12/05'], ['warn', 'Free cancel until 11/27']], price: '¥6,000', small: 'per person, per night', span: 1 },
+    { t: 'food', n: 'Sushi dinner, Kyoto (sample)', sub: 'Table for 3 · date only, no time yet', when: '12/05', tags: [['unlinked', 'Not on timetable'], ['unlinked', 'In Place List']], price: '—', small: 'pay at venue' },
   ]},
   { d: ['12/06', 'Sun', 'Kyoto'], items: [
     { t: 'flight', n: 'Flight home (KIX)', sub: 'Departs 16:00', when: '12/06 16:00', tags: [['unlinked', 'Not on timetable']], price: 'incl. above', small: 'same booking' },
@@ -205,7 +213,7 @@ for (const g of BK) {
 document.getElementById('b').innerHTML = topbar('Bookings') + `
   <div class="bk">
     <div class="bk-main">
-      <div class="bk-head"><h1>Bookings</h1><span class="muted">8</span>
+      <div class="bk-head"><h1>Bookings</h1><span class="muted">9</span>
         <span class="chip on">All</span><span class="chip">${ti('hotel', 16)}Hotel</span><span class="chip">${ti('flight', 16)}Flight</span><span class="chip">${ti('train', 16)}Train</span><span class="chip">${ti('ticket', 16)}Ticket</span><span class="chip">${ti('food', 16)}Restaurant</span><span class="chip">${ti('car', 16)}Car</span>
         <span class="spacer"></span><span class="btn primary">+ Add booking</span></div>
       <div class="attention">⚠ <span><b>2 cancellation deadlines</b> in the next 10 days: Hotel in Asakusa (11/25), Hotel in Kyoto (11/27).</span></div>
@@ -219,10 +227,17 @@ document.getElementById('b').innerHTML = topbar('Bookings') + `
         <dt>Check-out</dt><dd class="num">12/05 SAT · by 11:00</dd>
         <dt>Confirmation</dt><dd class="num">•••• •••• 92 <a style="color:var(--accent)">Show</a></dd>
         <dt>Address</dt><dd>2-chōme, Asakusa, Taitō City (sample) · <a style="color:var(--accent)">Open in Google Maps ↗</a></dd>
-        <dt>Price</dt><dd class="num"><b>¥54,000</b> · ¥18,000 / night · ≈ NT$11,340</dd>
+
         <dt>Cancellation</dt><dd><span class="tag warn">Free until 11/25 23:59</span> then 100% charged</dd>
         <dt>Booked on</dt><dd>Booking site (sample) · <a style="color:var(--accent)">Open booking ↗</a></dd>
       </dl>
+      <div class="box"><h3>Price</h3>
+        <div class="pricebox"><span class="inp num" style="min-width:110px">54,000</span><span class="dd">JPY ▾</span>
+          <span class="tgl">Per night</span><span class="tgl">Per person</span></div>
+        <div class="muted" style="font-size:11.5px;margin-top:6px">Neither on: the price is the <b style="color:var(--ink-2)">whole booking (total)</b>.</div>
+        <div class="kv" style="margin-top:8px;grid-template-columns:120px 1fr"><dt>Nights</dt><dd class="num">3 <span class="muted">from check-in / check-out</span></dd><dt>People</dt><dd class="num"><span class="inp num" style="min-width:40px">3</span> <span class="muted">of 3 on the trip</span></dd>
+          <dt>Total</dt><dd class="num"><b>¥54,000</b> · ≈ NT$11,340</dd>
+          <dt class="calc">Calculated</dt><dd class="calc num">≈ ¥18,000 / night · ≈ ¥18,000 per person · ≈ ¥6,000 per person / night</dd></div></div>
       <div class="box"><h3>Base for these nights</h3>
         <div class="nights"><span>12/02</span><span>12/03</span><span>12/04</span></div>
         <div class="muted" style="font-size:11.5px;margin-top:6px">Each next morning's first route starts here, and these days use Asakusa for daylight and weather.</div></div>
@@ -268,26 +283,28 @@ const maxDay = Math.max(...dayTot);
 const days = DAYC.map((d, i) => `<div class="daycol"><div class="muted num" style="font-size:11px">${fmt(dayTot[i], 'TWD')}</div>
   <div class="stack" style="height:${dayTot[i] / maxDay * 110}px">${d[2].map(([ci, v, c]) => `<span style="height:${toHome(v, c) / dayTot[i] * 100}%;background:${CATS[ci][1]}"></span>`).join('')}</div>
   <div class="lab num"><b>${d[0]}</b> ${d[1].toUpperCase()}</div></div>`).join('');
-const COSTS = [ // item, date, category index, source, amount, currency
-  ['Round-trip flights (HND in, KIX out)', '12/02, 12/06', 0, 'Booking', 1260, 'USD'],
-  ['Hotel in Asakusa', '12/02–12/04', 1, 'Booking', 54000, 'JPY'],
-  ['Shinkansen Tokyo → Kyoto', '12/05', 2, 'Booking', 42510, 'JPY'],
-  ['Hotel in Kyoto', '12/05', 1, 'Booking', 18000, 'JPY'],
-  ['Monja dinner, Tsukishima', '12/02', 3, 'Block (estimate)', 9000, 'JPY'],
-  ['Shibuya Sky, sunset slot', '12/03', 4, 'Booking', 7500, 'JPY'],
-  ['Local trains and buses', 'all days', 2, 'Travel legs (estimate)', 6490, 'JPY'],
-  ['Tsukiji Outer Market', '12/03', 3, 'Block (estimate)', 6000, 'JPY'],
-  ['Kappabashi Street', '12/02', 5, 'Block (estimate)', 6000, 'JPY'],
+const COSTS = [ // item, date, category index, status, source, amount, currency, old estimate
+  ['Round-trip flights (HND in, KIX out)', '12/02, 12/06', 0, 'booked', 'booking', 1260, 'USD'],
+  ['Hotel in Asakusa', '12/02–12/04', 1, 'booked', 'booking', 54000, 'JPY'],
+  ['Shinkansen Tokyo → Kyoto', '12/05', 2, 'booked', 'booking', 42510, 'JPY', 45000],
+  ['Hotel in Kyoto', '12/05', 1, 'booked', 'booking · ¥6,000 pp / night', 18000, 'JPY', 20000],
+  ['Monja dinner, Tsukishima', '12/02', 3, 'est', 'timetable block', 9000, 'JPY'],
+  ['Souvenirs', 'no date', 5, 'est', 'added on Budget', 9000, 'JPY'],
+  ['Sushi dinner, Kyoto', '12/05', 3, 'est', 'booking, pay at venue', 9000, 'JPY'],
+  ['Shibuya Sky, sunset slot', '12/03', 4, 'booked', 'booking', 7500, 'JPY'],
+  ['Local trains and buses', 'all days', 2, 'est', 'travel legs', 6490, 'JPY'],
+  ['Kappabashi Street', '12/02', 5, 'est', 'timetable block', 6000, 'JPY'],
 ];
-const rows = COSTS.map(([n, d, c, src, v, cur]) => `<tr><td>${n}<div class="src">${src} · ${d} · <span class="catdot" style="background:${CATS[c][1]};margin:0 3px 0 0"></span>${CATS[c][0]}</div></td>
-  <td class="r num">${cur === 'JPY' ? `<b>${fmt(v, 'JPY')}</b>` : '<span class="muted">—</span>'}</td>
+const rows = COSTS.map(([n, d, c, st, src, v, cur, was]) => `<tr><td>${n} <span class="tag ${st === 'booked' ? 'booked' : 'est'}">${st === 'booked' ? 'Booked' : 'Estimated'}</span><div class="src">${src} · ${d} · <span class="catdot" style="background:${CATS[c][1]};margin:0 3px 0 0"></span>${CATS[c][0]}</div></td>
+  <td class="r num">${cur === 'JPY' ? `<b>${fmt(v, 'JPY')}</b>${was ? `<div class="was">est. ${fmt(was, 'JPY')}</div>` : ''}` : '<span class="muted">—</span>'}</td>
   <td class="r num">${cur === 'USD' ? `<b>${fmt(v, 'USD')}</b>` : '<span class="muted">—</span>'}</td>
   <td class="r num">${fmt(toHome(v, cur), 'TWD')}<div class="src">${fmt(toHome(v, cur) / 3, 'TWD')} pp</div></td><td class="r later">—</td></tr>`).join('');
+const booked = COSTS.filter(c => c[3] === 'booked').reduce((a, c) => a + toHome(c[5], c[6]), 0) + toHome(3000, 'JPY'); // + Ghibli tickets (not in the top 10)
 document.getElementById('g').innerHTML = topbar('Budget') + `
   <div class="bg">
     <div class="bg-main">
       <div class="bg-top">
-        <div class="stat"><div class="l">Planned</div><div class="v num">${fmt(total, 'TWD')}</div><div class="h num">${fmt(total / 3, 'TWD')} per person</div></div>
+        <div class="stat"><div class="l">Planned</div><div class="v num">${fmt(total, 'TWD')}</div><div class="h num">${fmt(total / 3, 'TWD')} per person</div><div class="h num" style="margin-top:3px"><span class="tag booked">Booked ${fmt(booked, 'TWD')}</span> <span class="tag est">Estimated ${fmt(total - booked, 'TWD')}</span></div></div>
         <div class="stat"><div class="l">Trip budget</div><div class="v num">${fmt(budget, 'TWD')}</div><div class="h">set by you</div></div>
         <div class="stat"><div class="l">Left</div><div class="v num" style="color:var(--accent)">${fmt(budget - total, 'TWD')}</div><div class="h num">${Math.round((budget - total) / budget * 100)}% of budget</div></div>
         <span class="spacer"></span>
@@ -296,6 +313,7 @@ document.getElementById('g').innerHTML = topbar('Budget') + `
           <div class="rl">Rates <span class="muted">(entered by you)</span></div>
           <div class="rate"><span class="num">1 JPY =</span><span class="inp num">0.21</span><span>TWD</span></div>
           <div class="rate"><span class="num">1 USD =</span><span class="inp num">32.00</span><span>TWD</span></div>
+          <div class="rl" style="margin-top:2px"><span class="btn" style="padding:2px 8px">+ Add currency</span></div>
         </div>
       </div>
       <div class="total-bar">${CATS.map(c => `<span style="width:${catHome(c) / budget * 100}%;background:${c[1]}"></span>`).join('')}</div>
@@ -307,9 +325,9 @@ document.getElementById('g').innerHTML = topbar('Budget') + `
     </div>
     <div class="divider-v"></div>
     <div class="costs">
-      <div class="section-h" style="margin-bottom:8px">Costs <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">largest first · 9 of 24</span><span class="spacer"></span><span class="btn">+ Add cost</span></div>
+      <div class="section-h" style="margin-bottom:8px">Costs <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">largest first · 10 of 24</span><span class="spacer"></span><span class="btn">+ Add estimated cost</span></div>
       <table class="ct"><thead><tr><th>Item</th><th class="r">¥ JPY</th><th class="r">$ USD</th><th class="r">TWD</th><th class="r later">Actual (later)</th></tr></thead><tbody>${rows}</tbody></table>
-      <div class="muted" style="font-size:11.5px;margin-top:10px">Each cost stays in the currency it is paid in. A new currency gets its own column the first time a cost uses it. Totals use your rates; nothing is fetched from the internet.</div>
+      <div class="muted" style="font-size:11.5px;margin-top:10px">Estimated costs are for things not booked yet; when an item is booked, its booked price replaces the estimate (the old estimate stays faint). Each cost stays in the currency it is paid in. Add a currency with "+ Add currency" (next to the rates); each one gets its own column. Totals use your rates; nothing is fetched from the internet.</div>
     </div>
   </div>`;
 

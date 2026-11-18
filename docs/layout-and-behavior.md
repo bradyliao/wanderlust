@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–57 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–64 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -163,6 +163,20 @@ Shown in the mock, still to confirm:
 - A warning strip for cancellation deadlines coming up soon.
 - Each row says whether the booking is on the timetable, and whether it counts in the budget.
 - A "Count in trip budget" checkbox per booking (on by default).
+- Bookings page rows say "On timetable" or "Not on timetable" (follows from item 61).
+
+### Booking prices (agreed 2026-11-19, revised the same day)
+
+58. **Price as known.** A price is an amount and a currency. By default it is the **whole booking (total)**. Two toggle buttons change that: **Per night** and **Per person**. Both on means per person per night. There is no "Not sure" option.
+59. **Nights and people per booking.** Nights come from check-in and check-out. Each booking has its own head count, defaulting to the trip's (for example one room for 2 of 3 people).
+60. **Derived figures.** The app works out the total from the price, nights and people, and the budget always uses that total. The other forms (per night, per person) show in small grey text in the booking's details only, marked as calculated; the Budget page shows totals and its per-person column.
+
+### One item, three views (agreed 2026-11-19)
+
+61. **Plan, Bookings and Budget show the same items.** An item (a meal, a hotel stay, shopping, a ticket, a train, anything) can have a **time** (a block in the timetable), a **booking** (confirmation, file, cancellation deadline; shown on the Bookings page) and a **cost** (shown on the Budget page). Nothing is copied between pages: editing it in one place changes it everywhere.
+62. **Estimated costs.** A cost can be **Estimated** (not booked yet, for planning the budget) or **Booked**. Estimated costs can be added on any item, or directly on the Budget page. When the item is booked, the booked price replaces the estimate; the old estimate stays in faint text for comparison.
+63. **Hotels in the timetable.** A hotel stay adds a check-in block and a check-out block (fixed when the hotel sets the times). Each night shows a thin band at the end of the day saying where you sleep.
+64. **Booked but no time yet** (for example a reservation with only a date): the item also appears in the Place List with a booking mark, so it can be dragged into the timetable like any place.
 
 ### Budget page (agreed 2026-11-19)
 
@@ -171,6 +185,7 @@ Shown in the mock, still to confirm:
 54. **Currencies.** Each cost is entered in the local currency it is paid in. A trip can use several currencies; each one gets its own column in the category table and the cost list (for example ¥ JPY, and $ USD for flights), added the first time a cost uses it. Totals and the budget are in the home currency.
 55. **Home currency.** Chosen from a menu: TWD or USD for now. The top bar's running total uses it.
 56. **Exchange rates are typed in by the user**, one per currency (for example "1 JPY = 0.21 TWD"). Nothing is fetched from the internet.
+56a. **Adding currencies.** An "Add currency" button lets the user add any currency to the trip (for example KRW on a Japan-and-Korea trip), with its own rate. Each added currency gets its own column, and a cost's currency is picked from the trip's list.
 57. **Flights count in the budget**, under their own Flights category.
 
 Shown in the mock, still to confirm:

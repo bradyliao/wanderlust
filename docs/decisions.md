@@ -20,6 +20,8 @@
 
 Exchange rates are typed in by the user, one per currency; no rate service is needed (Brady, 2026-11-19).
 
+Data model (Brady, 2026-11-19): one **item** record with three optional parts, a time slot, a booking and a cost (estimated or booked, with an amount, currency, and per-night / per-person flags). Plan, Bookings and Budget are views of the same items. See items 58–64 in [layout-and-behavior.md](layout-and-behavior.md).
+
 Defaults I'll use while building (not user decisions): each day stores its local date and the city's time zone (IANA name, for example `Asia/Tokyo`); undo history is kept per session; attachments stay on the device.
 
 Order of work: review the UI decisions in [layout-and-behavior.md](layout-and-behavior.md), then build a clickable mock, then the real code.
