@@ -54,6 +54,26 @@
   --travel-tight: var(--danger);
   --travel-tight-soft: rgb(164 71 59 / 0.16);
 
+  /* Map (items 38–42): a calm, matte grey base; colour only for highlighted stops.
+     src/map/style.ts reads these when it builds the map style. */
+  --map-land: #ecebe7;
+  --map-water: #d8dfe4;
+  --map-water-label: #8e9ba5;
+  --map-park: #e1e5dc;
+  --map-building: #e3e1dc;
+  --map-road: #f8f7f4;
+  --map-road-casing: #dad8d2;
+  --map-rail: #bfbcb5;
+  --map-boundary: #c6c3bc;
+  --map-label: #8b9099;
+  --map-label-strong: #6b7079;
+  --map-label-halo: #f3f2ee;
+  --map-pin: #e8e6e1;
+  --map-pin-line: #b9b6af;
+  --map-pin-ink: #7b8089;
+  /* Days switched on to compare with the focus day: a paler slate blue */
+  --map-compare: #8aa5b7;
+
   /* Shape and type */
   --radius: 6px;
   --radius-small: 4px;

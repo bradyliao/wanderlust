@@ -16,7 +16,9 @@ React + TypeScript + Vite. All trip logic lives in the Rust core (`core/`, loade
 | `timetable.ts` | Timetable maths as pure functions: minutes ↔ pixels, 15-minute snapping, drop / move / resize slots, side-by-side lanes for overlaps, the daylight gradient from the core's stops (CSS variables per stage), sunrise and sunset marks, closed-hours bands with a 30-minute fade and their tags, travel bands while dragging, block names and colours |
 | `files.ts` | Download a file, read a picked file |
 | `format.ts` | Dates as numbers (`12/02`), money, mode and group labels, export file names |
-| `theme.css` | Colour tokens (items 77–81), including the daylight stages, hatching and travel band colours; light only, a dark set redefines the same names |
+| `map/style.ts` | Our own MapLibre style (items 41–42): OpenFreeMap vector tiles (OpenMapTiles schema) in matte greys read from the `--map-*` tokens, no POI icons, muted English labels, attribution kept |
+| `map/mapData.ts` | Map logic as pure functions: highlight chip state (days, group filter), stops numbered in time order, each pin's look (grey, group, day, compare), legs as lines (stored `travel.line`, else straight), dash per mode, legend rows, bounds to fit, the pane header text |
+| `theme.css` | Colour tokens (items 77–81), including the daylight stages, hatching, travel band and map colours; light only, a dark set redefines the same names |
 | `app.css` | Shell styles, using only theme tokens |
 | `components/TopBar.tsx` | Brand, Plan · Bookings · Budget tabs, trip menu, People, Transport, budget total, undo, history, layout switch |
 | `components/HistoryMenu.tsx` | Change log newest first, Undo, "Go back to here" |
@@ -30,9 +32,11 @@ React + TypeScript + Vite. All trip logic lives in the Rust core (`core/`, loade
 | `components/PlaceForm.tsx` | Add or edit a place by hand (reads the position from a Google Maps link) |
 | `components/ImportDialog.tsx` | Import preview: new places, details missing, possible duplicates, problems (items 66–71) |
 | `components/icons.tsx` | Small line icons, including one per sub-category (item 81) |
-| `pages/PlanPage.tsx` | Stacked and Three-column layouts (items 1–4) with the Place List and the Timetable (view toggle in its header); the map is a placeholder until phase 5 |
+| `components/kindPaths.ts` | The sub-category icon paths, shared with the map's HTML pins (`kindIconSvg`) |
+| `components/MapPane.tsx` | The Map pane (phase 5, loaded lazily so MapLibre stays out of the main bundle): grey pins with sub-category icons (HTML markers), the highlighted days' stops numbered in the accent colour and joined by their legs (line style by mode), selected ring and pan without zoom, hover ring, pin click selects, highlight chips (dates, groups), fit to the focus day when it changes, legend, leg click opens the timetable's mode picker; tiles that can't load leave pins and legs on a plain background with a note |
+| `pages/PlanPage.tsx` | Stacked and Three-column layouts (items 1–4) with the Place List, the Timetable (view toggle in its header) and the Map (focus day and stop count in its header) |
 | `pages/OtherPages.tsx` | Bookings placeholder; Budget group totals from `budgetSummary` |
-| `*.test.ts` | Vitest: the core wrapper (loads the real Wasm with `initSync`, imports `docs/samples/sample-places.json`), format, prefs, storage, the Place List logic (`places.test.ts`) and the timetable maths (`timetable.test.ts`) |
+| `*.test.ts` | Vitest: the core wrapper (loads the real Wasm with `initSync`, imports `docs/samples/sample-places.json`), format, prefs, storage, the Place List logic (`places.test.ts`), the timetable maths (`timetable.test.ts`) and the map logic (`map/mapData.test.ts`) |
 
 ## Trying the Place List
 
@@ -50,3 +54,15 @@ With the sample trip loaded (above):
 - **Travel**: click a gap label for the mode picker; "· walk N min?" switches that leg to Walk.
 - **Sizes**: drag the right edge of a day header for the column width, the bottom edge of an hour in the time column for the hour height.
 - **List** in the Timetable header shows one day; ‹ › change the day in focus.
+
+## Trying the Map
+
+With the sample trip loaded (above):
+
+- The focus day's stops are numbered in time order in slate blue and joined by their legs (Transit solid, Walk dotted, Drive dashed, Two-wheeler dash-dot, Cycle short dashes, Ride long-short); every other place (not Forget) is a small grey pin with its icon.
+- **Click a pin** to select the place (the list opens and scrolls to it, its blocks are outlined); **select in the list or timetable** and the map pans to the pin without zooming. Hover lights the pin in all panes.
+- **Click a day header** in the timetable: the chips follow and the map fits that day's stops.
+- **Chips** (top left): switch more days on to compare (other days in a paler blue); a group chip highlights only that group (pool places in their group colour), more group chips add to it, the last one off goes back to every group.
+- **Click a leg** for the same mode picker as the timetable (with the Google Maps link).
+- Offline, the tiles don't load: a note says so and the pins and legs stay on the plain background.
+- Dropping a place on the map does nothing (item 12).

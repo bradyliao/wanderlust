@@ -1,7 +1,8 @@
-import { useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useRef, useState, type ReactNode } from 'react'
 import { CollapsedBar, Divider, Pane, SepLine } from '../components/Panes'
 import { AddPlaceDialog, PlaceList, PlaceListTools } from '../components/PlaceList'
 import { Timetable, TimetableTools } from '../components/Timetable'
+import { mapInfo } from '../map/mapData'
 import type { PaneId, Prefs } from '../prefs'
 import { useSelection } from '../selection'
 import type { Command, PlanDay, Trip } from '../types'
@@ -15,10 +16,13 @@ interface Props {
   onImportPlaces: () => void
 }
 
+// MapLibre is large, so the Map pane loads on its own.
+const MapPane = lazy(() => import('../components/MapPane'))
+
 const MIN_PANE = 200
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi))
 
-/** The Plan page in either layout (items 1–4). The map comes in phase 5. */
+/** The Plan page in either layout (items 1–4): Place List, Timetable and Map. */
 export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: Props) {
   const [adding, setAdding] = useState(false)
   const sel = useSelection()
@@ -93,6 +97,14 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
     <Note>The days could not be read.</Note>
   )
   const timetableInfo = days && prefs.timetableView === 'days' ? `${days.length} ${days.length === 1 ? 'day' : 'days'}` : undefined
+  const mapBody = days ? (
+    <Suspense fallback={<Note>Loading the map…</Note>}>
+      <MapPane trip={trip} days={days} apply={apply} />
+    </Suspense>
+  ) : (
+    <Note>The days could not be read.</Note>
+  )
+  const mapPaneInfo = days ? mapInfo(days, sel.focusDate, trip.places) : undefined
   const timetableTools = <TimetableTools view={prefs.timetableView} onView={(timetableView) => onPrefs((p) => ({ ...p, timetableView }))} />
 
   if (prefs.layout === 'columns') {
@@ -128,8 +140,8 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
         {c.map ? (
           <CollapsedBar title="Map" orientation="vertical" fold="right" onExpand={() => setCollapsed('map', false)} />
         ) : (
-          <Pane title="Map" fold="right" fill onCollapse={() => setCollapsed('map', true)}>
-            <MapPlaceholder />
+          <Pane title="Map" info={mapPaneInfo} fold="right" fill onCollapse={() => setCollapsed('map', true)}>
+            {mapBody}
           </Pane>
         )}
         {addDialog}
@@ -184,8 +196,8 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
             onExpand={() => setCollapsed('map', false)}
           />
         ) : (
-          <Pane title="Map" fold="down" fill onCollapse={() => setCollapsed('map', true)}>
-            <MapPlaceholder />
+          <Pane title="Map" info={mapPaneInfo} fold="down" fill onCollapse={() => setCollapsed('map', true)}>
+            {mapBody}
           </Pane>
         )}
       </div>
@@ -196,8 +208,4 @@ export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: 
 
 function Note({ children }: { children: ReactNode }) {
   return <p className="placeholder">{children}</p>
-}
-
-function MapPlaceholder() {
-  return <Note>The map comes in phase 5.</Note>
 }

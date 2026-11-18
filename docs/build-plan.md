@@ -32,7 +32,7 @@ Each phase ends with something that can be tried.
 | 2 | Core updated to items 81–83 (done, see below). **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Shell done 2026-11-19 (see below) |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Done 2026-11-19 |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Done 2026-11-19 |
-| 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Not started |
+| 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Done 2026-11-19 |
 | 6 | **Bookings page, then Budget page** | Not started |
 | 7 | **Online extras**: routing, weather, sun times per city (needs the user's keys) | Not started |
 | Later | MCP server for Claude (route C), Tauri desktop app, cloud sync, sharing, trip guide export | Parked |
@@ -66,6 +66,12 @@ Update this table and the status above when a phase or module is finished.
 - Core gaps found (in `core/README.md` known gaps): leg JSON doesn't say if the mode is the leg's own; no command to unschedule a check-in or check-out block; no call for a place's closed hours alone (the UI uses `dragPreview` with a dummy slot).
 - Choices to confirm with Brady: dropping a place that has a booking waiting for a time on that date places the booking instead of adding a visit; travel labels draw above the hatching; list view has no drag in or out; the night band is pinned to the bottom of the visible area; a dropped place's top lands at the pointer.
 - Known UI issue: the top bar overflows at about 1100 px wide.
+
+## Phase 5 status (2026-11-19)
+
+- **Map done** by a sub-agent, checked by the main session in the browser with the sample trip: MapLibre with our own matte grey style on OpenFreeMap tiles (`src/map/style.ts`, colours from `--map-*` tokens), grey type pins, the focus day's stops numbered in slate blue and joined by legs (line style per mode; straight until routing), day and group highlight chips, legend, selection and hover linked with the other panes (pan, no zoom), leg click opens the mode picker, plain background with a note when tiles can't load. MapLibre is loaded lazily. 65 web tests, build and lint clean.
+- Not verified: ~50 places (the sample has 17), the production build in a browser, routed lines (none stored yet).
+- Choices to confirm with Brady: group chips filter (one click keeps only that group, more add, last off = all); compared days in a paler slate blue, numbered per day, "1·2" for a place on two highlighted days; a new focus day resets the date chips but keeps the group filter; a scheduled Forget place still shows on its highlighted day; only highlighted stops show names (grey pins on hover); selecting from another pane always pans.
 
 ## Core changes for items 81–83 (done 2026-11-19)
 
