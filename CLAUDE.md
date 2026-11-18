@@ -1,62 +1,51 @@
 # Wanderlust: notes for the next session
 
-Read this first. It is the handoff from the cloud session that started the project (2026-11-17 to 18).
+Read this first, then [`docs/build-plan.md`](docs/build-plan.md). Started 2026-11-17 in a cloud session; restarted 2026-11-18 at layout and behavior; building since 2026-11-19.
 
 ## What this is
 
-A travel planner in two halves:
-
-1. **Plan** on a big screen: a pool of collected places, a timetable like a class schedule, and a large map, all linked.
-2. **Travel** with a phone trip guide that opens on today and shows now and next.
-
-It replaces the owner's current method: a Google Sheet (place list and daily schedule), a Claude chat and Google Maps used side by side. The first real case was a Tokyo trip.
+A travel planner used on a computer: a Place List of collected places, a timetable like a class schedule, and a large map, all linked, plus Bookings and Budget pages. It replaces the owner's method of a Google Sheet, a Claude chat and Google Maps side by side. The first real case is a Tokyo trip. A phone trip guide is parked for later (an export format question).
 
 ## Where things are
 
 | What | Where |
 | --- | --- |
-| Original planning brief (Chinese) | Claude doc "旅遊規劃 App：Brady 的規劃流程與需求": https://claude.ai/artifact/7gFeupjz9FgGkb2tfBN5zR |
-| Layout mock-ups (three planner options and the phone guide) | Claude Design canvas "Wanderlust layout options": https://claude.ai/artifact/YEiYwpuVFzWtBs6vMr9HLy |
-| Copies of those mock-ups | `docs/design/*.dc.html` and `docs/design/canvas.json`. These are source only and need the canvas runtime to render; open the canvas link to view them |
-| User workflow and screens | `docs/ux-workflow.md` |
-| Requirements worked backward from the screens | `docs/requirements.md` |
-| Decisions, open questions, roadmap | `docs/decisions.md` |
-| Working prototype v0 | `src/` (React, TypeScript, Vite). See `README.md` |
-
-The artifacts are private to the owner's claude.ai account.
+| **Build plan, phases, status, how to start sub-sessions** | `docs/build-plan.md` |
+| **Every UI and behavior decision, numbered (items 1–76)** | `docs/layout-and-behavior.md` |
+| Platform, map, backend, data model decisions | `docs/decisions.md` (the roadmap section at its end is old background) |
+| Place import file format and AI prompt | `docs/import-format.md` |
+| AI change file format and AI prompt | `docs/change-file-format.md` |
+| Static mocks (colours are placeholders) | `docs/mock/layouts.html`, `docs/mock/pages.html`, rendered as `.png` next to them |
+| Brady's layout sketch | `docs/img/layout-sketch.png` |
+| **Rust core** (data model, commands, all logic) | `core/`, see `core/README.md` |
+| Old prototype v0 (rejected, not a reference, to be replaced in phase 2) | `src/` |
+| Older background docs (went too far ahead; not decisions) | `docs/ux-workflow.md`, `docs/requirements.md`, `docs/design/` |
+| Original planning brief (Chinese, private claude.ai doc) | https://claude.ai/artifact/7gFeupjz9FgGkb2tfBN5zR |
 
 ## Current state
 
-- **Restarted on 2026-11-18 at layout and behavior.** Read `docs/layout-and-behavior.md` first. Brady sketched two default layouts (Stacked: places left, timetable over map; Three columns: places, timetable, map). Canvas options A, B, C are kept as alternatives only.
-- About 50 layout and behavior items in that doc are agreed (2026-11-18 to 19), including the map and routing stack (MapLibre with our own grey style, Valhalla), and separate Bookings and Budget pages. A static mock is in `docs/mock/layouts.html` (colours are placeholders). Backend basics are decided (local-first, no key server yet, hosted Valhalla routing; see `docs/decisions.md`). **Next:** update the mock for the newest items, then build. Earlier docs (`ux-workflow.md`, `requirements.md`, roadmap in `decisions.md`) went too far ahead and are background, not decisions.
-- Prototype v0 in `src/` was rejected, UI and logic both: do not reuse or port it (Brady, 2026-11-19). It will be replaced in phase 2.
-- `npm test` passes (12 tests). `npm run build` passes.
+- **Phase 1, the Rust core, is in progress.** See `docs/build-plan.md` for what is done and what is next.
+- Stack: Rust core compiled to Wasm (`wasm-pack`), React + TypeScript + Vite UI, MapLibre, data local in the browser. Browser first, Tauri later. No server, no accounts.
+- Every change to a trip is a `Command` in `core/src/commands.rs`, logged with its author (user or AI) and undoable. AI changes the trip with change files now, through MCP later.
 
-## Decisions the owner made
+## Decisions the owner made (summary; details in the docs)
 
-- Interface in **English**.
-- **No named travellers or family / elder mode for now.** The trip has only a head count (`partySize`) for budget totals.
-- **One rating per place**: 1 Forget (greyed out, not deleted), 2 So-So, 3 Must Go.
-- Website first, desktop app later (the build uses relative paths so it can be wrapped in Tauri or Electron).
-- After planning, the output is a convenient trip guide for use during the trip.
+- Interface in **English**. Dates as numbers, `12/02`.
+- Two default layouts (Stacked; Three columns), Place List grouped by area by default.
+- Ratings: Must Go / So-So / Forget, plus Unrated for imported places the user didn't rate.
+- People on the trip is a trip-wide setting that can change. No named travellers.
+- Costs in local currencies, home currency TWD or USD, rates typed in by the user. Flights count in the budget.
+- Offline for now. Not hosted on bradyliao.com for now.
 
-## Facts established (checked 2026-11-17 / 18)
+## Facts established
 
-- **Google Maps API has no transit routes in Japan.** Google's FAQ says the Routes API supports all transit partners "except ... those in Japan". Walking and driving work. Pricing: Routes Essentials 10,000 free a month, then about USD 5 per 1,000; Places Text Search Pro 5,000 free, then about USD 32 per 1,000. The Google Maps website and app do show Japanese trains, so a "check route in Google Maps" link works. Details and sources: `docs/requirements.md`, section "Travel and fares".
-- **Travel times in v0 are a rough formula** (straight-line distance, a walk/transit cutoff at 1.2 km, pace-based speeds), calculated live and labelled "est.". Only connections the user confirmed are stored.
-- **Existing apps**: Wanderlog (itinerary plus map, Pro about USD 40 a year), Funliday (Taiwanese, Chinese interface, imports ChatGPT itineraries to a map), Stippl, Tripsy, TripIt, AI planners (Mindtrip and others). None clearly offers a week-grid timetable with fixed blocks, opening-hours and clash warnings, Japanese train routes, or a transport-pass calculator. The owner was advised to try Wanderlog and Funliday on a real trip before more building; it is not known whether they did.
-
-## Open questions for the owner
-
-Layout and behavior questions now live in `docs/layout-and-behavior.md`. Older ones:
-
-1. ~~Which layout~~: answered, see above.
-2. Travel as its own row or block, or a label in the gap?
-3. Plan only on a computer, or on the phone too?
-4. What next after the layout: lodging comparison, or faster place entry (search with auto-filled details)?
+- **Google Maps API has no transit routes in Japan**, and its two-wheeler mode doesn't cover Japan; Routes API results must be shown on a Google map. Sources in `docs/requirements.md` and `docs/layout-and-behavior.md` (travel notes).
+- Stadia Maps free plan (Valhalla routing): 200,000 credits a month, no commercial use, temporary storage only (checked 2026-11-19).
+- Japanese transit APIs: NAVITIME (business pricing, not public) and Ekispert (free trial, timetable-based); not chosen yet.
 
 ## Working with the owner
 
-- Show a layout or mock-up and get a reaction before building UI.
-- Keep real trip data (itineraries, bookings) out of this repository. `*.trip.json` and `*-guide.html` are git-ignored.
-- The owner keeps a shared memory vault (`bradyliao/obsidian`, `Memory/`). This cloud session could not open it; a local session may be able to.
+- Show a mock and get a reaction before building any screen not already mocked.
+- Ask before deciding things that are the owner's; record every decision by number in the docs, in the same commit.
+- Keep real trip data out of the repository (`*.trip.json` is git-ignored).
+- The owner's memory vault is at `~/Projects/Obsidian/Memory` on this Mac.
