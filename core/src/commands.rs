@@ -198,7 +198,7 @@ fn get(trip: &Trip, key: &Key) -> Option<Record> {
 fn restore(trip: &mut Trip, key: Option<Key>, value: Option<Record>) {
     let Some(key) = key else { return };
     fn upsert<T: Clone>(list: &mut Vec<T>, matches: impl Fn(&T) -> bool, value: Option<T>) {
-        match (list.iter().position(|x| matches(x)), value) {
+        match (list.iter().position(matches), value) {
             (Some(i), Some(v)) => list[i] = v,
             (Some(i), None) => {
                 list.remove(i);
@@ -682,7 +682,7 @@ mod tests {
         ];
         apply(&mut t, &cmds, stamp("g2")).unwrap();
         let mv = Command::MoveItem { id: "i1".into(), part: BlockPart::Main, date: "2026-12-03".into(), start: 960, end: 1020 };
-        assert!(apply(&mut t, &[mv.clone()], stamp("g3")).unwrap_err().message.contains("Unlock"));
+        assert!(apply(&mut t, std::slice::from_ref(&mv), stamp("g3")).unwrap_err().message.contains("Unlock"));
         let unlock = Command::SetFixed { id: "i1".into(), part: BlockPart::Main, fixed: false, reason: None };
         apply(&mut t, &[unlock, mv], stamp("g4")).unwrap();
         assert_eq!(t.item("i1").unwrap().slot.as_ref().unwrap().start, 960);
@@ -707,7 +707,7 @@ mod tests {
         apply(&mut t, &[Command::AddItem { item }], stamp("g1")).unwrap();
         let cost: Cost = serde_json::from_value(json!({ "amount": 1260, "currency": "USD", "status": "booked" })).unwrap();
         let set = Command::SetCost { id: "i1".into(), cost: Some(cost) };
-        assert!(apply(&mut t, &[set.clone()], stamp("g2")).is_err());
+        assert!(apply(&mut t, std::slice::from_ref(&set), stamp("g2")).is_err());
         let add_usd = Command::SetCurrency { code: "usd".into(), rate_to_home: 32.0, set_on: None };
         apply(&mut t, &[add_usd, set], stamp("g3")).unwrap();
         assert_eq!(t.rate_to_home("USD"), Some(32.0));
