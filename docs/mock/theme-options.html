@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Wanderlust theme options</title>
+<style>
+  body { margin: 0; padding: 24px; background: #e9e7e1; font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #2b2f36; }
+  h2 { font-size: 15px; margin: 22px 0 8px; } h2:first-child { margin-top: 0; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { width: 300px; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.12); background: #fff; }
+  .card .name { padding: 8px 12px; font-weight: 600; background: #fff; border-top: 1px solid #eee; }
+  .card .name span { font-weight: 400; color: #8b9099; }
+  .mood { height: 120px; padding: 12px; display: flex; gap: 8px; }
+  .mood .panel { flex: 1; border-radius: 6px; padding: 8px; font-size: 11.5px; }
+  .mood .line { height: 1px; margin: 6px 0; }
+  .sw { display: flex; height: 64px; }
+  .sw div { flex: 1; display: flex; align-items: flex-end; padding: 4px; font-size: 10px; color: rgba(255,255,255,.95); }
+  .acc { height: 90px; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #fbfaf7; }
+  .btn { align-self: flex-start; color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; }
+  .sel { border-radius: 6px; padding: 6px 10px; font-size: 12px; background: #fff; }
+  .types { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 12px; background: #fbfaf7; }
+  .t { height: 46px; border-radius: 5px; display: flex; align-items: flex-end; justify-content: center; font-size: 9.5px; padding-bottom: 3px; }
+</style></head><body>
+
+<h2>1. Mood (backgrounds, panels, lines, text)</h2>
+<div class="row">
+  <div class="card"><div class="mood" style="background:#f6f5f1"><div class="panel" style="background:#fbfaf7;color:#2b2f36;box-shadow:0 0 0 1px #e2e0da">Panel<div class="line" style="background:#e2e0da"></div><span style="color:#8b9099">Muted text</span></div><div class="panel" style="background:#fbfaf7;color:#2b2f36;box-shadow:0 0 0 1px #e2e0da">Senso-ji<div class="line" style="background:#e2e0da"></div><span style="color:#8b9099">1.5 h</span></div></div><div class="name">Warm paper <span>· off-white, warm grey lines</span></div></div>
+  <div class="card"><div class="mood" style="background:#f4f5f7"><div class="panel" style="background:#ffffff;color:#1f2328;box-shadow:0 0 0 1px #e3e6ea">Panel<div class="line" style="background:#e3e6ea"></div><span style="color:#868e96">Muted text</span></div><div class="panel" style="background:#ffffff;color:#1f2328;box-shadow:0 0 0 1px #e3e6ea">Senso-ji<div class="line" style="background:#e3e6ea"></div><span style="color:#868e96">1.5 h</span></div></div><div class="name">Cool minimal <span>· white, cool greys</span></div></div>
+  <div class="card"><div class="mood" style="background:#e7e5e0"><div class="panel" style="background:#ffffff;color:#2d2f33;box-shadow:0 1px 2px rgba(0,0,0,.08)">Panel<div class="line" style="background:#ecebe7"></div><span style="color:#8a8d92">Muted text</span></div><div class="panel" style="background:#ffffff;color:#2d2f33;box-shadow:0 1px 2px rgba(0,0,0,.08)">Senso-ji<div class="line" style="background:#ecebe7"></div><span style="color:#8a8d92">1.5 h</span></div></div><div class="name">Soft neutral <span>· stone grey, white panels</span></div></div>
+</div>
+
+<h2>2. Accent (selection, buttons, highlighted day on the map)</h2>
+<div class="row">
+  <div class="card"><div class="acc"><span class="btn" style="background:#3f6b86">+ Add booking</span><div class="sel" style="box-shadow:0 0 0 2px #3f6b86">Selected block</div></div><div class="name">Slate blue <span>#3F6B86</span></div></div>
+  <div class="card"><div class="acc"><span class="btn" style="background:#5f8a6e">+ Add booking</span><div class="sel" style="box-shadow:0 0 0 2px #5f8a6e">Selected block</div></div><div class="name">Sage green <span>#5F8A6E</span></div></div>
+  <div class="card"><div class="acc"><span class="btn" style="background:#b4664a">+ Add booking</span><div class="sel" style="box-shadow:0 0 0 2px #b4664a">Selected block</div></div><div class="name">Terracotta <span>#B4664A</span></div></div>
+  <div class="card"><div class="acc"><span class="btn" style="background:#4b4f9a">+ Add booking</span><div class="sel" style="box-shadow:0 0 0 2px #4b4f9a">Selected block</div></div><div class="name">Indigo <span>#4B4F9A</span></div></div>
+</div>
+
+<h2>3. Place type colours (Sight · Food · Café · Shop · Museum · Nature · Nightlife)</h2>
+<div class="row">
+  <div class="card" style="width:420px"><div class="types">
+    <div class="t" style="background:#86a394;color:#fff">Sight</div><div class="t" style="background:#c79a80;color:#fff">Food</div><div class="t" style="background:#b8a08c;color:#fff">Café</div><div class="t" style="background:#c4ad7c;color:#fff">Shop</div><div class="t" style="background:#9a94b0;color:#fff">Museum</div><div class="t" style="background:#8fae7e;color:#fff">Nature</div><div class="t" style="background:#8a8fb0;color:#fff">Night</div>
+  </div><div class="name">Muted earth tones <span>· as in the mocks</span></div></div>
+  <div class="card" style="width:420px"><div class="types">
+    <div class="t" style="background:#cfe3d8">Sight</div><div class="t" style="background:#f3d3c2">Food</div><div class="t" style="background:#e8dccf">Café</div><div class="t" style="background:#f1e2b8">Shop</div><div class="t" style="background:#dcd7ec">Museum</div><div class="t" style="background:#d6e8c8">Nature</div><div class="t" style="background:#d3d6ec">Night</div>
+  </div><div class="name">Soft pastels <span>· lighter, less contrast</span></div></div>
+  <div class="card" style="width:420px"><div class="types">
+    <div class="t" style="background:#e9e8e4">Sight</div><div class="t" style="background:#e9e8e4">Food</div><div class="t" style="background:#e9e8e4">Café</div><div class="t" style="background:#e9e8e4">Shop</div><div class="t" style="background:#e9e8e4">Museum</div><div class="t" style="background:#e9e8e4">Nature</div><div class="t" style="background:#e9e8e4">Night</div>
+  </div><div class="name">Icons only <span>· one colour, the icon tells them apart</span></div></div>
+</div>
+
+<h2>Chosen (2026-11-19): Warm paper · Slate blue #3F6B86 · soft pastels, one palette for types and budget</h2>
+<div class="row">
+  <div class="card" style="width:560px"><div class="types"><div class="t" style="background:#cfe3d8;color:#4f7a63;box-shadow:inset 3px 0 0 #4f7a63;font-weight:600">Sight</div><div class="t" style="background:#f3d3c2;color:#a5674a;box-shadow:inset 3px 0 0 #a5674a;font-weight:600">Food</div><div class="t" style="background:#e8dccf;color:#87684c;box-shadow:inset 3px 0 0 #87684c;font-weight:600">Café</div><div class="t" style="background:#f1e2b8;color:#8f7430;box-shadow:inset 3px 0 0 #8f7430;font-weight:600">Shop</div><div class="t" style="background:#dcd7ec;color:#675d92;box-shadow:inset 3px 0 0 #675d92;font-weight:600">Museum</div><div class="t" style="background:#d6e8c8;color:#56803f;box-shadow:inset 3px 0 0 #56803f;font-weight:600">Nature</div><div class="t" style="background:#d3d6ec;color:#565c94;box-shadow:inset 3px 0 0 #565c94;font-weight:600">Nightlife</div></div><div class="name">Place types <span>· pastel fill, deeper shade for lines, icons and text</span></div></div>
+  <div class="card" style="width:560px"><div class="types"><div class="t" style="background:#cfe0ee;color:#46708f;box-shadow:inset 3px 0 0 #46708f;font-weight:600">Flights</div><div class="t" style="background:#ecd3dc;color:#93566b;box-shadow:inset 3px 0 0 #93566b;font-weight:600">Lodging</div><div class="t" style="background:#d9dee5;color:#5b6675;box-shadow:inset 3px 0 0 #5b6675;font-weight:600">Transport</div><div class="t" style="background:#f3d3c2;color:#a5674a;box-shadow:inset 3px 0 0 #a5674a;font-weight:600">Food</div><div class="t" style="background:#cfe3d8;color:#4f7a63;box-shadow:inset 3px 0 0 #4f7a63;font-weight:600">Tickets</div><div class="t" style="background:#f1e2b8;color:#8f7430;box-shadow:inset 3px 0 0 #8f7430;font-weight:600">Shopping</div><div class="t" style="background:#e6e3dd;color:#6e6a62;box-shadow:inset 3px 0 0 #6e6a62;font-weight:600">Other</div></div><div class="name">Budget categories <span>· Food, Shopping and Tickets share the place colours</span></div></div>
+</div>
+</body></html>

@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–76 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–80 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -232,11 +232,22 @@ Still open:
 
 - **Long place names** get cut short once the rating chip is on the row (for example "Ueno museum …"). To be solved later.
 
+### Visual theme (agreed 2026-11-19)
+
+The colour card is [mock/theme-options.html](mock/theme-options.html) (rendered as `.png`); its bottom row shows the chosen palette.
+
+77. **Mood: Warm paper.** Off-white, slightly warm surfaces, soft ink text, thin warm-grey lines (paper `#FBFAF7`, panel `#F6F5F1`, line `#E2E0DA`, ink `#2B2F36`, muted `#8B9099`).
+78. **Accent: Slate blue `#3F6B86`** for buttons, selection and the highlighted day on the map.
+79. **One pastel palette for place types and budget categories**, so a colour means the same thing everywhere. Each colour has a pastel fill and a deeper shade of itself for lines, icons and text (pastels alone are too light for those).
+    - Types: Sight sage `#CFE3D8` / `#4F7A63`, Food peach `#F3D3C2` / `#A5674A`, Café latte `#E8DCCF` / `#87684C`, Shop butter `#F1E2B8` / `#8F7430`, Museum lilac `#DCD7EC` / `#675D92`, Nature leaf `#D6E8C8` / `#56803F`, Nightlife periwinkle `#D3D6EC` / `#565C94`.
+    - Budget: Food, Shopping and Tickets share the Food, Shop and Sight colours; Flights sky `#CFE0EE` / `#46708F`, Lodging rose `#ECD3DC` / `#93566B`, Transport mist `#D9DEE5` / `#5B6675`, Other stone `#E6E3DD` / `#6E6A62`.
+80. **Light mode now, dark later.** All colours are named tokens (CSS variables) so a dark set can be added without rework.
+
 ## Mock
 
 A static mock of both layouts is in [mock/layouts.html](mock/layouts.html), rendered as [mock/layouts.png](mock/layouts.png). It uses invented sample data. The Bookings and Budget pages are in [mock/pages.html](mock/pages.html), rendered as [mock/pages.png](mock/pages.png).
 
-**Its colours, fonts and map style are placeholders, not a chosen theme.** Only the direction for the daylight background is agreed (item 21: muted, matte, never eye-catching); its exact shades are still open. The visual theme is a separate step, after layout and behavior feel right.
+**The mocks' colours are older placeholders; the chosen theme is items 77–80.** Fonts and the map style are still placeholders. Only the direction for the daylight background is agreed (item 21: muted, matte, never eye-catching); its exact shades are still open. The visual theme is a separate step, after layout and behavior feel right.
 
 ## Not discussed yet (parked)
 
