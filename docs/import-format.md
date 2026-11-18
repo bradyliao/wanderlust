@@ -2,6 +2,8 @@
 
 Before planning a trip, places come from saved social posts (Instagram and others). An AI (for example Claude) turns those posts into one JSON file in this format, and the app imports it into the trip's Place List. Places can still be added by hand at any time.
 
+The type list follows item 81; until the core is updated (build-plan.md, start of phase 2) the importer accepts only the older seven types.
+
 Decisions behind this (see items 66–71 in [layout-and-behavior.md](layout-and-behavior.md)):
 
 - JSON only, with the ready-made AI prompt at the end of this page.
@@ -70,7 +72,7 @@ Only `name` is required. Anything unknown is **left out**, never guessed.
 | `trip_hint` | text | Optional: what trip the posts were collected for |
 | `name` | text | **Required.** Name in English (or as commonly written in English) |
 | `name_local` | text | Name in the local language, if known |
-| `type` | one of `sight`, `food`, `cafe`, `shop`, `museum`, `nature`, `nightlife` | The place type (item 17b) |
+| `type` | one of `food`, `cafe`, `dessert`, `sight`, `museum`, `nature`, `nightlife`, `flight`, `train`, `bus`, `car`, `lodging`, `shopping`, `other` | The sub-category (item 81). Not `localTravel` |
 | `area` | text | Neighbourhood, for example `Asakusa`. Used for grouping the Place List |
 | `city` | text | City, for example `Tokyo` |
 | `country` | two-letter code | ISO 3166-1, for example `JP`, `TW`, `KR` |
@@ -109,7 +111,7 @@ Step 2. Then output only JSON, no other text, in this exact shape:
 { "format": "wanderlust-places", "version": 1, "created": "<today, YYYY-MM-DD>", "trip_hint": "<optional>", "places": [ ... ] }
 
 For each place mentioned in a post, add one entry to "places" with these fields:
-name (required, English), name_local, type (one of: sight, food, cafe, shop, museum, nature, nightlife),
+name (required, English), name_local, type (one of: food, cafe, dessert, sight, museum, nature, nightlife, flight, train, bus, car, lodging, shopping, other),
 area (neighbourhood), city, country (two-letter code), google_maps_url, lat, lng, address,
 usual_stay_minutes, opening_hours (keys mon..sun, each a list of ["HH:MM","HH:MM"] pairs, [] if closed),
 hours_note, estimated_cost {amount, currency (three-letter code), per_person true/false},

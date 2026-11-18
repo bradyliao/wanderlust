@@ -245,21 +245,30 @@ The colour card is [mock/theme-options.html](mock/theme-options.html) (rendered 
 
 ### One set of categories (agreed 2026-11-19; replaces the lists in items 17b, 50, 52, 57 and the colours in 79)
 
-81. **Six groups, one colour each, the same on all three lists** (places, bookings, budget). Within a group, icons tell the kinds apart.
+81. **Six groups, each with its sub-categories, the same on every list.** Places, bookings and budget all use one list of sub-categories. A group has one colour; its sub-categories share it and differ by icon. Every item stores **one sub-category**; its group, colour and budget category follow from it, so they can never disagree.
 
-| Colour | Place types | Booking types | Budget category (sub-categories) |
-| --- | --- | --- | --- |
-| Peach: Food `#F3D3C2` / `#A5674A` | Food, Café, Dessert | Food | Food |
-| Sage: Activity `#CFE3D8` / `#4F7A63` | Sight, Museum, Nature, Nightlife | Activity | Activity |
-| Rose: Lodging `#ECD3DC` / `#93566B` (house icon) | Lodging | Lodging | Lodging |
-| Sky: Transport `#CFE0EE` / `#46708F` | Transport (station, pier) | Flight, Train, Bus, Car | Transport: Flight, Train, Bus, Car, Local travel |
-| Butter: Shopping `#F1E2B8` / `#8F7430` | Shop | Shopping | Shopping |
-| Stone: Other `#E6E3DD` / `#6E6A62` | Other | Other | Other |
+| Group | Colour (fill / deeper shade) | Sub-categories (icon each) |
+| --- | --- | --- |
+| Food | peach `#F3D3C2` / `#A5674A` | Food, Café, Dessert |
+| Activity | sage `#CFE3D8` / `#4F7A63` | Sight, Museum, Nature, Nightlife |
+| Transport | sky `#CFE0EE` / `#46708F` | Flight, Train, Bus, Car, Local travel |
+| Lodging | rose `#ECD3DC` / `#93566B` | Lodging (house icon) |
+| Shopping | butter `#F1E2B8` / `#8F7430` | Shopping |
+| Other | stone `#E6E3DD` / `#6E6A62` | Other |
 
-82. **Flights are part of Transport** in the budget (a sub-category), not their own category (replaces the Flights category of item 57; flights still count in the budget).
-83. **Every group exists on every list**, so nothing is left without a match (for example a Shopping booking, or an Other place). Bus and "Local travel" (costs of the legs between stops) were added by Claude as Transport sub-categories; Brady may remove them.
+How each list uses it:
 
-Not yet in the code: `core/src/model.rs` still has the old lists (`PlaceType`, `BookingKind`, `Category` with Flights and Tickets). Update them, with their tests, at the start of phase 2.
+| List | Uses |
+| --- | --- |
+| **Places** (Place List, map pins, timetable blocks) | Any sub-category except Local travel. A Flight, Train or Bus place is an airport, station or stop |
+| **Bookings** (type filter chips, rows) | Any sub-category except Local travel. Filter chips are the six groups; each row shows its sub-category icon |
+| **Budget** | Six category lines (the groups); each line opens to its sub-categories, for example Food: Food, Café, Dessert. Travel legs between stops count as Transport → Local travel |
+| **Place List grouping by Type** (item 17) | Sections by group, rows show the sub-category icon |
+
+Ids used in files and code (camelCase): `food`, `cafe`, `dessert`, `sight`, `museum`, `nature`, `nightlife`, `flight`, `train`, `bus`, `car`, `localTravel`, `lodging`, `shopping`, `other`; groups `food`, `activity`, `transport`, `lodging`, `shopping`, `other`.
+
+82. **Flights are part of Transport** (a sub-category), not their own budget category. Flights still count in the budget (item 57).
+83. **Every group exists on every list**, so nothing is left without a match (for example a Shopping booking, or an Other place). Bus and Local travel were added by Claude; Brady may remove them.
 
 
 ## Mock

@@ -58,7 +58,7 @@ The commands are defined in [`core/src/commands.rs`](../core/src/commands.rs); t
 | `setLegRouted` | `from`, `to`, `routed` (`mode`, `minutes`, `line`, `service`) | Store a routing result (normally done by the app, not AI) |
 | `confirmLegMinutes` | `from`, `to`, `minutes` | Minutes the user checked |
 
-Modes: `drive`, `transit`, `walk`, `twoWheeler`, `cycle`, `ride`. Categories: `flights`, `lodging`, `transport`, `food`, `tickets`, `shopping`, `other`. Place types: `sight`, `food`, `cafe`, `shop`, `museum`, `nature`, `nightlife`.
+Modes: `drive`, `transit`, `walk`, `twoWheeler`, `cycle`, `ride`. Kinds (item 81), used by places, bookings and items: `food`, `cafe`, `dessert`, `sight`, `museum`, `nature`, `nightlife`, `flight`, `train`, `bus`, `car`, `localTravel` (budget only), `lodging`, `shopping`, `other`. Groups (budget limits): `food`, `activity`, `transport`, `lodging`, `shopping`, `other`. Until the core is updated at the start of phase 2, it still accepts only the older lists.
 
 Block keys in `from` / `to`: an item id, or `<item id>#checkIn` / `<item id>#checkOut` for a hotel's check-in and check-out blocks.
 
