@@ -18,13 +18,13 @@ A travel planner used on a computer: a Place List of collected places, a timetab
 | Static mocks (colours are placeholders) | `docs/mock/layouts.html`, `docs/mock/pages.html`, rendered as `.png` next to them |
 | Brady's layout sketch | `docs/img/layout-sketch.png` |
 | **Rust core** (data model, commands, all logic) | `core/`, see `core/README.md` |
-| Old prototype v0 (rejected, not a reference, to be replaced in phase 2) | `src/` |
+| Web app (React + TypeScript + Vite), file map in `src/README.md` | `src/` |
 | Older background docs (went too far ahead; not decisions) | `docs/ux-workflow.md`, `docs/requirements.md`, `docs/design/` |
 | Original planning brief (Chinese, private claude.ai doc) | https://claude.ai/artifact/7gFeupjz9FgGkb2tfBN5zR |
 
 ## Current state
 
-- **Phase 1, the Rust core, is in progress.** See `docs/build-plan.md` for what is done and what is next.
+- **Phase 1 (Rust core) is done; phase 2 (app shell) is done; phase 3 (Place List and import) is next.** See `docs/build-plan.md`. Run it with `npm install` then `npm run dev` (needs Rust, the wasm32 target and wasm-pack).
 - Stack: Rust core compiled to Wasm (`wasm-pack`), React + TypeScript + Vite UI, MapLibre, data local in the browser. Browser first, Tauri later. No server, no accounts.
 - Every change to a trip is a `Command` in `core/src/commands.rs`, logged with its author (user or AI) and undoable. AI changes the trip with change files now, through MCP later.
 

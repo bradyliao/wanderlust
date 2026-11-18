@@ -1,0 +1,46 @@
+/* Theme tokens (items 77–81). Light only for now; a dark set goes in a
+   [data-theme='dark'] block (and/or prefers-color-scheme) that redefines the
+   same names, so nothing else needs to change (item 80). */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* Mood: Warm paper (item 77) */
+  --paper: #fbfaf7;
+  --panel: #f6f5f1;
+  --line: #e2e0da;
+  --line-strong: #cfccc4;
+  --ink: #2b2f36;
+  --muted: #8b9099;
+
+  /* Accent: Slate blue (item 78) */
+  --accent: #3f6b86;
+  --accent-ink: #fbfaf7;
+  --accent-soft: #e3ebf0;
+
+  /* Messages */
+  --danger: #a4473b;
+  --danger-soft: #f6e3df;
+
+  /* One pastel per group: fill, and a deeper shade for lines, icons, text (items 79, 81) */
+  --kind-food-fill: #f3d3c2;
+  --kind-food-ink: #a5674a;
+  --kind-activity-fill: #cfe3d8;
+  --kind-activity-ink: #4f7a63;
+  --kind-transport-fill: #cfe0ee;
+  --kind-transport-ink: #46708f;
+  --kind-lodging-fill: #ecd3dc;
+  --kind-lodging-ink: #93566b;
+  --kind-shopping-fill: #f1e2b8;
+  --kind-shopping-ink: #8f7430;
+  --kind-other-fill: #e6e3dd;
+  --kind-other-ink: #6e6a62;
+
+  /* Shape and type */
+  --radius: 6px;
+  --radius-small: 4px;
+  --shadow-pop: 0 6px 24px rgb(43 47 54 / 0.12), 0 1px 3px rgb(43 47 54 / 0.08);
+  --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-size: 13px;
+}

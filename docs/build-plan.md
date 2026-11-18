@@ -29,7 +29,7 @@ Each phase ends with something that can be tried.
 | # | Phase | Status |
 | --- | --- | --- |
 | 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | Done 2026-11-19 |
-| 2 | Core updated to items 81–83 (done, see below). **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
+| 2 | Core updated to items 81–83 (done, see below). **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Shell done 2026-11-19 (see below) |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Not started |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Not started |
 | 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Not started |
@@ -47,6 +47,13 @@ Each phase ends with something that can be tried.
 - Lesson for sub-agents: worktrees are cut from `main`, so **commit (and merge to main, or tell the agent the branch) before starting them**, or they start without the newest files.
 
 Update this table and the status above when a phase or module is finished.
+
+## Phase 2 status (2026-11-19)
+
+- **Shell done** by a sub-agent, checked by the main session in the browser: top bar (tabs, trip menu, People, Transport, budget total, undo, history, layout icons), both layouts with resizable and collapsible panes, trips saved in IndexedDB, export and open trip files, AI change file import, change log with Undo and "Go back to here". `npm test` 13 tests, `npm run build` and `npm run lint` clean, no console errors.
+- The old v0 prototype in `src/` is replaced (still in git history).
+- Pane contents (Place List, timetable, map) are placeholders until phases 3–5. Bookings and Budget are placeholder pages.
+- Choices to confirm with Brady: "Go back to here" undoes that change and everything after it (asks first when more than one); opening a trip file with an id already saved asks before replacing; the trip menu sits on the trip name; People offers 1–12; both layouts share collapsed panes; system font until fonts are chosen.
 
 ## Core changes for items 81–83 (done 2026-11-19)
 
