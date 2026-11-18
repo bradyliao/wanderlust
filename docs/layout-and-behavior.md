@@ -45,7 +45,7 @@ From the Design canvas: A (week grid with half-width map), B (one day as a list)
 
 ## Behavior questions
 
-All of them were agreed with Brady on 2026-11-18 (items 1–80 plus the day-label and date-format rules).
+All of them were agreed with Brady on 2026-11-18 (items 1–83 plus the day-label and date-format rules).
 
 ### Layout
 
@@ -242,6 +242,25 @@ The colour card is [mock/theme-options.html](mock/theme-options.html) (rendered 
     - Types: Sight sage `#CFE3D8` / `#4F7A63`, Food peach `#F3D3C2` / `#A5674A`, Café latte `#E8DCCF` / `#87684C`, Shop butter `#F1E2B8` / `#8F7430`, Museum lilac `#DCD7EC` / `#675D92`, Nature leaf `#D6E8C8` / `#56803F`, Nightlife periwinkle `#D3D6EC` / `#565C94`.
     - Budget: Food, Shopping and Tickets share the Food, Shop and Sight colours; Flights sky `#CFE0EE` / `#46708F`, Lodging rose `#ECD3DC` / `#93566B`, Transport mist `#D9DEE5` / `#5B6675`, Other stone `#E6E3DD` / `#6E6A62`.
 80. **Light mode now, dark later.** All colours are named tokens (CSS variables) so a dark set can be added without rework.
+
+### One set of categories (agreed 2026-11-19; replaces the lists in items 17b, 50, 52, 57 and the colours in 79)
+
+81. **Six groups, one colour each, the same on all three lists** (places, bookings, budget). Within a group, icons tell the kinds apart.
+
+| Colour | Place types | Booking types | Budget category (sub-categories) |
+| --- | --- | --- | --- |
+| Peach: Food `#F3D3C2` / `#A5674A` | Food, Café, Dessert | Food | Food |
+| Sage: Activity `#CFE3D8` / `#4F7A63` | Sight, Museum, Nature, Nightlife | Activity | Activity |
+| Rose: Lodging `#ECD3DC` / `#93566B` (house icon) | Lodging | Lodging | Lodging |
+| Sky: Transport `#CFE0EE` / `#46708F` | Transport (station, pier) | Flight, Train, Bus, Car | Transport: Flight, Train, Bus, Car, Local travel |
+| Butter: Shopping `#F1E2B8` / `#8F7430` | Shop | Shopping | Shopping |
+| Stone: Other `#E6E3DD` / `#6E6A62` | Other | Other | Other |
+
+82. **Flights are part of Transport** in the budget (a sub-category), not their own category (replaces the Flights category of item 57; flights still count in the budget).
+83. **Every group exists on every list**, so nothing is left without a match (for example a Shopping booking, or an Other place). Bus and "Local travel" (costs of the legs between stops) were added by Claude as Transport sub-categories; Brady may remove them.
+
+Not yet in the code: `core/src/model.rs` still has the old lists (`PlaceType`, `BookingKind`, `Category` with Flights and Tickets). Update them, with their tests, at the start of phase 2.
+
 
 ## Mock
 

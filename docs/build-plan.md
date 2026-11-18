@@ -29,7 +29,7 @@ Each phase ends with something that can be tried.
 | # | Phase | Status |
 | --- | --- | --- |
 | 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | Done 2026-11-19 |
-| 2 | **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
+| 2 | **First: update the core's category lists to items 81–83** (place types, booking types, budget categories with Transport sub-categories). Then the **app shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Not started |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Not started |
 | 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Not started |
