@@ -1,0 +1,1272 @@
+{
+ "format": "wanderlust-changes",
+ "version": 1,
+ "label": "Sample trip data (invented)",
+ "commands": [
+  {
+   "op": "setPeople",
+   "people": 3
+  },
+  {
+   "op": "setCurrency",
+   "code": "JPY",
+   "rateToHome": 0.21,
+   "setOn": "2026-11-19"
+  },
+  {
+   "op": "setCurrency",
+   "code": "USD",
+   "rateToHome": 32,
+   "setOn": "2026-11-19"
+  },
+  {
+   "op": "setBudget",
+   "total": 110000,
+   "limits": {
+    "food": 12600,
+    "activity": 8000,
+    "transport": 55000,
+    "lodging": 21000,
+    "shopping": 8400,
+    "other": 4200
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-02",
+   "set": {
+    "city": "Tokyo",
+    "timeZone": "Asia/Tokyo",
+    "utcOffsetMinutes": 540
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-03",
+   "set": {
+    "city": "Tokyo",
+    "timeZone": "Asia/Tokyo",
+    "utcOffsetMinutes": 540
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-04",
+   "set": {
+    "city": "Tokyo",
+    "timeZone": "Asia/Tokyo",
+    "utcOffsetMinutes": 540
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-05",
+   "set": {
+    "city": "Kyoto",
+    "timeZone": "Asia/Tokyo",
+    "utcOffsetMinutes": 540
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-06",
+   "set": {
+    "city": "Kyoto",
+    "timeZone": "Asia/Tokyo",
+    "utcOffsetMinutes": 540
+   }
+  },
+  {
+   "op": "setDay",
+   "date": "2026-12-05",
+   "set": {
+    "mode": "drive"
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-sensoji",
+    "name": "Senso-ji",
+    "kind": "sight",
+    "area": "Asakusa",
+    "city": "Tokyo",
+    "lat": 35.7148,
+    "lng": 139.7967,
+    "usualStayMinutes": 90,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "tue": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "wed": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "thu": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "fri": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "sat": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ],
+     "sun": [
+      {
+       "open": 360,
+       "close": 1020
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-kappa",
+    "name": "Kappabashi Street",
+    "kind": "shopping",
+    "area": "Asakusa",
+    "city": "Tokyo",
+    "lat": 35.7128,
+    "lng": 139.7887,
+    "usualStayMinutes": 60,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "tue": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "wed": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "thu": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "fri": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "sat": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ],
+     "sun": [
+      {
+       "open": 600,
+       "close": 1020
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 2000,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-sky",
+    "name": "Tokyo Skytree",
+    "kind": "sight",
+    "area": "Oshiage",
+    "city": "Tokyo",
+    "lat": 35.7101,
+    "lng": 139.8107,
+    "usualStayMinutes": 90,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "tue": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "wed": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "thu": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "fri": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "sat": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ],
+     "sun": [
+      {
+       "open": 600,
+       "close": 1260
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 3000,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-teamlab",
+    "name": "teamLab Planets",
+    "kind": "museum",
+    "area": "Toyosu",
+    "city": "Tokyo",
+    "lat": 35.6491,
+    "lng": 139.784,
+    "usualStayMinutes": 120,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "tue": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "wed": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "thu": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "fri": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "sat": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ],
+     "sun": [
+      {
+       "open": 540,
+       "close": 1320
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 3800,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-monja",
+    "name": "Monja dinner, Tsukishima",
+    "kind": "food",
+    "area": "Tsukishima",
+    "city": "Tokyo",
+    "lat": 35.663,
+    "lng": 139.782,
+    "usualStayMinutes": 90,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "tue": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "wed": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "thu": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "fri": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "sat": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ],
+     "sun": [
+      {
+       "open": 1020,
+       "close": 1320
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 3000,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-tsukiji",
+    "name": "Tsukiji Outer Market",
+    "kind": "food",
+    "area": "Tsukiji",
+    "city": "Tokyo",
+    "lat": 35.6654,
+    "lng": 139.7706,
+    "usualStayMinutes": 90,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "tue": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "wed": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "thu": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "fri": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "sat": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ],
+     "sun": [
+      {
+       "open": 360,
+       "close": 840
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 2000,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-meiji",
+    "name": "Meiji Jingu",
+    "kind": "sight",
+    "area": "Harajuku",
+    "city": "Tokyo",
+    "lat": 35.6764,
+    "lng": 139.6993,
+    "usualStayMinutes": 60,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "tue": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "wed": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "thu": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "fri": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "sat": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ],
+     "sun": [
+      {
+       "open": 390,
+       "close": 990
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-koffee",
+    "name": "Koffee Mameya",
+    "kind": "cafe",
+    "area": "Omotesando",
+    "city": "Tokyo",
+    "lat": 35.6668,
+    "lng": 139.7118,
+    "usualStayMinutes": 30,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "tue": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "wed": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "thu": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "fri": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "sat": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ],
+     "sun": [
+      {
+       "open": 600,
+       "close": 1080
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 900,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-shibsky",
+    "name": "Shibuya Sky",
+    "kind": "sight",
+    "area": "Shibuya",
+    "city": "Tokyo",
+    "lat": 35.6585,
+    "lng": 139.702,
+    "usualStayMinutes": 60,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "tue": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "wed": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "thu": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "fri": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "sat": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ],
+     "sun": [
+      {
+       "open": 600,
+       "close": 1350
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 2500,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-omoide",
+    "name": "Omoide Yokocho",
+    "kind": "nightlife",
+    "area": "Shinjuku",
+    "city": "Tokyo",
+    "lat": 35.693,
+    "lng": 139.6996,
+    "usualStayMinutes": 90,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "tue": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "wed": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "thu": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "fri": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "sat": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ],
+     "sun": [
+      {
+       "open": 1020,
+       "close": 1440
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 3000,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-ueno",
+    "name": "Ueno Park",
+    "kind": "nature",
+    "area": "Ueno",
+    "city": "Tokyo",
+    "lat": 35.7148,
+    "lng": 139.7714,
+    "usualStayMinutes": 60,
+    "rating": "unrated",
+    "unverified": []
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-hotel1",
+    "name": "Hotel in Asakusa (sample)",
+    "kind": "lodging",
+    "area": "Asakusa",
+    "city": "Tokyo",
+    "lat": 35.7105,
+    "lng": 139.7935,
+    "usualStayMinutes": 0,
+    "rating": "soSo",
+    "unverified": []
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-kiyomizu",
+    "name": "Kiyomizu-dera",
+    "kind": "sight",
+    "area": "Higashiyama",
+    "city": "Kyoto",
+    "lat": 34.9949,
+    "lng": 135.785,
+    "usualStayMinutes": 120,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "tue": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "wed": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "thu": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "fri": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "sat": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ],
+     "sun": [
+      {
+       "open": 360,
+       "close": 1080
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 400,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-nishiki",
+    "name": "Nishiki Market",
+    "kind": "food",
+    "area": "Nakagyo",
+    "city": "Kyoto",
+    "lat": 35.005,
+    "lng": 135.765,
+    "usualStayMinutes": 90,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "tue": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "wed": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "thu": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "fri": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "sat": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ],
+     "sun": [
+      {
+       "open": 540,
+       "close": 1020
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 2500,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-fushimi",
+    "name": "Fushimi Inari",
+    "kind": "sight",
+    "area": "Fushimi",
+    "city": "Kyoto",
+    "lat": 34.9671,
+    "lng": 135.7727,
+    "usualStayMinutes": 150,
+    "rating": "mustGo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "tue": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "wed": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "thu": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "fri": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "sat": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ],
+     "sun": [
+      {
+       "open": 0,
+       "close": 1440
+      }
+     ]
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-matcha",
+    "name": "Matcha parfait, Gion (sample)",
+    "kind": "dessert",
+    "area": "Gion",
+    "city": "Kyoto",
+    "lat": 35.0037,
+    "lng": 135.7756,
+    "usualStayMinutes": 45,
+    "rating": "soSo",
+    "unverified": [],
+    "openingHours": {
+     "mon": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "tue": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "wed": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "thu": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "fri": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "sat": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ],
+     "sun": [
+      {
+       "open": 660,
+       "close": 1200
+      }
+     ]
+    },
+    "estimatedCost": {
+     "amount": 1800,
+     "currency": "JPY",
+     "perPerson": true
+    }
+   }
+  },
+  {
+   "op": "addPlace",
+   "place": {
+    "id": "p-hotel2",
+    "name": "Hotel in Kyoto (sample)",
+    "kind": "lodging",
+    "area": "Kyoto Station",
+    "city": "Kyoto",
+    "lat": 34.9858,
+    "lng": 135.7588,
+    "usualStayMinutes": 0,
+    "rating": "soSo",
+    "unverified": []
+   }
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-sensoji",
+   "itemId": "i-sensoji",
+   "date": "2026-12-02",
+   "start": 540,
+   "end": 630
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-kappa",
+   "itemId": "i-kappa",
+   "date": "2026-12-02",
+   "start": 640,
+   "end": 700
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-sky",
+   "itemId": "i-sky",
+   "date": "2026-12-02",
+   "start": 725,
+   "end": 815
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-teamlab",
+   "itemId": "i-teamlab",
+   "date": "2026-12-02",
+   "start": 850,
+   "end": 970
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-monja",
+   "itemId": "i-monja",
+   "date": "2026-12-02",
+   "start": 1080,
+   "end": 1170
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-tsukiji",
+   "itemId": "i-tsukiji",
+   "date": "2026-12-03",
+   "start": 480,
+   "end": 570
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-meiji",
+   "itemId": "i-meiji",
+   "date": "2026-12-03",
+   "start": 600,
+   "end": 660
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-koffee",
+   "itemId": "i-koffee",
+   "date": "2026-12-03",
+   "start": 690,
+   "end": 720
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-shibsky",
+   "itemId": "i-shibsky",
+   "date": "2026-12-03",
+   "start": 945,
+   "end": 1005
+  },
+  {
+   "op": "setFixed",
+   "id": "i-shibsky",
+   "fixed": true,
+   "reason": "Ticket booked"
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-omoide",
+   "itemId": "i-omoide",
+   "date": "2026-12-04",
+   "start": 960,
+   "end": 1050
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-nishiki",
+   "itemId": "i-nishiki",
+   "date": "2026-12-05",
+   "start": 720,
+   "end": 810
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-kiyomizu",
+   "itemId": "i-kiyomizu",
+   "date": "2026-12-05",
+   "start": 870,
+   "end": 990
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-matcha",
+   "itemId": "i-matcha",
+   "date": "2026-12-05",
+   "start": 1020,
+   "end": 1065
+  },
+  {
+   "op": "schedulePlace",
+   "placeId": "p-fushimi",
+   "itemId": "i-fushimi",
+   "date": "2026-12-06",
+   "start": 420,
+   "end": 570
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-flights",
+    "title": "Round-trip flights (sample)",
+    "kind": "flight",
+    "booking": {
+     "kind": "flight",
+     "confirmation": "SAMPLE1",
+     "provider": "Airline (sample)"
+    },
+    "cost": {
+     "amount": 1260,
+     "currency": "USD",
+     "status": "booked"
+    }
+   }
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-shinkansen",
+    "title": "Shinkansen Tokyo → Kyoto",
+    "kind": "train",
+    "slot": {
+     "date": "2026-12-05",
+     "start": 540,
+     "end": 675,
+     "fixed": true,
+     "fixedReason": "Ticket booked"
+    },
+    "booking": {
+     "kind": "train",
+     "confirmation": "SAMPLE2"
+    },
+    "cost": {
+     "amount": 14170,
+     "currency": "JPY",
+     "perPerson": true,
+     "status": "booked"
+    }
+   }
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-stay1",
+    "title": "Hotel in Asakusa (sample)",
+    "kind": "lodging",
+    "placeId": "p-hotel1",
+    "stay": {
+     "checkInDate": "2026-12-02",
+     "checkOutDate": "2026-12-05",
+     "checkIn": {
+      "date": "2026-12-02",
+      "start": 1190,
+      "end": 1210
+     },
+     "checkOut": {
+      "date": "2026-12-05",
+      "start": 465,
+      "end": 495
+     },
+     "checkInFrom": 900,
+     "checkOutBy": 660
+    },
+    "booking": {
+     "kind": "lodging",
+     "confirmation": "SAMPLE3",
+     "cancelDeadline": "2026-11-25 23:59"
+    },
+    "cost": {
+     "amount": 54000,
+     "currency": "JPY",
+     "status": "booked"
+    }
+   }
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-stay2",
+    "title": "Hotel in Kyoto (sample)",
+    "kind": "lodging",
+    "placeId": "p-hotel2",
+    "stay": {
+     "checkInDate": "2026-12-05",
+     "checkOutDate": "2026-12-06",
+     "checkIn": {
+      "date": "2026-12-05",
+      "start": 1095,
+      "end": 1115
+     },
+     "checkOut": {
+      "date": "2026-12-06",
+      "start": 600,
+      "end": 630,
+      "fixed": true,
+      "fixedReason": "Must be there"
+     }
+    },
+    "booking": {
+     "kind": "lodging",
+     "confirmation": "SAMPLE4",
+     "cancelDeadline": "2026-11-27 23:59"
+    },
+    "cost": {
+     "amount": 6000,
+     "currency": "JPY",
+     "perNight": true,
+     "perPerson": true,
+     "status": "booked"
+    }
+   }
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-souvenirs",
+    "title": "Souvenirs",
+    "kind": "shopping",
+    "cost": {
+     "amount": 9000,
+     "currency": "JPY",
+     "status": "estimated"
+    }
+   }
+  },
+  {
+   "op": "addItem",
+   "item": {
+    "id": "i-local",
+    "title": "Local trains and buses",
+    "kind": "localTravel",
+    "cost": {
+     "amount": 6490,
+     "currency": "JPY",
+     "status": "estimated"
+    }
+   }
+  }
+ ]
+}
