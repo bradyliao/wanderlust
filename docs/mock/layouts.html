@@ -185,6 +185,28 @@
   .gmenu div { padding: 5px 9px; border-radius: 5px; color: var(--ink); white-space: nowrap; }
   .gmenu div.on { background: var(--accent-soft); font-weight: 600; }
   .rate.maybe { color: var(--maybe); }
+  .mapchips { position: absolute; left: 12px; top: 12px; z-index: 3; display: flex; align-items: center; gap: 4px; background: rgba(251,250,247,.95); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; }
+  .mapchips .ml { font-size: 11px; color: var(--ink-3); margin-right: 2px; }
+  .mapchips .chip { font-size: 11px; color: var(--ink-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; background: #fff; font-variant-numeric: tabular-nums; }
+  .mapchips .chip.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .mapchips .chip.ic { padding: 0; border: 0; background: transparent; }
+  .mapchips .chip.ic .icon { width: 20px; height: 20px; border-radius: 5px; }
+  .mapchips .sep { width: 1px; height: 16px; background: var(--line); margin: 0 3px; }
+  .colgrip { position: absolute; right: -4px; top: 6px; bottom: 6px; width: 7px; z-index: 5; border-radius: 3px; background: var(--accent); opacity: .85; cursor: col-resize; }
+  .colgrip::after { content: "⇔"; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--accent); background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 0 3px; }
+  .rowgrip { position: absolute; left: 2px; width: 11px; height: 4px; transform: translateY(-50%); background: var(--accent); border-radius: 2px; opacity: .85; cursor: row-resize; z-index: 5; }
+  .rowgrip::after { content: "⇕"; position: absolute; left: 0; top: 7px; font-size: 12px; color: var(--accent); background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 0 3px; }
+  .vbar { position: absolute; right: 2px; top: 3%; height: 62%; width: 5px; border-radius: 3px; background: rgba(43,47,54,.28); z-index: 6; }
+  .hbar { position: absolute; left: 50px; bottom: 2px; width: 70%; height: 5px; border-radius: 3px; background: rgba(43,47,54,.28); z-index: 6; }
+  .tabs { display: inline-flex; gap: 2px; margin-left: 6px; }
+  .tabs span { padding: 5px 10px; border-radius: 6px; color: var(--ink-2); font-size: 12.5px; }
+  .tabs span.on { background: var(--panel); color: var(--ink); font-weight: 600; box-shadow: inset 0 0 0 1px var(--line); }
+  .tb-item { display: inline-flex; align-items: center; gap: 6px; }
+  .tb-l { font-size: 11.5px; color: var(--ink-3); }
+  .tb-btn { font-size: 12px; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; white-space: nowrap; }
+  .tb-total { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .tb-total b { color: var(--ink); font-weight: 600; }
+  .seg-ic span { padding: 4px 8px; display: inline-grid; place-items: center; }
   .note { max-width: 1440px; color: var(--ink-2); font-size: 12.5px; margin: -28px 0 40px; }
 </style>
 </head>
@@ -192,7 +214,7 @@
 <div class="page">
   <div class="caption">
     <h2>Layout 1 · Stacked (default)</h2>
-    <p>Place List on the left; timetable in multi-day view above the map. Senso-ji is selected, so it is highlighted in all three panes. The map shows the focus day (12/02) as numbered stops; other places are grey dots. Travel labels show the mode icon; 12/03 has a walk suggestion ("· walk 5 min?"), and 12/05 uses Drive as its day default.</p>
+    <p>Place List on the left; timetable in multi-day view above the map. Senso-ji is selected, so it is highlighted in all three panes. The map shows the focus day (12/02) as numbered stops; other places are grey dots. The map shows every other place as a grey pin with its type icon (Forget places are hidden); chips at the top choose which days and types to highlight. The walk leg follows the streets; train legs stay straight lines until a Japanese transit source is chosen. In the timetable, the highlighted grips show where to drag to resize: the edge of a day header (width) and an hour edge in the time column (height); the scrollbars show it scrolls both ways. Travel labels show the mode icon; 12/03 has a walk suggestion ("· walk 5 min?"), and 12/05 uses Drive as its day default.</p>
   </div>
   <div class="scaler"><div class="frame" id="f1"></div></div>
 
@@ -207,7 +229,7 @@
     <p>Dragging "Ueno museum" from the Place List onto 12/03 at 13:45. Its closed hours are hatched in every column (it is closed on Fridays, so 12/04 is hatched all day). The red band shows the train time it needs from Ichiran: 35 min, but only 10 min are free. The drop is still allowed. The blue band after it shows the travel to Shibuya Sky fits. Fixed blocks show a lock and their reason; Omoide Yokocho on 12/04 has a warning because it is scheduled before opening time.</p>
   </div>
   <div class="scaler"><div class="frame" id="f3"></div></div>
-  <p class="note">Static mock with invented sample data. All colours, fonts and the map style are placeholders, not a chosen theme. Weather values and opening hours are made up. 12/02–12/03 are within forecast range; 12/04–12/06 show "typical" weather. Sun times are approximate for Tokyo and Kyoto in early December.</p>
+  <p class="note">Static mock with invented sample data. The top bar shows the Plan · Bookings · Budget tabs (only Plan is drawn), the trip's default transport, a running budget total (made-up figures) and the layout switch as two icons. All colours, fonts and the map style are placeholders, not a chosen theme. Weather values and opening hours are made up. 12/02–12/03 are within forecast range; 12/04–12/06 show "typical" weather. Sun times are approximate for Tokyo and Kyoto in early December.</p>
 </div>
 
 <script>
@@ -358,8 +380,8 @@ function multiDay() {
   const n = DAYS.length, gut = 44;
   const tmpl = `${gut}px repeat(${n}, 1fr)`;
   let head = `<div class="days-head" style="grid-template-columns:${tmpl}"><div></div>`;
-  for (const day of DAYS) {
-    head += `<div class="dh"><div class="d">${dayLabel(day)} <span class="city">· ${day.city}</span>${day.mode ? `<span class="daymode">${mIcon(day.mode)}${MODES[day.mode].name}</span>` : ''}</div>
+  for (const [hi, day] of DAYS.entries()) {
+    head += `<div class="dh" style="position:relative">${!DRAG && hi === 0 ? '<span class="colgrip" title="Drag to change column width"></span>' : ''}<div class="d">${dayLabel(day)} <span class="city">· ${day.city}</span>${day.mode ? `<span class="daymode">${mIcon(day.mode)}${MODES[day.mode].name}</span>` : ''}</div>
       <div class="w">${wxIcon(day.wx[0])} ${day.wx[1]} ${rain} ${day.wx[2]} ${day.typical ? '<span class="typical">typical</span>' : ''}</div></div>`;
   }
   head += `</div>`;
@@ -367,6 +389,7 @@ function multiDay() {
   const y = t => (t - RANGE[0]) * 100 / H;
   let gutter = `<div class="gutter">`;
   for (let t = RANGE[0] + 1; t < RANGE[1]; t++) gutter += `<div style="top:${y(t)}%">${t}:00</div>`;
+  if (!DRAG) gutter += `<span class="rowgrip" style="top:${y(11)}%" title="Drag to change hour height"></span>`;
   gutter += `</div>`;
   let cols = '';
   DAYS.forEach((day, di) => {
@@ -404,16 +427,16 @@ function multiDay() {
       c += `<div class="need bad" style="top:${y(bs)}%;height:${y(s) - y(bs)}%"></div>
         <div class="needlab bad" style="top:${(y(bs) + y(s)) / 2}%">needs ${DRAG.before.needs} min, has ${DRAG.before.has}</div>
         <div class="need ok" style="top:${y(e)}%;height:${y(ae) - y(e)}%"></div>
-        <div class="needlab ok" style="top:${(y(e) + y(ae)) / 2}%">${DRAG.afterInfo.label}</div>
+        <div class="needlab ok" style="top:${(y(e) + y(ae)) / 2}%">${travelLabel(DRAG.afterInfo.label)} · fits</div>
         <div class="block ghost" style="--c:${TYPES[dp.t].c};top:${y(s)}%;height:${y(e) - y(s)}%"><div class="t">${dp.n} <span style="font-weight:400;color:var(--ink-2)">${DRAG.start}–${DRAG.end}</span></div></div>
         <svg class="cursor" style="left:62%;top:calc(${y(s)}% + 14px)" width="16" height="20" viewBox="0 0 16 20"><path d="M1 1v15l4-3.5 2.6 5.6 2.4-1.1-2.6-5.4H13z" fill="#2b2f36" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
     }
     cols += c + `</div>`;
   });
   return `<div class="pane-head">Timetable <span class="seg"><span class="on">Multi-day</span><span>List</span></span>
-      <span class="muted">5 days · 6:00–22:00 · Trip default ${mIcon('transit', '#8b9099')}Transit</span><span class="collapse">˄</span></div>
+      <span class="muted">5 days · 6:00–22:00</span><span class="collapse">˄</span></div>
     <div class="tt-grid" style="grid-template-rows:auto 1fr">${head}
-      <div class="cols" style="grid-template-columns:${tmpl}">${gutter}${cols}</div></div>`;
+      <div class="cols" style="grid-template-columns:${tmpl}">${gutter}${cols}<span class="vbar"></span><span class="hbar"></span></div></div>`;
 }
 
 function listView() {
@@ -449,7 +472,7 @@ function mapSvg(W, H) {
   const raw = day1.map(id => proj(P[id].ll)).concat(DRAG ? [proj(P[DRAG.id].ll)] : []);
   // fit the focus day's stops into the pane, in pixels, so labels keep a readable size
   const xs = raw.map(p => p[0]), ys = raw.map(p => p[1]);
-  const pad = { l: 60, r: 200, t: 40, b: 60 };
+  const pad = { l: 60, r: 200, t: 78, b: 60 };
   const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
   const sc = Math.min((W - pad.l - pad.r) / bw, (H - pad.t - pad.b) / bh);
   const cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2;
@@ -460,24 +483,26 @@ function mapSvg(W, H) {
   const sumida = [[139.8050,35.7350],[139.8020,35.7180],[139.7990,35.7090],[139.7930,35.6990],[139.7880,35.6900],[139.7860,35.6800],[139.7800,35.6700],[139.7760,35.6560],[139.7700,35.6400]];
   const bay = [[139.68,35.60],[139.725,35.618],[139.752,35.640],[139.768,35.652],[139.778,35.640],[139.795,35.650],[139.80,35.640],[139.83,35.655],[139.98,35.66],[139.98,35.40],[139.40,35.40],[139.40,35.60]];
   let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${W}" height="${H}" fill="#eeede7"/><g stroke="#e4e2da" stroke-width="1">`;
+    <rect width="${W}" height="${H}" fill="#ecece9"/><g stroke="#e3e3df" stroke-width="1">`;
   const step = Math.max(26, 46 * sc);
   for (let i = -H; i < W + H; i += step) s += `<path d="M${i} 0 L${i + H * .35} ${H}"/>`;
   for (let j = -W; j < H + W; j += step * 1.15) s += `<path d="M0 ${j + W * .2} L${W} ${j}"/>`;
-  const park = (ll, w, h) => { const [x, y] = tp(ll); return `<rect x="${x}" y="${y}" width="${w * sc}" height="${h * sc}" rx="${8}" fill="#dfe6da"/>`; };
+  const park = (ll, w, h) => { const [x, y] = tp(ll); return `<rect x="${x}" y="${y}" width="${w * sc}" height="${h * sc}" rx="${8}" fill="#e2e4df"/>`; };
   const lab = (ll, t, extra = '') => { const [x, y] = tp(ll); return `<text x="${x}" y="${y}" ${extra}>${t}</text>`; };
   s += `</g>${park([139.690,35.682], 38, 44)}${park([139.765,35.720], 40, 30)}
-    <path d="M ${bay.map(pt).join(' L ')} Z" fill="#d9e2e6"/>
-    <polyline points="${sumida.map(pt).join(' ')}" fill="none" stroke="#d9e2e6" stroke-width="${Math.max(6, 12 * sc)}" stroke-linecap="round" stroke-linejoin="round"/>
-    <polyline points="${yamanote.map(pt).join(' ')}" fill="none" stroke="#c3c7cc" stroke-width="2.2" stroke-dasharray="7 4"/>
+    <path d="M ${bay.map(pt).join(' L ')} Z" fill="#dfe3e5"/>
+    <polyline points="${sumida.map(pt).join(' ')}" fill="none" stroke="#dfe3e5" stroke-width="${Math.max(6, 12 * sc)}" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${yamanote.map(pt).join(' ')}" fill="none" stroke="#cacccf" stroke-width="2" stroke-dasharray="7 4"/>
     ${lab([139.706,35.6455], 'JR Yamanote', 'font-size="11" fill="#9aa0a8"')}
-    ${lab([139.735,35.6245], 'Tokyo Bay', 'font-size="12" fill="#9fb1ba" font-style="italic"')}`;
-  // other places: grey dots
+    ${lab([139.735,35.6245], 'Tokyo Bay', 'font-size="12" fill="#a9b1b6" font-style="italic"')}`;
+  // every other place: matte grey pin with its type icon; Forget places are not shown
   for (const [id, p] of Object.entries(P)) {
-    if (!p.ll || day1.includes(id) || (DRAG && DRAG.id === id)) continue;
+    if (!p.ll || !p.r || p.r === 'forget' || day1.includes(id) || (DRAG && DRAG.id === id)) continue;
     const [x, y] = tp(p.ll);
-    s += `<g opacity="${p.r === 'forget' ? .45 : 1}"><circle cx="${x}" cy="${y}" r="4.5" fill="#b4b8be" stroke="#fff" stroke-width="1.5"/>
-      <text x="${x + 8}" y="${y + 4}" font-size="11" fill="#8b9099">${p.n.replace(' (sunset ticket)', '')}</text></g>`;
+    const g = TYPES[p.t].glyph.replace(/stroke="#[0-9a-f]{6}"/g, 'stroke="#8d9196"');
+    s += `<g><circle cx="${x}" cy="${y}" r="8.5" fill="#dcdcd8" stroke="#f7f7f5" stroke-width="1.5"/>
+      <g transform="translate(${x - 5.6},${y - 5.6}) scale(.7)">${g}</g>
+      <text x="${x + 12}" y="${y + 4}" font-size="11" fill="#8b9099" paint-order="stroke" stroke="#ecece9" stroke-width="3">${p.n.replace(' (sunset ticket)', '')}</text></g>`;
   }
   // focus-day route
   const pts = day1.map(id => tp(P[id].ll));
@@ -487,21 +512,24 @@ function mapSvg(W, H) {
     const m = legMode((legs[i][3] || 'transit').split('|')[0]);
     const skipLeg = DRAG && DRAG.after === i;
     if (skipLeg) continue;
-    s += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+1][0]}" y2="${pts[i+1][1]}" stroke="#3f6b86" stroke-width="${m === 'walk' ? 3 : 2.5}" stroke-opacity=".6" stroke-linecap="round" stroke-dasharray="${DASH[m]}"/>`;
+    const [a, b] = [pts[i], pts[i + 1]], dx = b[0] - a[0], dy = b[1] - a[1];
+    // street-following path for road modes (stand-in for the router's geometry); trains in Japan stay straight for now
+    const path = m === 'transit' ? [a, b] : [a, [a[0] + dx * .15, a[1] + dy * .45], [a[0] + dx * .55, a[1] + dy * .5], [a[0] + dx * .6, a[1] + dy * .9], b];
+    s += `<polyline points="${path.map(q => q.join(',')).join(' ')}" fill="none" stroke="#3f6b86" stroke-width="${m === 'walk' ? 3 : 2.5}" stroke-opacity=".65" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${DASH[m]}"/>`;
   }
   if (DRAG) {
     const g = tp(P[DRAG.id].ll), a = pts[DRAG.after], b = pts[DRAG.after + 1];
     s += `<polyline points="${a.join(',')} ${g.join(',')} ${b.join(',')}" fill="none" stroke="#3f6b86" stroke-width="2" stroke-dasharray="5 4"/>
       <circle cx="${g[0]}" cy="${g[1]}" r="10.5" fill="#fbfaf7" stroke="#3f6b86" stroke-width="2" stroke-dasharray="3 2"/>
       <text x="${g[0]}" y="${g[1] + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#3f6b86">+</text>
-      <text x="${g[0] - 16}" y="${g[1] + 4}" text-anchor="end" font-size="12" font-weight="600" fill="#3f6b86" paint-order="stroke" stroke="#eeede7" stroke-width="3">${P[DRAG.id].n} (dragging)</text>`;
+      <text x="${g[0] - 16}" y="${g[1] + 4}" text-anchor="end" font-size="12" font-weight="600" fill="#3f6b86" paint-order="stroke" stroke="#ecece9" stroke-width="3">${P[DRAG.id].n} (dragging)</text>`;
   }
   day1.forEach((id, i) => {
     const [x, y] = pts[i], sel = id === SEL, left = P[id].labelLeft;
     if (sel) s += `<circle cx="${x}" cy="${y}" r="18" fill="rgba(63,107,134,.16)"/>`;
     s += `<circle cx="${x}" cy="${y}" r="10.5" fill="${sel ? '#3f6b86' : '#fbfaf7'}" stroke="#3f6b86" stroke-width="2"/>
       <text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="${sel ? '#fff' : '#3f6b86'}">${i + 1}</text>
-      <text x="${left ? x - 16 : x + 16}" y="${y + 4 + (P[id].dy || 0)}" text-anchor="${left ? 'end' : 'start'}" font-size="12" font-weight="600" fill="#2b2f36" paint-order="stroke" stroke="#eeede7" stroke-width="3">${P[id].n}</text>`;
+      <text x="${left ? x - 16 : x + 16}" y="${y + 4 + (P[id].dy || 0)}" text-anchor="${left ? 'end' : 'start'}" font-size="12" font-weight="600" fill="#2b2f36" paint-order="stroke" stroke="#ecece9" stroke-width="3">${P[id].n}</text>`;
   });
   return s + `</svg>`;
 }
@@ -510,12 +538,20 @@ function mapPane(head = true) {
   return `<div class="pane-head">Map <span class="muted">Focus: ${md(fd)} ${fd.d.slice(0, 3)} · ${fd.blocks.length} stops</span><span class="collapse">${head ? '˅' : '›'}</span></div>
     <div class="map" style="flex:1"><div class="map-slot" data-sel="${SEL || ''}" data-focus="${FOCUS}" data-drag="${DRAG ? 1 : 0}" style="position:absolute;inset:0"></div>
       <div class="zoom"><span>+</span><span>−</span></div>
-      <div class="map-legend"><span><i style="background:#3f6b86"></i>Focus day, in order</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5"/></svg> Transit</span><span><svg width="22" height="6"><line x1="2" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="3" stroke-dasharray="1.5 5" stroke-linecap="round"/></svg> Walk</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5" stroke-dasharray="9 5"/></svg> Drive</span><span><i style="background:#b4b8be"></i>Other places</span></div></div>`;
+      <div class="mapchips"><span class="ml">Highlight</span>${DAYS.map((d, i) => `<span class="chip ${i === FOCUS ? 'on' : ''}">${md(d)}</span>`).join('')}<span class="sep"></span>${['sight','food','cafe','shop','museum','nature','night'].map(t => `<span class="chip on ic" title="${t}">${icon(t)}</span>`).join('')}</div>
+      <div class="map-legend"><span><i style="background:#3f6b86"></i>Focus day, in order</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5"/></svg> Transit (straight line for now)</span><span><svg width="22" height="6"><line x1="2" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="3" stroke-dasharray="1.5 5" stroke-linecap="round"/></svg> Walk</span><span><svg width="22" height="6"><line x1="1" y1="3" x2="21" y2="3" stroke="#3f6b86" stroke-width="2.5" stroke-dasharray="9 5"/></svg> Drive</span><span><i style="background:#dcdcd8;box-shadow:0 0 0 1px #c9c9c5"></i>Other places</span></div></div>`;
 }
 function topbar(active) {
-  return `<div class="topbar"><span class="brand">Wanderlust</span><span class="trip"><b>Tokyo &amp; Kyoto</b> · 12/02–12/06/2026 · 3 people</span>
-    <span class="spacer"></span><span class="seg-label">Layout</span>
-    <span class="seg"><span class="${active === 1 ? 'on' : ''}">Stacked</span><span class="${active === 2 ? 'on' : ''}">Three columns</span></span></div>`;
+  const stackIc = c => `<svg width="18" height="14" viewBox="0 0 18 14"><rect x=".75" y=".75" width="16.5" height="12.5" rx="2" fill="none" stroke="${c}" stroke-width="1.3"/><path d="M6 1v12M6 7h11" stroke="${c}" stroke-width="1.3"/></svg>`;
+  const colsIc = c => `<svg width="18" height="14" viewBox="0 0 18 14"><rect x=".75" y=".75" width="16.5" height="12.5" rx="2" fill="none" stroke="${c}" stroke-width="1.3"/><path d="M6 1v12M11.5 1v12" stroke="${c}" stroke-width="1.3"/></svg>`;
+  const on = '#2b2f36', off = '#8b9099';
+  return `<div class="topbar"><span class="brand">Wanderlust</span>
+    <span class="tabs"><span class="on">Plan</span><span>Bookings</span><span>Budget</span></span>
+    <span class="trip"><b>Tokyo &amp; Kyoto</b> · 12/02–12/06/2026 · 3 people</span>
+    <span class="spacer"></span>
+    <span class="tb-item"><span class="tb-l">Transport</span><span class="tb-btn">${mIcon('transit')}Transit ▾</span></span>
+    <span class="tb-item"><span class="tb-l">Budget</span><span class="tb-btn tb-total"><b>¥186,400</b> / ¥300,000</span></span>
+    <span class="seg seg-ic" title="Layout"><span class="${active === 1 ? 'on' : ''}" title="Stacked">${stackIc(active === 1 ? on : off)}</span><span class="${active === 2 ? 'on' : ''}" title="Three columns">${colsIc(active === 2 ? on : off)}</span></span></div>`;
 }
 
 // ---------- assemble ----------
@@ -537,7 +573,7 @@ document.getElementById('f2').innerHTML = topbar(2) + `
 MENU = false;
 
 const DRAG3 = { id: 'uenomus', day: 1, after: 3, start: '13:45', end: '14:45',
-  before: { needs: 35, has: 10 }, afterInfo: { needs: 35, label: 'train 35 min · fits' } };
+  before: { needs: 35, has: 10 }, afterInfo: { needs: 35, label: 'transit 35 min' } };
 SEL = null; DRAG = DRAG3; FOCUS = 1;
 document.getElementById('f3').innerHTML = topbar(1) + `
   <div class="body" style="grid-template-columns:300px 6px 1fr">
@@ -547,6 +583,9 @@ document.getElementById('f3').innerHTML = topbar(1) + `
       <div class="pane">${mapPane(true)}</div>
     </div>
   </div>`;
+// frame 3: the Place List is scrolled to the row being dragged
+{ const list = document.querySelector('#f3 .places'), row = document.querySelector('#f3 .row.dragging');
+  if (list && row) list.scrollTop = row.offsetTop - list.offsetTop - 120; }
 // draw maps at their real pixel size
 document.querySelectorAll('.map-slot').forEach(el => {
   SEL = el.dataset.sel; FOCUS = +el.dataset.focus; DRAG = el.dataset.drag === '1' ? DRAG3 : null;
