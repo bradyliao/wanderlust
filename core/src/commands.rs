@@ -9,7 +9,7 @@
 //! fixed block, a slot outside the trip), fails with a message in plain words.
 
 use crate::model::*;
-use crate::time::{dates_between, Date};
+use crate::time::{dates_between, fmt_hhmm, Date};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -32,10 +32,17 @@ pub enum Command {
     /// Add a currency or change its rate (items 56, 56a).
     SetCurrency { code: String, rate_to_home: f64, set_on: Option<String> },
     RemoveCurrency { code: String },
-    /// `None` clears the budget. Limits are merged; a limit of 0 removes it.
-    SetBudget { total: Option<f64>, #[serde(default)] limits: BTreeMap<Category, f64> },
-    /// Add or replace a day's overrides (city, time zone, mode).
-    SetDay { day: Day },
+    /// Leave `total` out to keep it, `null` to clear it. Limits are merged;
+    /// a limit of 0 removes it.
+    SetBudget {
+        #[serde(default, deserialize_with = "present", skip_serializing_if = "Option::is_none")]
+        total: Option<Option<f64>>,
+        #[serde(default)]
+        limits: BTreeMap<Category, f64>,
+    },
+    /// Change some of a day's overrides (city, timeZone, utcOffsetMinutes,
+    /// mode); `set` is merged like `updatePlace`, `null` clears a field.
+    SetDay { date: String, set: Value },
 
     // ----- places -----
     AddPlace { place: Place },
@@ -125,6 +132,7 @@ pub fn apply(trip: &mut Trip, commands: &[Command], stamp: Stamp) -> Result<(), 
     for (index, cmd) in commands.iter().enumerate() {
         let mut tx = Tx { trip: &mut work, changes: &mut changes, at: &stamp.at };
         run(&mut tx, cmd).map_err(|message| CommandError { index, message })?;
+        prune_legs(&mut tx);
     }
     let changes: Vec<RecordChange> = changes.into_iter().filter(|c| c.before != c.after).collect();
     if !changes.is_empty() {
@@ -273,8 +281,17 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             let name = name.clone().unwrap_or_else(|| tx.trip.name.clone());
             let start_date = start_date.clone().unwrap_or_else(|| tx.trip.start_date.clone());
             let end_date = end_date.clone().unwrap_or_else(|| tx.trip.end_date.clone());
-            if dates_between(&start_date, &end_date).is_empty() {
+            let range = dates_between(&start_date, &end_date);
+            if range.is_empty() {
                 return Err(format!("{start_date} to {end_date} is not a valid date range."));
+            }
+            let outside: Vec<String> = crate::schedule::all_blocks(tx.trip)
+                .into_iter()
+                .filter(|b| Date::parse(&b.date).is_none_or(|d| !range.contains(&d)))
+                .map(|b| format!("{} ({})", b.title, b.date))
+                .collect();
+            if !outside.is_empty() {
+                return Err(format!("These are scheduled outside the new dates: {}. Move or unschedule them first.", outside.join(", ")));
             }
             tx.put(Key::Header, Some(Record::Header { name, start_date, end_date }));
         }
@@ -293,10 +310,10 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
         })?,
         Command::SetHomeCurrency { code } => {
             let code = currency_code(code)?;
-            tx.settings(|s| {
-                s.home_currency = code;
-                Ok(())
-            })?;
+            if !HOME_CURRENCIES.contains(&code.as_str()) {
+                return Err(format!("The home currency can be {} for now.", HOME_CURRENCIES.join(" or ")));
+            }
+            tx.settings(|s| switch_home(s, &code))?;
         }
         Command::SetCurrency { code, rate_to_home, set_on } => {
             let code = currency_code(code)?;
@@ -314,7 +331,7 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
         }
         Command::RemoveCurrency { code } => {
             let code = code.trim().to_uppercase();
-            if tx.trip.items.iter().any(|i| i.cost.as_ref().is_some_and(|c| c.currency == code)) {
+            if tx.trip.items.iter().any(|i| i.cost.as_ref().is_some_and(|c| c.currency == code || c.replaced_estimate.as_ref().is_some_and(|m| m.currency == code))) {
                 return Err(format!("Some costs are still in {code}. Change them first."));
             }
             tx.settings(|s| {
@@ -323,7 +340,9 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             })?;
         }
         Command::SetBudget { total, limits } => tx.settings(|s| {
-            s.budget = *total;
+            if let Some(t) = total {
+                s.budget = *t;
+            }
             for (cat, v) in limits {
                 if *v <= 0.0 {
                     s.limits.remove(cat);
@@ -333,9 +352,18 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             }
             Ok(())
         })?,
-        Command::SetDay { day } => {
-            in_trip(tx.trip, &day.date)?;
-            let mut day = day.clone();
+        Command::SetDay { date, set } => {
+            in_trip(tx.trip, date)?;
+            let current = tx.trip.day(date).cloned().unwrap_or(Day {
+                date: date.clone(),
+                city: None,
+                time_zone: None,
+                utc_offset_minutes: None,
+                mode: None,
+                updated_at: None,
+            });
+            let mut day: Day = merge(&current, set)?;
+            day.date = date.clone();
             day.updated_at = Some(tx.at.to_string());
             tx.put(Key::Day(day.date.clone()), Some(Record::Day(day)));
         }
@@ -374,19 +402,34 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             if tx.trip.item(&item.id).is_some() {
                 return Err(format!("An item with id \"{}\" already exists.", item.id));
             }
-            check_item(tx.trip, item)?;
+            check_item(tx.trip, item, true)?;
+            for (key, slot) in item_slots(item) {
+                check_not_over_fixed(tx.trip, slot, &key)?;
+            }
             tx.put_item(item.clone());
         }
         Command::UpdateItem { id, set } => {
-            let item = tx.item(id)?;
-            let mut item: Item = merge(&item, set)?;
+            let before = tx.item(id)?;
+            let mut item: Item = merge(&before, set)?;
             item.id = id.clone();
-            check_item(tx.trip, &item)?;
+            check_item(tx.trip, &item, set.get("cost").is_some())?;
+            // A fixed block keeps its time until it is unlocked (item 32).
+            let old: Vec<(String, Slot)> = item_slots(&before).into_iter().map(|(k, s)| (k, s.clone())).collect();
+            let new: Vec<(String, &Slot)> = item_slots(&item);
+            for (key, was) in &old {
+                let now = new.iter().find(|(k, _)| k == key).map(|(_, s)| *s);
+                let moved = now.is_none_or(|s| s.date != was.date || s.start != was.start || s.end != was.end);
+                if was.fixed && now.is_none_or(|s| s.fixed) && moved {
+                    return Err(format!("\"{}\" is fixed. Unlock it first.", before.title));
+                }
+            }
+            for (key, slot) in &new {
+                check_not_over_fixed(tx.trip, slot, key)?;
+            }
             tx.put_item(item);
         }
         Command::RemoveItem { id } => {
             tx.item(id)?;
-            remove_legs_of(tx, id);
             tx.put(Key::Item(id.clone()), None);
         }
         Command::SchedulePlace { place_id, item_id, date, start, end } => {
@@ -394,9 +437,10 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             if tx.trip.item(item_id).is_some() {
                 return Err(format!("An item with id \"{item_id}\" already exists."));
             }
-            let end = end.unwrap_or_else(|| start + place.usual_stay_minutes.unwrap_or(DEFAULT_BLOCK_MINUTES));
+            let end = end.unwrap_or_else(|| start.saturating_add(place.usual_stay_minutes.unwrap_or(DEFAULT_BLOCK_MINUTES)));
             let slot = Slot { date: date.clone(), start: *start, end: end.min(1440), fixed: false, fixed_reason: None };
             check_slot(tx.trip, &slot)?;
+            check_not_over_fixed(tx.trip, &slot, item_id)?;
             let cost = place.estimated_cost.as_ref().map(|m| Cost {
                 amount: m.amount,
                 currency: m.currency.clone(),
@@ -424,6 +468,7 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             let mut item = tx.item(id)?;
             let slot = Slot { date: date.clone(), start: *start, end: *end, fixed: false, fixed_reason: None };
             check_slot(tx.trip, &slot)?;
+            check_not_over_fixed(tx.trip, &slot, &BlockKey { item_id: id.clone(), part: *part }.encode())?;
             let target = block_mut(&mut item, *part).ok_or_else(|| format!("\"{}\" has no such block.", item_title(tx.trip, id)))?;
             if let Some(old) = target.as_ref() {
                 if old.fixed {
@@ -438,7 +483,6 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             if item.slot.as_ref().is_some_and(|s| s.fixed) {
                 return Err(format!("\"{}\" is fixed. Unlock it first.", item.title));
             }
-            remove_legs_of(tx, id);
             let plain_visit = item.place_id.is_some() && item.booking.is_none() && item.stay.is_none();
             if plain_visit {
                 tx.put(Key::Item(id.clone()), None);
@@ -459,9 +503,16 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
         Command::SetCost { id, cost } => {
             let mut item = tx.item(id)?;
             if let Some(c) = cost {
-                check_cost(tx.trip, c)?;
+                check_cost(tx.trip, c, true)?;
             }
-            item.cost = cost.clone();
+            // Booking a cost keeps the estimate it replaces (item 62).
+            let mut cost = cost.clone();
+            if let (Some(old), Some(new)) = (&item.cost, &mut cost) {
+                if old.status == CostStatus::Estimated && new.status == CostStatus::Booked && new.replaced_estimate.is_none() {
+                    new.replaced_estimate = Some(Money { amount: old.amount, currency: old.currency.clone() });
+                }
+            }
+            item.cost = cost;
             tx.put_item(item);
         }
         Command::SetBooking { id, booking } => {
@@ -473,17 +524,36 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             let mut item = tx.item(id)?;
             if let Some(s) = stay {
                 check_stay(tx.trip, s)?;
+                for (part, slot) in [(BlockPart::CheckIn, &s.check_in), (BlockPart::CheckOut, &s.check_out)] {
+                    if let Some(slot) = slot {
+                        check_not_over_fixed(tx.trip, slot, &BlockKey { item_id: id.clone(), part }.encode())?;
+                    }
+                }
             }
             item.stay = stay.clone();
             tx.put_item(item);
         }
 
-        Command::SetLegMode { from, to, mode } => tx.leg(from, to, |l| l.mode = *mode),
-        Command::SetLegRouted { from, to, routed } => tx.leg(from, to, |l| {
+        Command::SetLegMode { from, to, mode } => {
+            check_block_keys(tx.trip, from, to)?;
+            tx.leg(from, to, |l| {
+                if l.mode != *mode {
+                    l.confirmed_minutes = None;
+                }
+                l.mode = *mode;
+            })
+        }
+        Command::SetLegRouted { from, to, routed } => {
+            check_block_keys(tx.trip, from, to)?;
+            tx.leg(from, to, |l| {
             l.routed.retain(|r| r.mode != routed.mode);
             l.routed.push(routed.clone());
-        }),
-        Command::ConfirmLegMinutes { from, to, minutes } => tx.leg(from, to, |l| l.confirmed_minutes = *minutes),
+            })
+        }
+        Command::ConfirmLegMinutes { from, to, minutes } => {
+            check_block_keys(tx.trip, from, to)?;
+            tx.leg(from, to, |l| l.confirmed_minutes = *minutes)
+        }
     }
     Ok(())
 }
@@ -510,18 +580,89 @@ fn block_mut(item: &mut Item, part: BlockPart) -> Option<&mut Option<Slot>> {
     }
 }
 
-/// Legs that start or end at any block of the item.
-fn remove_legs_of(tx: &mut Tx, item_id: &str) {
-    let keys: Vec<(String, String)> = tx
-        .trip
-        .legs
-        .iter()
-        .filter(|l| BlockKey::decode(&l.from).item_id == item_id || BlockKey::decode(&l.to).item_id == item_id)
-        .map(|l| (l.from.clone(), l.to.clone()))
-        .collect();
-    for (a, b) in keys {
+/// Remove legs whose blocks no longer exist (an item removed, unscheduled,
+/// or a stay's check-in or check-out taken away).
+fn prune_legs(tx: &mut Tx) {
+    let live: std::collections::HashSet<String> = crate::schedule::all_blocks(tx.trip).into_iter().map(|b| b.key).collect();
+    let dead: Vec<(String, String)> =
+        tx.trip.legs.iter().filter(|l| !live.contains(&l.from) || !live.contains(&l.to)).map(|l| (l.from.clone(), l.to.clone())).collect();
+    for (a, b) in dead {
         tx.put(Key::Leg(a, b), None);
     }
+}
+
+fn check_block_keys(trip: &Trip, from: &str, to: &str) -> Result<(), String> {
+    let blocks = crate::schedule::all_blocks(trip);
+    for key in [from, to] {
+        if !blocks.iter().any(|b| b.key == key) {
+            return Err(format!("There is no block \"{key}\" on the timetable."));
+        }
+    }
+    Ok(())
+}
+
+/// A slot may not cover a fixed block (item 31). `own` is the block being
+/// placed, which is skipped.
+fn check_not_over_fixed(trip: &Trip, slot: &Slot, own: &str) -> Result<(), String> {
+    for b in crate::schedule::blocks_on(trip, &slot.date) {
+        if b.fixed && b.key != own && slot.start < b.end && b.start < slot.end {
+            return Err(format!("That time covers \"{}\" ({}–{}), which is fixed.", b.title, fmt_hhmm(b.start), fmt_hhmm(b.end)));
+        }
+    }
+    Ok(())
+}
+
+/// Every block of an item: (key, slot).
+fn item_slots(item: &Item) -> Vec<(String, &Slot)> {
+    let mut out = Vec::new();
+    if let Some(s) = &item.slot {
+        out.push((BlockKey { item_id: item.id.clone(), part: BlockPart::Main }.encode(), s));
+    }
+    if let Some(stay) = &item.stay {
+        if let Some(s) = &stay.check_in {
+            out.push((BlockKey { item_id: item.id.clone(), part: BlockPart::CheckIn }.encode(), s));
+        }
+        if let Some(s) = &stay.check_out {
+            out.push((BlockKey { item_id: item.id.clone(), part: BlockPart::CheckOut }.encode(), s));
+        }
+    }
+    out
+}
+
+/// Switch the home currency, converting every typed rate and the budget so
+/// totals keep their value (rates were "to the old home currency").
+fn switch_home(s: &mut Settings, new_home: &str) -> Result<(), String> {
+    let old_home = s.home_currency.clone();
+    if new_home == old_home {
+        return Ok(());
+    }
+    if s.currencies.is_empty() {
+        s.home_currency = new_home.into();
+        return Ok(());
+    }
+    let Some(r) = s.currencies.iter().find(|c| c.code == new_home).map(|c| c.rate_to_home) else {
+        return Err(format!("Add {new_home} with its rate to {old_home} first, so the other rates can be converted."));
+    };
+    let set_on = s.currencies.iter().find(|c| c.code == new_home).and_then(|c| c.set_on.clone());
+    s.currencies.retain(|c| c.code != new_home);
+    for c in &mut s.currencies {
+        c.rate_to_home /= r;
+    }
+    s.currencies.push(CurrencyRate { code: old_home, rate_to_home: 1.0 / r, set_on });
+    s.budget = s.budget.map(|b| b / r);
+    for v in s.limits.values_mut() {
+        *v /= r;
+    }
+    s.home_currency = new_home.into();
+    Ok(())
+}
+
+/// Home currencies offered for now (item 55).
+pub const HOME_CURRENCIES: [&str; 2] = ["TWD", "USD"];
+
+/// For `Option<Option<T>>` fields: absent = `None`, `null` = `Some(None)`.
+fn present<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(d: D) -> Result<Option<Option<T>>, D::Error> {
+    Option::<T>::deserialize(d).map(Some)
 }
 
 fn currency_code(code: &str) -> Result<String, String> {
@@ -550,11 +691,14 @@ fn check_slot(trip: &Trip, slot: &Slot) -> Result<(), String> {
     Ok(())
 }
 
-fn check_cost(trip: &Trip, cost: &Cost) -> Result<(), String> {
+/// `need_rate`: a cost the user is setting now must be in a currency with a
+/// rate; costs copied from an import or left untouched may not have one yet
+/// (the Budget page lists missing rates).
+fn check_cost(trip: &Trip, cost: &Cost, need_rate: bool) -> Result<(), String> {
     if !(cost.amount.is_finite() && cost.amount >= 0.0) {
         return Err("A cost must be 0 or more.".into());
     }
-    if trip.rate_to_home(&cost.currency).is_none() {
+    if need_rate && trip.rate_to_home(&cost.currency).is_none() {
         return Err(format!("{} is not one of the trip's currencies yet. Add it with its rate first.", cost.currency));
     }
     if cost.people == Some(0) {
@@ -576,7 +720,7 @@ fn check_stay(trip: &Trip, stay: &Stay) -> Result<(), String> {
     Ok(())
 }
 
-fn check_item(trip: &Trip, item: &Item) -> Result<(), String> {
+fn check_item(trip: &Trip, item: &Item, check_cost_rate: bool) -> Result<(), String> {
     if item.title.trim().is_empty() {
         return Err("An item needs a title.".into());
     }
@@ -587,7 +731,7 @@ fn check_item(trip: &Trip, item: &Item) -> Result<(), String> {
         check_slot(trip, slot)?;
     }
     if let Some(cost) = &item.cost {
-        check_cost(trip, cost)?;
+        check_cost(trip, cost, check_cost_rate)?;
     }
     if let Some(stay) = &item.stay {
         check_stay(trip, stay)?;
@@ -721,5 +865,132 @@ mod tests {
         let file = ChangeFile::from_json(text).unwrap();
         assert_eq!(file.commands.len(), 3);
         assert_eq!(file.commands[1], Command::SetPeople { people: 4 });
+    }
+
+    // ----- regression tests for the 2026-11-19 review -----
+
+    fn senso_at(t: &mut Trip, item: &str, date: &str, start: u32, end: u32) {
+        if t.place("p1").is_none() {
+            apply(t, &[Command::AddPlace { place: place("p1", "Senso-ji") }], stamp("setup")).unwrap();
+        }
+        let cmd = Command::SchedulePlace { place_id: "p1".into(), item_id: item.into(), date: date.into(), start, end: Some(end) };
+        apply(t, &[cmd], stamp(item)).unwrap();
+    }
+
+    fn fix(t: &mut Trip, item: &str) {
+        apply(t, &[Command::SetFixed { id: item.into(), part: BlockPart::Main, fixed: true, reason: Some("Ticket booked".into()) }], stamp("fix")).unwrap();
+    }
+
+    #[test]
+    fn switching_home_currency_keeps_values() {
+        let mut t = sample(); // JPY at 0.21 TWD
+        apply(&mut t, &[Command::SetBudget { total: Some(Some(110_000.0)), limits: BTreeMap::new() }], stamp("b")).unwrap();
+        assert!(apply(&mut t, &[Command::SetHomeCurrency { code: "USD".into() }], stamp("h")).unwrap_err().message.contains("Add USD"));
+        let cmds = [Command::SetCurrency { code: "USD".into(), rate_to_home: 32.0, set_on: None }, Command::SetHomeCurrency { code: "USD".into() }];
+        apply(&mut t, &cmds, stamp("h2")).unwrap();
+        assert_eq!(t.settings.home_currency, "USD");
+        assert!((t.rate_to_home("JPY").unwrap() - 0.21 / 32.0).abs() < 1e-12);
+        assert!((t.rate_to_home("TWD").unwrap() - 1.0 / 32.0).abs() < 1e-12);
+        assert!((t.settings.budget.unwrap() - 110_000.0 / 32.0).abs() < 1e-9);
+        assert!(apply(&mut t, &[Command::SetHomeCurrency { code: "EUR".into() }], stamp("h3")).is_err());
+    }
+
+    #[test]
+    fn nothing_can_be_placed_over_a_fixed_block() {
+        let mut t = sample();
+        senso_at(&mut t, "i1", "2026-12-02", 800, 900);
+        fix(&mut t, "i1");
+        let over = Command::SchedulePlace { place_id: "p1".into(), item_id: "i2".into(), date: "2026-12-02".into(), start: 810, end: Some(870) };
+        assert!(apply(&mut t, &[over], stamp("x")).unwrap_err().message.contains("fixed"));
+        senso_at(&mut t, "i3", "2026-12-02", 600, 660);
+        let mv = Command::MoveItem { id: "i3".into(), part: BlockPart::Main, date: "2026-12-02".into(), start: 850, end: 910 };
+        assert!(apply(&mut t, &[mv], stamp("x")).unwrap_err().message.contains("fixed"));
+        let sneaky = Command::UpdateItem { id: "i1".into(), set: json!({ "slot": { "start": 700, "end": 800 } }) };
+        assert!(apply(&mut t, &[sneaky], stamp("x")).unwrap_err().message.contains("Unlock"));
+    }
+
+    #[test]
+    fn set_budget_without_total_keeps_it() {
+        let mut t = sample();
+        apply(&mut t, &[Command::SetBudget { total: Some(Some(100.0)), limits: BTreeMap::new() }], stamp("a")).unwrap();
+        let only_limits: Command = serde_json::from_value(json!({ "op": "setBudget", "limits": { "food": 20 } })).unwrap();
+        apply(&mut t, &[only_limits], stamp("b")).unwrap();
+        assert_eq!(t.settings.budget, Some(100.0));
+        assert_eq!(t.settings.limits.get(&Category::Food), Some(&20.0));
+        let clear: Command = serde_json::from_value(json!({ "op": "setBudget", "total": null })).unwrap();
+        apply(&mut t, &[clear], stamp("c")).unwrap();
+        assert_eq!(t.settings.budget, None);
+    }
+
+    #[test]
+    fn set_day_changes_only_the_fields_given() {
+        let mut t = sample();
+        let first = Command::SetDay { date: "2026-12-03".into(), set: json!({ "city": "Tokyo", "timeZone": "Asia/Tokyo", "utcOffsetMinutes": 540 }) };
+        let second = Command::SetDay { date: "2026-12-03".into(), set: json!({ "mode": "drive" }) };
+        apply(&mut t, &[first, second], stamp("d")).unwrap();
+        let d = t.day("2026-12-03").unwrap();
+        assert_eq!((d.city.as_deref(), d.utc_offset_minutes, d.mode), (Some("Tokyo"), Some(540), Some(Mode::Drive)));
+    }
+
+    #[test]
+    fn changing_a_legs_mode_drops_its_confirmed_minutes() {
+        let mut t = sample();
+        senso_at(&mut t, "a", "2026-12-02", 540, 600);
+        senso_at(&mut t, "b", "2026-12-02", 660, 720);
+        apply(&mut t, &[Command::ConfirmLegMinutes { from: "a".into(), to: "b".into(), minutes: Some(25) }], stamp("c")).unwrap();
+        apply(&mut t, &[Command::SetLegMode { from: "a".into(), to: "b".into(), mode: Some(Mode::Walk) }], stamp("m")).unwrap();
+        assert_eq!(t.leg("a", "b").unwrap().confirmed_minutes, None);
+        assert!(apply(&mut t, &[Command::SetLegMode { from: "a".into(), to: "zz".into(), mode: None }], stamp("bad")).is_err());
+    }
+
+    #[test]
+    fn an_estimate_without_a_rate_does_not_block_edits() {
+        let mut t = sample();
+        let mut p = place("p9", "Myeongdong");
+        p.estimated_cost = Some(PlaceCost { amount: 10_000.0, currency: "KRW".into(), per_person: true });
+        apply(&mut t, &[Command::AddPlace { place: p }], stamp("p")).unwrap();
+        let sched = Command::SchedulePlace { place_id: "p9".into(), item_id: "k".into(), date: "2026-12-02".into(), start: 600, end: None };
+        apply(&mut t, &[sched], stamp("s")).unwrap();
+        assert!(t.item("k").unwrap().cost.as_ref().unwrap().per_person);
+        apply(&mut t, &[Command::UpdateItem { id: "k".into(), set: json!({ "notes": "hi" }) }], stamp("n")).unwrap();
+    }
+
+    #[test]
+    fn legs_go_when_their_blocks_go() {
+        let mut t = sample();
+        senso_at(&mut t, "a", "2026-12-02", 540, 600);
+        senso_at(&mut t, "b", "2026-12-02", 660, 720);
+        apply(&mut t, &[Command::SetLegMode { from: "a".into(), to: "b".into(), mode: Some(Mode::Walk) }], stamp("m")).unwrap();
+        apply(&mut t, &[Command::UpdateItem { id: "b".into(), set: json!({ "slot": null }) }], stamp("u")).unwrap();
+        assert!(t.legs.is_empty());
+        undo_last(&mut t);
+        assert_eq!(t.legs.len(), 1, "undo brings the leg back with its block");
+    }
+
+    #[test]
+    fn the_log_is_camel_case() {
+        let mut t = sample();
+        apply(&mut t, &[Command::SetTrip { name: Some("New".into()), start_date: None, end_date: None }], stamp("t")).unwrap();
+        let v = serde_json::to_value(&t.log[0]).unwrap();
+        assert!(v["changes"][0]["after"]["startDate"].is_string(), "{v}");
+    }
+
+    #[test]
+    fn the_trip_cannot_shrink_past_scheduled_blocks() {
+        let mut t = sample();
+        senso_at(&mut t, "a", "2026-12-02", 540, 600);
+        let shrink = Command::SetTrip { name: None, start_date: Some("2026-12-03".into()), end_date: None };
+        assert!(apply(&mut t, &[shrink], stamp("s")).unwrap_err().message.contains("Senso-ji (2026-12-02)"));
+    }
+
+    #[test]
+    fn booking_a_cost_keeps_the_estimate() {
+        let mut t = sample();
+        let item: Item = serde_json::from_value(json!({ "id": "s", "title": "Shinkansen", "category": "transport",
+            "cost": { "amount": 45000, "currency": "JPY", "status": "estimated" } })).unwrap();
+        apply(&mut t, &[Command::AddItem { item }], stamp("a")).unwrap();
+        let booked: Cost = serde_json::from_value(json!({ "amount": 42510, "currency": "JPY", "status": "booked" })).unwrap();
+        apply(&mut t, &[Command::SetCost { id: "s".into(), cost: Some(booked) }], stamp("b")).unwrap();
+        assert_eq!(t.item("s").unwrap().cost.as_ref().unwrap().replaced_estimate, Some(Money { amount: 45000.0, currency: "JPY".into() }));
     }
 }

@@ -21,13 +21,14 @@ Tools: Rust stable, the `wasm32-unknown-unknown` target, `wasm-pack` (installed 
 | `model.rs` | Every stored record: `Trip`, `Settings`, `Day`, `Place`, `Item` (slot, stay, booking, cost), `Leg`, change log types, enums | Done |
 | `time.rs` | `Date` (no time zone database), `HH:MM` parsing, snapping | Done |
 | `commands.rs` | `Command` (the only way a trip changes), `apply` as one undo step, `undo_last`, `undo_to`, AI `ChangeFile` | Done |
-| `hours.rs` | Opening hours on a date: open and closed ranges | Phase 1 |
-| `travel.rs` | Leg estimates per mode, the leg's mode and minutes, walk hint, picker options, Maps links, coordinates from links | Phase 1 |
-| `sun.rs` | Sunrise, sunset, civil dawn and dusk; daylight stages for the gradient | Phase 1 |
-| `schedule.rs` | Blocks per day, legs between them, night band, warnings, drag preview, day location | Phase 1 |
-| `budget.rs` | Price totals (whole booking / per night / per person), currencies, Budget page summary | Phase 1 |
-| `import.rs` | Place import (`wanderlust-places` v1): read, check, preview, merge into commands | Phase 1 |
-| `wasm.rs` | The JavaScript API: a few large calls with JSON in and out | Phase 1 |
+| `hours.rs` | Opening hours on a date: open and closed ranges | Done |
+| `travel.rs` | Leg estimates per mode, the leg's mode and minutes, walk hint, picker options, Maps links, coordinates from links | Done |
+| `sun.rs` | Sunrise, sunset, civil dawn and dusk; daylight stages for the gradient | Done |
+| `schedule.rs` | Blocks per day, legs between them, night band, warnings, drag and move previews, day location | Done |
+| `budget.rs` | Price totals (whole booking / per night / per person), currencies, Budget page summary | Done |
+| `import.rs` | Place import (`wanderlust-places` v1): read, check, preview, merge into commands | Done |
+| `api.rs` | The app's calls, JSON text in and out (testable natively) | Done |
+| `wasm.rs` | Exposes `api.rs` to JavaScript unchanged | Done |
 
 ## Rules every module follows
 
@@ -74,3 +75,42 @@ Defines its own types. Implements `docs/import-format.md`:
 - Read a `wanderlust-places` v1 file; list problems per place in words; drop bad fields, keep the place.
 - Preview against a trip: new places, possible duplicates (same Google Maps link, or same name and area, case-insensitive) with the fields they would fill, link-only places ("details missing").
 - Turn it into commands: `AddPlace` for new places (rating from the file or Unrated; every filled field listed in `unverified`; coordinates read from the link when the file has none), `UpdatePlace` for duplicates filling only missing fields (rating kept). Ids made from a caller-given prefix.
+
+## JavaScript API
+
+Built with `wasm-pack build --target web --features wasm` into `core/pkg/` (git-ignored). Every call takes and returns JSON text; the result always has `ok`, and on failure `error` in plain words (and `index` for the failing command). Calls that change the trip return the new `trip`; the app stores it.
+
+| Call | Arguments | Returns |
+| --- | --- | --- |
+| `newTrip` | id, name, startDate, endDate | `trip` |
+| `openTrip` | trip file text | `trip` (checked) |
+| `applyCommands` | trip, commands (JSON array), stamp `{ groupId, at, label, aiSource? }` | `trip` |
+| `applyChangeFile` | trip, change file text, groupId, at, source name | `trip`, `count` |
+| `undoLast` | trip | `trip`, `undone` (label) |
+| `undoTo` | trip, groupId | `trip`, `steps` |
+| `planView` | trip | `days[]`: label, weekday, city, mode, modeIsOverride, blocks, legs, night, warnings, location, sun, daylight |
+| `dragPreview` | trip, placeId, date, start, end | closed hours per date, before / after neighbours with needs / has, inClosedHours, overFixed |
+| `movePreview` | trip, blockKey, date, start, end | same, for a block already on the timetable |
+| `budgetSummary` | trip | the Budget page (see `budget::BudgetSummary`) |
+| `costForms` | trip, itemId | `forms`: total and calculated per night / per person |
+| `importPreview` | trip, places file text | new places, link-only, duplicates, problems |
+| `importPlaces` | trip, places file text, id prefix, stamp | `trip`, `count` |
+| `daylight` | lat, lng, date, UTC offset | `sun`, `stops` |
+| `coordsFromMapsUrl` | text | `coords` or `null` |
+
+A quick Node check that loads the package and calls these is how phase 1 was verified (see `docs/build-plan.md`).
+
+## Review (2026-11-19)
+
+A review sub-agent found 10 bugs with failing inputs (home currency switch, fixed blocks, `setBudget`, `setDay`, leg modes, imported costs without a rate, legs left behind, log field names, shrinking the trip, day location). All are fixed, each with a regression test at the end of `commands.rs`.
+
+## Known gaps (to do)
+
+- No leg is drawn from the hotel to the first block of a morning unless the day has a check-out block (item 49). Needs a "leave the base" block key. (The day's location already follows the night before.)
+- Two stays covering the same night: `night_on` takes the first, with no warning.
+- A place with no type in an import comes in as Sight, marked unverified. `Place.kind` could become optional if that proves confusing.
+- Cost rows divide per person by the people the cost covers (a room for 2 shows half); the summary's per-person total divides by the trip's people.
+- Estimate speeds in `travel.rs` are rough stand-ins until routing.
+- Unscheduling a plain visit removes the item, including an estimated cost typed on it (undo brings it back).
+- A stay's check-in block can be moved to a different date than `checkInDate`; nothing checks they match.
+- When sunset falls after local midnight (far north in summer), the daylight gradient shows night all day.

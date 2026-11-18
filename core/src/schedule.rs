@@ -440,9 +440,15 @@ pub fn day_location(trip: &Trip, date: &str) -> Option<(f64, f64)> {
         let p = trip.place(id?)?;
         Some((p.lat?, p.lng?))
     };
-    night_on(trip, date)
+    // The night before sets the day's base (item 49); on the first day, or a
+    // day after no stay, the first block with a place decides; failing that,
+    // tonight's stay.
+    let yesterday = Date::parse(date).map(|d| d.add_days(-1).to_string());
+    yesterday
+        .and_then(|y| night_on(trip, &y))
         .and_then(|n| position(n.place_id.as_deref()))
         .or_else(|| blocks_on(trip, date).iter().find_map(|b| position(b.place_id.as_deref())))
+        .or_else(|| night_on(trip, date).and_then(|n| position(n.place_id.as_deref())))
 }
 
 #[cfg(test)]
@@ -741,7 +747,7 @@ mod tests {
     }
 
     #[test]
-    fn day_location_prefers_the_night_stay() {
+    fn day_location_follows_last_nights_stay() {
         let mut t = trip();
         run(
             &mut t,
@@ -752,9 +758,9 @@ mod tests {
                 visit("senso", "s", WED, 660, 720),
             ],
         );
-        // Monday night at the hotel, even though Senso-ji comes first.
-        assert_eq!(day_location(&t, MON), Some((35.6950, 139.7020)));
-        // Tuesday: no night; the check-out block is the first with a position.
+        // Monday, the first day: no night before, so the first block (Senso-ji).
+        assert_eq!(day_location(&t, MON), Some((35.7148, 139.7967)));
+        // Tuesday: Monday night was at the hotel, so the day starts there (item 49).
         assert_eq!(day_location(&t, TUE), Some((35.6950, 139.7020)));
         // Wednesday: Ueno Park has no position, so Senso-ji.
         assert_eq!(day_location(&t, WED), Some((35.7148, 139.7967)));

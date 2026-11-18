@@ -28,7 +28,7 @@ Each phase ends with something that can be tried.
 
 | # | Phase | Status |
 | --- | --- | --- |
-| 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | In progress |
+| 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | Done 2026-11-19 |
 | 2 | **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Not started |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Not started |
@@ -39,9 +39,12 @@ Each phase ends with something that can be tried.
 
 ## Phase 1 status (2026-11-19)
 
-- Done by the main session: `model.rs`, `time.rs`, `commands.rs` (commands, change log, undo, change files), module contracts for `hours`, `travel`, `sun`.
-- Built by four sub-agents in their own worktrees, then merged and reviewed by the main session: `hours` + `schedule`, `travel` + `sun`, `budget`, `import`.
-- Then: `wasm.rs` (the JavaScript API), a `wasm-pack` build, and a final review.
+- **Done.** `core/` builds natively and as Wasm; 81 tests; `cargo clippy --all-targets` clean.
+- A review sub-agent checked the core against the decisions and found 10 bugs with failing inputs; all fixed with regression tests (see `core/README.md`).
+- The main session wrote `model.rs`, `time.rs`, `commands.rs`, `api.rs`, `wasm.rs` and the contracts. Four sub-agents in their own worktrees wrote `hours` + `schedule`, `travel` + `sun`, `budget` and `import`; the main session merged them and fixed the gaps they reported.
+- Checked from JavaScript: a Node script loaded `core/pkg`, built a trip with commands, and read back the plan view (blocks, a too-tight travel warning, Tokyo sun times), a drag preview in closed hours, the budget, undo, and a failing command's message.
+- Known gaps are listed at the end of `core/README.md`.
+- Lesson for sub-agents: worktrees are cut from `main`, so **commit (and merge to main, or tell the agent the branch) before starting them**, or they start without the newest files.
 
 Update this table and the status above when a phase or module is finished.
 

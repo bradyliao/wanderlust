@@ -575,7 +575,7 @@ mod tests {
                 Command::SetCost { id: "f".into(), cost: Some(cost(1260.0, "USD", json!({ "status": "booked" }))) },
                 Command::AddItem { item: item("m", "Monja", "food", json!({ "cost": { "amount": 9000, "currency": "JPY", "status": "estimated", "date": "2026-12-03" } })) },
                 Command::AddItem { item: item("c", "Coffee", "food", json!({ "cost": { "amount": 300, "currency": "TWD", "status": "estimated" } })) },
-                Command::SetBudget { total: Some(110000.0), limits: [(Category::Food, 2000.0)].into_iter().collect() },
+                Command::SetBudget { total: Some(Some(110000.0)), limits: [(Category::Food, 2000.0)].into_iter().collect() },
             ],
         );
         let s = summary(&t);

@@ -430,7 +430,7 @@ pub struct RecordChange {
 
 /// Anything a change can touch.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", tag = "record")]
+#[serde(rename_all = "camelCase", rename_all_fields = "camelCase", tag = "record")]
 pub enum Record {
     Settings(Settings),
     Day(Day),

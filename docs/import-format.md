@@ -93,7 +93,7 @@ One post that mentions several places becomes several entries, each with the sam
 
 1. Reads the file and lists problems in words (missing name, unknown `type`, bad time format). Places with problems can still be imported; the bad field is dropped.
 2. Shows the preview: new places, possible duplicates, and link-only places marked "details missing".
-3. On confirm, adds new places with the rating from the file (Unrated if there is none), with every imported detail marked **unverified**, and fills only the missing details of duplicates. A duplicate keeps its existing rating.
+3. On confirm, adds new places with the rating from the file (Unrated if there is none), with every imported detail marked **unverified**, and fills only the missing details of duplicates. A duplicate keeps its existing rating, unless that place is still Unrated: then it takes the file's rating.
 
 ## Prompt to give the AI
 

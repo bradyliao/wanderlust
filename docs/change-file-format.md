@@ -26,6 +26,7 @@ The commands are defined in [`core/src/commands.rs`](../core/src/commands.rs); t
 - Commands run in order. If any command fails (for example it names a place that doesn't exist), **nothing** in the file is applied and the app says which command failed and why.
 - Times are minutes from midnight (`1080` = 18:00). Dates are `YYYY-MM-DD`.
 - New records need new ids. Use a prefix that can't clash, for example `ai-1`, `ai-2`.
+- Rules the app enforces: nothing may be placed over a fixed block; a fixed block keeps its time until `setFixed` unlocks it; the trip's dates can't shrink past scheduled blocks; legs (`from`, `to`) must name blocks on the timetable, and a leg disappears when either block does.
 
 ## Commands
 
@@ -34,11 +35,11 @@ The commands are defined in [`core/src/commands.rs`](../core/src/commands.rs); t
 | `setTrip` | `name`, `startDate`, `endDate` (each optional) | Rename the trip or change its dates |
 | `setPeople` | `people` | Number of people on the trip |
 | `setDefaultMode` | `mode` | Trip default travel mode |
-| `setHomeCurrency` | `code` | `TWD` or `USD` for now |
+| `setHomeCurrency` | `code` | `TWD` or `USD` for now. Every rate and the budget are converted so totals keep their value; the new home currency needs a rate first |
 | `setCurrency` | `code`, `rateToHome`, `setOn` | Add a currency or change its rate |
 | `removeCurrency` | `code` | Fails while costs still use it |
-| `setBudget` | `total`, `limits` (category → amount) | Trip budget and category limits, home currency |
-| `setDay` | `day` (`date`, `city`, `timeZone`, `utcOffsetMinutes`, `mode`) | A day's city, time zone or travel mode |
+| `setBudget` | `total`, `limits` (category → amount) | Trip budget and category limits, home currency. Leave `total` out to keep it, `null` to clear it. Limits are merged; a limit of 0 removes it |
+| `setDay` | `date`, `set` (any of `city`, `timeZone`, `utcOffsetMinutes`, `mode`; `null` clears one) | Change some of a day's settings; the others stay |
 | `addPlace` | `place` | A new place in the Place List |
 | `updatePlace` | `id`, `set` (fields to change; `null` clears one) | Change some fields of a place |
 | `ratePlace` | `id`, `rating` | `unrated`, `forget`, `soSo`, `mustGo` |
@@ -47,13 +48,14 @@ The commands are defined in [`core/src/commands.rs`](../core/src/commands.rs); t
 | `updateItem` | `id`, `set` | Change some fields of an item |
 | `removeItem` | `id` | |
 | `schedulePlace` | `placeId`, `itemId`, `date`, `start`, `end` (optional) | Put a place on the timetable (length defaults to its usual stay) |
-| `moveItem` | `id`, `part` (`main`, `checkIn`, `checkOut`), `date`, `start`, `end` | Move or resize a block; fails on fixed blocks |
+| `moveItem` | `id`, `part` (`main`, `checkIn`, `checkOut`), `date`, `start`, `end` | Move or resize a block. Fails on a fixed block, or if the new time covers one |
 | `unschedule` | `id` | Take it off the timetable |
 | `setFixed` | `id`, `part`, `fixed`, `reason` | Lock or unlock a block |
-| `setCost` | `id`, `cost` (or `null`) | Amount, currency, `perNight`, `perPerson`, `people`, `status` (`estimated` / `booked`) |
+| `setCost` | `id`, `cost` (or `null`) | Amount, currency, `perNight`, `perPerson`, `people`, `status` (`estimated` / `booked`). The currency needs a rate. Changing an estimated cost to booked keeps the old estimate in `replacedEstimate` |
 | `setBooking` | `id`, `booking` (or `null`) | Confirmation, provider, link, date, cancellation deadline… |
 | `setStay` | `id`, `stay` (or `null`) | Hotel check-in and check-out |
-| `setLegMode` | `from`, `to`, `mode` (or `null`) | Travel mode for one leg |
+| `setLegMode` | `from`, `to`, `mode` (or `null`) | Travel mode for one leg. Minutes confirmed for the old mode are dropped |
+| `setLegRouted` | `from`, `to`, `routed` (`mode`, `minutes`, `line`, `service`) | Store a routing result (normally done by the app, not AI) |
 | `confirmLegMinutes` | `from`, `to`, `minutes` | Minutes the user checked |
 
 Modes: `drive`, `transit`, `walk`, `twoWheeler`, `cycle`, `ride`. Categories: `flights`, `lodging`, `transport`, `food`, `tickets`, `shopping`, `other`. Place types: `sight`, `food`, `cafe`, `shop`, `museum`, `nature`, `nightlife`.
