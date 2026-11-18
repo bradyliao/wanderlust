@@ -78,4 +78,24 @@ describe('core wrapper', () => {
     expect(b.budget).toBeNull()
     expect(b.groups.map((g) => g.group)).toEqual(['food', 'activity', 'transport', 'lodging', 'shopping', 'other'])
   })
+
+  it('previews and imports the sample places file as one step', () => {
+    const sample = (name: string) => readFileSync(new URL(`../docs/samples/${name}`, import.meta.url), 'utf8')
+    const t = core.applyChangeFile(trip(), sample('sample-trip.changes.json'), 'sample').trip
+    const file = sample('sample-places.json')
+    const pv = core.importPreview(t, file)
+    expect(pv.newPlaces).toHaveLength(4)
+    expect(pv.linkOnly.map((p) => p.name)).toEqual(['Tiny gallery from a reel (sample)'])
+    expect(pv.duplicates.map((d) => [d.existingName, d.sameAsNumber])).toEqual([
+      ['Senso-ji', null],
+      ['Yanaka Ginza (sample)', 1],
+    ])
+    expect(pv.problems).toHaveLength(4)
+    const r = core.importPlaces(t, file, 'imp-test', core.userStamp('Imported places'))
+    expect(r.trip.places).toHaveLength(t.places.length + 5)
+    expect(r.trip.log).toHaveLength(t.log.length + 1)
+    expect(r.trip.places.find((p) => p.id === 'p-sensoji')?.unverified).toContain('address')
+    expect(core.coordsFromMapsUrl('https://www.google.com/maps/place/x/@35.7277,139.766,17z')).toEqual([35.7277, 139.766])
+    expect(core.coordsFromMapsUrl('https://maps.app.goo.gl/abc')).toBeNull()
+  })
 })

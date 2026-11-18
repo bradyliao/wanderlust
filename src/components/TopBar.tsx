@@ -37,6 +37,7 @@ interface Props {
   onOpenFile: () => void
   onExport: () => void
   onChangeFile: () => void
+  onImportPlaces: () => void
 }
 
 /** Brand, pages, trip, People, Transport, budget total, history, layout (items 45–48, 65). */
@@ -82,6 +83,7 @@ export function TopBar(p: Props) {
             <MenuItem onSelect={pick(close, p.onOpenFile)}>Open trip file…</MenuItem>
             <MenuItem onSelect={pick(close, p.onExport)}>Export trip file</MenuItem>
             <div className="menu-sep" />
+            <MenuItem onSelect={pick(close, p.onImportPlaces)}>Import places file…</MenuItem>
             <MenuItem onSelect={pick(close, p.onChangeFile)}>Import AI change file…</MenuItem>
           </>
         )}

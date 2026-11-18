@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ImportDialog } from './components/ImportDialog'
 import { TopBar, type Page } from './components/TopBar'
 import { TripDialog } from './components/TripDialog'
 import * as core from './core'
@@ -7,8 +8,9 @@ import { modeLabel, tripFileName } from './format'
 import { PlanPage } from './pages/PlanPage'
 import { BookingsPage, BudgetPage } from './pages/OtherPages'
 import { loadPrefs, savePrefs, type Prefs } from './prefs'
+import { SelectionContext, type SelectFrom, type Selection } from './selection'
 import { hasTrip, listTrips, loadTrip, saveTrip, type TripSummary } from './storage'
-import type { Command, LogGroup, Mode, Trip } from './types'
+import type { Command, ImportPreview, LogGroup, Mode, Trip } from './types'
 
 type Notice = { kind: 'info' | 'error'; text: string }
 type Boot = { state: 'loading' } | { state: 'failed'; message: string } | { state: 'ready' }
@@ -31,6 +33,22 @@ export default function App() {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const tripFileInput = useRef<HTMLInputElement>(null)
   const changeFileInput = useRef<HTMLInputElement>(null)
+  const placesFileInput = useRef<HTMLInputElement>(null)
+  const [pendingImport, setPendingImport] = useState<{ name: string; text: string; preview: ImportPreview } | null>(null)
+
+  // Selected and hovered place, shared by the panes (items 5–8).
+  const [selected, setSelected] = useState<{ id: string | null; from: SelectFrom | null }>({ id: null, from: null })
+  const [hovered, setHovered] = useState<string | null>(null)
+  const selection = useMemo<Selection>(
+    () => ({
+      selectedPlaceId: selected.id,
+      selectedFrom: selected.from,
+      hoveredPlaceId: hovered,
+      select: (id, from) => setSelected({ id, from }),
+      hover: setHovered,
+    }),
+    [selected, hovered],
+  )
 
   useEffect(() => savePrefs(prefs), [prefs])
 
@@ -90,14 +108,17 @@ export default function App() {
 
   // ----- changes, through commands only (items 72–76)
 
+  /** Apply commands as one undo step. False when the core refused (the notice says why). */
   const apply = useCallback(
-    (commands: Command[], label: string) => {
+    (commands: Command[], label: string): boolean => {
       const t = tripRef.current
-      if (!t) return
+      if (!t) return false
       try {
         commit(core.applyCommands(t, commands, core.userStamp(label)))
+        return true
       } catch (e) {
         fail(core.messageOf(e))
+        return false
       }
     },
     [commit, fail],
@@ -219,6 +240,39 @@ export default function App() {
     }
   }
 
+  // Place import (items 66–71): pick a file, preview, then import as one step.
+  const pickPlacesFile = async () => {
+    const input = placesFileInput.current
+    const t = tripRef.current
+    if (!input || !t) return
+    let name = 'the places file'
+    try {
+      const file = await takePickedFile(input)
+      if (!file) return
+      name = file.name
+      setPendingImport({ ...file, preview: core.importPreview(t, file.text) })
+    } catch (e) {
+      fail(`${name} could not be read: ${core.messageOf(e)}`)
+    }
+  }
+
+  const confirmImport = () => {
+    const t = tripRef.current
+    const pending = pendingImport
+    if (!t || !pending) return
+    setPendingImport(null)
+    try {
+      const added = pending.preview.newPlaces.length + pending.preview.linkOnly.length
+      const r = core.importPlaces(t, pending.text, `imp-${core.shortId()}`, core.userStamp(`Imported places from ${pending.name}`))
+      commit(r.trip)
+      const filled = r.count - added
+      const parts = [`${added} ${added === 1 ? 'place' : 'places'} added`, filled > 0 ? `${filled} filled in` : null].filter(Boolean)
+      info(`Imported ${pending.name}: ${parts.join(', ')}. Undo takes the whole import back.`)
+    } catch (e) {
+      fail(`${pending.name} was not imported: ${core.messageOf(e)}`)
+    }
+  }
+
   // ----- views from the core
 
   const days = useMemo(() => (trip ? attempt(() => core.planView(trip)) : null), [trip])
@@ -246,6 +300,7 @@ export default function App() {
           onOpenFile={() => tripFileInput.current?.click()}
           onExport={exportTrip}
           onChangeFile={() => changeFileInput.current?.click()}
+          onImportPlaces={() => placesFileInput.current?.click()}
         />
       )}
 
@@ -258,7 +313,18 @@ export default function App() {
         </div>
       )}
 
-      {trip && page === 'plan' && <PlanPage trip={trip} days={days} prefs={prefs} onPrefs={setPrefs} />}
+      {trip && page === 'plan' && (
+        <SelectionContext.Provider value={selection}>
+          <PlanPage
+            trip={trip}
+            days={days}
+            prefs={prefs}
+            onPrefs={setPrefs}
+            apply={apply}
+            onImportPlaces={() => placesFileInput.current?.click()}
+          />
+        </SelectionContext.Provider>
+      )}
       {trip && page === 'bookings' && <BookingsPage />}
       {trip && page === 'budget' && <BudgetPage summary={budget} />}
 
@@ -273,6 +339,16 @@ export default function App() {
       )}
 
       <input ref={tripFileInput} type="file" accept=".json,application/json" hidden onChange={openTripFile} />
+      {pendingImport && (
+        <ImportDialog
+          fileName={pendingImport.name}
+          preview={pendingImport.preview}
+          onConfirm={confirmImport}
+          onCancel={() => setPendingImport(null)}
+        />
+      )}
+
+      <input ref={placesFileInput} type="file" accept=".json,application/json" hidden onChange={pickPlacesFile} />
       <input ref={changeFileInput} type="file" accept=".json,application/json" hidden onChange={importChangeFile} />
     </div>
   )

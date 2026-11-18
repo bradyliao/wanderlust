@@ -1,0 +1,78 @@
+{
+  "format": "wanderlust-places",
+  "version": 1,
+  "created": "2026-11-19",
+  "trip_hint": "Invented sample places for testing the import (not checked facts)",
+  "places": [
+    {
+      "name": "Yanaka Ginza (sample)",
+      "name_local": "谷中銀座",
+      "type": "shopping",
+      "area": "Yanaka",
+      "city": "Tokyo",
+      "country": "JP",
+      "google_maps_url": "https://www.google.com/maps/place/Yanaka/@35.7277,139.7660,17z",
+      "usual_stay_minutes": 60,
+      "opening_hours": {
+        "mon": [["10:00", "18:00"]], "tue": [["10:00", "18:00"]], "wed": [["10:00", "18:00"]],
+        "thu": [["10:00", "18:00"]], "fri": [["10:00", "18:00"]], "sat": [["10:00", "19:00"]],
+        "sun": [["10:00", "19:00"]]
+      },
+      "rating": "soso",
+      "tags": ["street-food"],
+      "notes": "Old shopping street; snacks to eat while walking.",
+      "ai_notes": "Hours vary by shop; these are a rough guess from the post.",
+      "source": { "platform": "instagram", "url": "https://www.instagram.com/p/sample1/", "account": "@sample", "saved": "2026-11-02" }
+    },
+    {
+      "name": "Late-night ramen, Shinjuku (sample)",
+      "type": "food",
+      "area": "Shinjuku",
+      "city": "Tokyo",
+      "usual_stay_minutes": 45,
+      "opening_hours": {
+        "mon": [["11:00", "02:00"]], "tue": [["11:00", "02:00"]], "wed": [],
+        "thu": [["11:00", "02:00"]], "fri": [["11:00", "04:00"]], "sat": [["11:00", "04:00"]]
+      },
+      "rating": "must",
+      "notes": "Queue moves fast; buy a ticket at the machine."
+    },
+    {
+      "name": "Rooftop bar with a very long name that will not fit on one line in the Place List (sample)",
+      "type": "nightlife",
+      "area": "Shibuya",
+      "city": "Tokyo",
+      "usual_stay_minutes": 90,
+      "opening_hours": { "mon": [["18:00", "25:00"]], "tue": [["18:00", "24:00"]] },
+      "rating": "maybe",
+      "colour": "blue"
+    },
+    {
+      "name": "Tiny gallery from a reel (sample)",
+      "google_maps_url": "https://maps.app.goo.gl/sampleLinkOnly"
+    },
+    {
+      "name": "Senso-ji",
+      "name_local": "浅草寺",
+      "area": "asakusa",
+      "address": "2-3-1 Asakusa, Taito City, Tokyo",
+      "hours_note": "Main hall hours; the grounds are open 24 hours.",
+      "rating": "must",
+      "notes": "Second post: go before 7:00 for photos.",
+      "source": { "platform": "threads", "url": "https://www.threads.net/@sample/post/sample2", "saved": "2026-11-05" }
+    },
+    {
+      "name": "yanaka ginza (sample)",
+      "area": "Yanaka",
+      "address": "3 Yanaka, Taito City, Tokyo",
+      "rating": "forget"
+    },
+    {
+      "name": "Day trip to the coast (sample)",
+      "type": "beach",
+      "area": "Kamakura",
+      "city": "Kamakura",
+      "usual_stay_minutes": 240
+    }
+  ]
+}

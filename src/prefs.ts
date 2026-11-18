@@ -2,6 +2,8 @@
 // missing or throw (private windows, blocked storage), so every access is
 // wrapped and falls back to the defaults.
 
+import type { GroupBy } from './places'
+
 export type Layout = 'stacked' | 'columns'
 export type PaneId = 'places' | 'timetable' | 'map'
 
@@ -14,6 +16,8 @@ export interface Prefs {
   /** Timetable share of the right side's height (Stacked), 0..1. */
   timetableShare: number
   collapsed: Record<PaneId, boolean>
+  /** Place List grouping (item 17). */
+  placesGroup: GroupBy
   /** The trip open last time. */
   lastTripId: string | null
 }
@@ -24,6 +28,7 @@ export const DEFAULT_PREFS: Prefs = {
   timetableWidth: 560,
   timetableShare: 0.58,
   collapsed: { places: false, timetable: false, map: false },
+  placesGroup: 'area',
   lastTripId: null,
 }
 
@@ -46,6 +51,7 @@ export function parsePrefs(text: string | null): Prefs {
     timetableWidth: num(raw.timetableWidth, DEFAULT_PREFS.timetableWidth),
     timetableShare: Math.min(0.9, Math.max(0.1, num(raw.timetableShare, DEFAULT_PREFS.timetableShare))),
     collapsed: { places: c.places === true, timetable: c.timetable === true, map: c.map === true },
+    placesGroup: (['area', 'rating', 'type', 'scheduled'] as const).find((g) => g === raw.placesGroup) ?? 'area',
     lastTripId: typeof raw.lastTripId === 'string' ? raw.lastTripId : null,
   }
 }

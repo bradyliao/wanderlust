@@ -7,6 +7,8 @@ interface PaneProps {
   title: string
   /** Shown after the title in the pane header. */
   info?: ReactNode
+  /** Controls after the title; they bring their own spacer. */
+  tools?: ReactNode
   /** Which way the pane folds when collapsed. */
   fold: Dir
   onCollapse: () => void
@@ -18,13 +20,13 @@ interface PaneProps {
 const opposite: Record<Dir, Dir> = { left: 'right', right: 'left', up: 'down', down: 'up' }
 
 /** A pane with a header and a collapse button (item 2). */
-export function Pane({ title, info, fold, onCollapse, fill, style, children }: PaneProps) {
+export function Pane({ title, info, tools, fold, onCollapse, fill, style, children }: PaneProps) {
   return (
     <section className={`pane ${fill ? 'fill' : ''}`} style={style} aria-label={title}>
       <header className="pane-head">
         <h2>{title}</h2>
         {info && <span className="muted">{info}</span>}
-        <span className="spacer" />
+        {tools ?? <span className="spacer" />}
         <button type="button" className="icon-btn" title={`Hide ${title}`} aria-label={`Hide ${title}`} onClick={onCollapse}>
           <Fold dir={fold} />
         </button>

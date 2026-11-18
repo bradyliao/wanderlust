@@ -4,7 +4,7 @@
 
 import init, * as wasm from '../core/pkg/wanderlust_core.js'
 import wasmUrl from '../core/pkg/wanderlust_core_bg.wasm?url'
-import type { BudgetSummary, Command, PlanDay, Stamp, Trip } from './types'
+import type { BudgetSummary, Command, ImportPreview, PlanDay, Stamp, Trip } from './types'
 
 export class CoreError extends Error {
   /** Index of the failing command, when a list of commands failed. */
@@ -105,6 +105,28 @@ export function planView(trip: Trip): PlanDay[] {
 
 export function budgetSummary(trip: Trip): BudgetSummary {
   return call<BudgetSummary>(() => wasm.budgetSummary(json(trip)))
+}
+
+/** What importing a `wanderlust-places` file would do (item 70). Changes nothing. */
+export function importPreview(trip: Trip, fileText: string): ImportPreview {
+  const r = call<ImportPreview>(() => wasm.importPreview(json(trip), fileText))
+  return { newPlaces: r.newPlaces, linkOnly: r.linkOnly, duplicates: r.duplicates, problems: r.problems }
+}
+
+/** Import a places file as one step in the change log. Ids are `{idPrefix}-1`, `-2`, … */
+export function importPlaces(trip: Trip, fileText: string, idPrefix: string, stamp: Stamp): { trip: Trip; count: number } {
+  const r = call<{ trip: Trip; count: number }>(() => wasm.importPlaces(json(trip), fileText, idPrefix, json(stamp)))
+  return { trip: r.trip, count: r.count }
+}
+
+/** `[lat, lng]` read from a Google Maps link, or null when it has none. */
+export function coordsFromMapsUrl(text: string): [number, number] | null {
+  return call<{ coords: [number, number] | null }>(() => wasm.coordsFromMapsUrl(text)).coords
+}
+
+/** A short random id part, for example `k3f9q2`. */
+export function shortId(): string {
+  return crypto.randomUUID().replace(/-/g, '').slice(0, 6)
 }
 
 /** Plain-words message for anything thrown while calling the core. */

@@ -1,20 +1,26 @@
-import { useRef, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { CollapsedBar, Divider, Pane, SepLine } from '../components/Panes'
+import { AddPlaceDialog, PlaceList, PlaceListTools } from '../components/PlaceList'
 import type { PaneId, Prefs } from '../prefs'
-import type { PlanDay, Trip } from '../types'
+import { useSelection } from '../selection'
+import type { Command, PlanDay, Trip } from '../types'
 
 interface Props {
   trip: Trip
   days: PlanDay[] | null
   prefs: Prefs
   onPrefs: (update: (p: Prefs) => Prefs) => void
+  apply: (commands: Command[], label: string) => boolean
+  onImportPlaces: () => void
 }
 
 const MIN_PANE = 200
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi))
 
 /** The Plan page in either layout (items 1–4). Pane contents come in phases 3–5. */
-export function PlanPage({ trip, days, prefs, onPrefs }: Props) {
+export function PlanPage({ trip, days, prefs, onPrefs, apply, onImportPlaces }: Props) {
+  const [adding, setAdding] = useState(false)
+  const sel = useSelection()
   const root = useRef<HTMLDivElement>(null)
   const right = useRef<HTMLDivElement>(null)
   const start = useRef(0)
@@ -56,11 +62,29 @@ export function PlanPage({ trip, days, prefs, onPrefs }: Props) {
         fold="left"
         fill={fill}
         style={fill ? undefined : { width: prefs.placesWidth, flex: 'none' }}
+        tools={
+          <PlaceListTools
+            groupBy={prefs.placesGroup}
+            onGroupBy={(placesGroup) => onPrefs((p) => ({ ...p, placesGroup }))}
+            onAdd={() => setAdding(true)}
+            onImport={onImportPlaces}
+          />
+        }
         onCollapse={() => setCollapsed('places', true)}
       >
-        <PlacesPlaceholder count={trip.places.length} />
+        <PlaceList trip={trip} groupBy={prefs.placesGroup} apply={apply} />
       </Pane>
     )
+
+  const addDialog = adding && (
+    <AddPlaceDialog
+      apply={apply}
+      onClose={(id) => {
+        setAdding(false)
+        if (id) sel.select(id, 'list')
+      }}
+    />
+  )
 
   const timetableBody = <TimetablePlaceholder days={days} />
   const timetableInfo = days ? `${days.length} ${days.length === 1 ? 'day' : 'days'}` : undefined
@@ -101,6 +125,7 @@ export function PlanPage({ trip, days, prefs, onPrefs }: Props) {
             <MapPlaceholder />
           </Pane>
         )}
+        {addDialog}
       </div>
     )
   }
@@ -156,20 +181,13 @@ export function PlanPage({ trip, days, prefs, onPrefs }: Props) {
           </Pane>
         )}
       </div>
+      {addDialog}
     </div>
   )
 }
 
 function Note({ children }: { children: ReactNode }) {
   return <p className="placeholder">{children}</p>
-}
-
-function PlacesPlaceholder({ count }: { count: number }) {
-  return (
-    <Note>
-      {count === 0 ? 'No places yet.' : `${count} places.`} The Place List and place import come in phase 3.
-    </Note>
-  )
 }
 
 /** Trip days from the core's plan view, so the wiring is visible (phase 4 replaces this). */
