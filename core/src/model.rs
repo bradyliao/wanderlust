@@ -131,12 +131,14 @@ pub struct Place {
     pub opening_hours: Option<OpeningHours>,
     pub hours_note: Option<String>,
     /// Planning estimate per visit, used when the place is scheduled.
-    pub estimated_cost: Option<Money>,
+    pub estimated_cost: Option<PlaceCost>,
     #[serde(default)]
     pub rating: Rating,
     #[serde(default)]
     pub tags: Vec<String>,
     pub notes: Option<String>,
+    /// The AI's own doubts from an import (`ai_notes` in import-format.md).
+    pub ai_notes: Option<String>,
     /// Names of fields that came from an import and are not checked yet
     /// (item 69), for example `["openingHours", "lat", "lng"]`.
     #[serde(default)]
@@ -289,6 +291,16 @@ fn yes() -> bool {
 pub struct FileRef {
     pub id: Id,
     pub name: String,
+}
+
+/// A place's planning estimate: per visit for the group, or per person.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlaceCost {
+    pub amount: f64,
+    pub currency: String,
+    #[serde(default)]
+    pub per_person: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

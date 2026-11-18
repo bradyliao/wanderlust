@@ -4,6 +4,7 @@
 //! Read `README.md` in this folder for the module map and the rules every
 //! module follows.
 
+pub mod api;
 pub mod budget;
 pub mod commands;
 pub mod hours;

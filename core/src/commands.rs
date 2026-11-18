@@ -22,7 +22,7 @@ pub const CHANGES_VERSION: u32 = 1;
 pub const DEFAULT_BLOCK_MINUTES: u32 = 60;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", tag = "op")]
+#[serde(rename_all = "camelCase", rename_all_fields = "camelCase", tag = "op")]
 pub enum Command {
     // ----- trip and settings -----
     SetTrip { name: Option<String>, start_date: Option<String>, end_date: Option<String> },
@@ -401,7 +401,7 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
                 amount: m.amount,
                 currency: m.currency.clone(),
                 per_night: false,
-                per_person: false,
+                per_person: m.per_person,
                 people: None,
                 status: CostStatus::Estimated,
                 replaced_estimate: None,
@@ -716,9 +716,10 @@ mod tests {
     #[test]
     fn reads_a_change_file() {
         let text = r#"{ "format": "wanderlust-changes", "version": 1, "label": "Ratings",
-            "commands": [ { "op": "ratePlace", "id": "p1", "rating": "mustGo" }, { "op": "setPeople", "people": 4 } ] }"#;
+            "commands": [ { "op": "ratePlace", "id": "p1", "rating": "mustGo" }, { "op": "setPeople", "people": 4 },
+                { "op": "schedulePlace", "placeId": "p1", "itemId": "ai-1", "date": "2026-12-03", "start": 1080 } ] }"#;
         let file = ChangeFile::from_json(text).unwrap();
-        assert_eq!(file.commands.len(), 2);
+        assert_eq!(file.commands.len(), 3);
         assert_eq!(file.commands[1], Command::SetPeople { people: 4 });
     }
 }
