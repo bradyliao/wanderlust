@@ -29,7 +29,7 @@ Each phase ends with something that can be tried.
 | # | Phase | Status |
 | --- | --- | --- |
 | 1 | **Rust core**: data model, commands and change log, hours, travel estimates, sun times, schedule checks, budget, place import, Wasm API | Done 2026-11-19 |
-| 2 | **First: update the core to items 81–83** (see "Core changes for items 81–83" below). Then the **app shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
+| 2 | Core updated to items 81–83 (done, see below). **App shell**: top bar (tabs, People, Transport, budget total, layout icons), both layouts with resizable and collapsible panes, IndexedDB storage, trip export and import, change file import, undo from the change log | Not started |
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Not started |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Not started |
 | 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Not started |
@@ -39,7 +39,7 @@ Each phase ends with something that can be tried.
 
 ## Phase 1 status (2026-11-19)
 
-- **Done.** `core/` builds natively and as Wasm; 81 tests; `cargo clippy --all-targets` clean.
+- **Done.** `core/` builds natively and as Wasm; 81 tests at the time (87 after items 81–83); `cargo clippy --all-targets` clean.
 - A review sub-agent checked the core against the decisions and found 10 bugs with failing inputs; all fixed with regression tests (see `core/README.md`).
 - The main session wrote `model.rs`, `time.rs`, `commands.rs`, `api.rs`, `wasm.rs` and the contracts. Four sub-agents in their own worktrees wrote `hours` + `schedule`, `travel` + `sun`, `budget` and `import`; the main session merged them and fixed the gaps they reported.
 - Checked from JavaScript: a Node script loaded `core/pkg`, built a trip with commands, and read back the plan view (blocks, a too-tight travel warning, Tokyo sun times), a drag preview in closed hours, the budget, undo, and a failing command's message.
@@ -48,16 +48,14 @@ Each phase ends with something that can be tried.
 
 Update this table and the status above when a phase or module is finished.
 
-## Core changes for items 81–83 (to do at the start of phase 2)
+## Core changes for items 81–83 (done 2026-11-19)
 
-Phase 1 was built on the older lists (7 place types, booking kinds Hotel / Ticket / Restaurant…, budget categories Flights and Tickets). Checked 2026-11-19; these need changing, with their tests:
-
-1. **`model.rs`:** replace `PlaceType`, `BookingKind` and `Category` with one `Kind` enum (the 15 sub-categories) and a `Group` enum (the 6 groups), with `Kind::group()`. `Place.kind`, `Booking.kind` and `Item` use `Kind` (`Item.category` becomes `Item.kind`). `Settings.limits` is keyed by `Group`. Local travel is not allowed for places or bookings.
-2. **`commands.rs`:** `category_for` goes away (the group comes from the kind); `SchedulePlace` copies the place's kind to the item; checks reject Local travel on places and bookings.
-3. **`budget.rs`:** totals by group, each with sub-category totals; travel-leg costs go to Transport → Local travel; `ALL_CATEGORIES` becomes the six groups.
-4. **`import.rs`:** the file's `type` accepts the 15 ids (and the old `shop` as `shopping`); `docs/import-format.md` already lists the new values.
-5. **Docs:** `docs/change-file-format.md` (lists of values) is updated; the mocks still show the older lists and colours.
-6. Bump `TRIP_VERSION` only if real trips were saved before the change (none yet).
+- [x] `model.rs`: `Kind` (15 sub-categories) and `Group` (6 groups) replace `PlaceType`, `BookingKind` and `Category`; `Place.kind`, `Booking.kind`, `Item.kind`; `Settings.limits` keyed by group.
+- [x] `commands.rs`: `category_for` removed; `SchedulePlace` copies the place's kind; Local travel refused on places and bookings.
+- [x] `budget.rs`: six group lines in order, each with its sub-category lines; rows show kind and group; Local travel costs are Transport → Local travel (legs have no cost yet).
+- [x] `import.rs`: the 14 place ids, `shop` read as `shopping`, `localTravel` refused; no type now means Other (was Sight), unverified.
+- [x] Docs: `change-file-format.md` and `import-format.md` no longer mention the older lists; the mocks still do.
+- `TRIP_VERSION` stays 1 (no real trips saved before the change). 87 tests, clippy clean.
 
 ## Working rules
 

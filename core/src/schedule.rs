@@ -492,7 +492,7 @@ mod tests {
 
     fn hotel(item_id: &str, place_id: &str, check_in: &str, check_out: &str) -> Command {
         let item = json!({
-            "id": item_id, "title": "Hotel Gracery", "placeId": place_id, "category": "lodging",
+            "id": item_id, "title": "Hotel Gracery", "placeId": place_id, "kind": "lodging",
             "stay": {
                 "checkInDate": check_in, "checkOutDate": check_out,
                 "checkIn": { "date": check_in, "start": 900, "end": 930, "fixed": true, "fixedReason": "Hotel time" },

@@ -38,9 +38,10 @@ pub struct FilePlace {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name_local: Option<String>,
-    /// `sight`, `food`, `cafe`, `shop`, `museum`, `nature` or `nightlife`.
+    /// One of the 14 place sub-categories (items 81–83): every `Kind` id
+    /// except `localTravel`. The older `shop` is read as `shopping`.
     #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
-    pub kind: Option<PlaceType>,
+    pub kind: Option<Kind>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub area: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -310,12 +311,9 @@ fn read_place(number: usize, value: &Value, problems: &mut Vec<String>) -> Optio
     place.ai_notes = text(obj, "ai_notes", "the AI notes", &mut p);
 
     if let Some(v) = present(obj, "type") {
-        match typed::<PlaceType>(v) {
-            Some(kind) => place.kind = Some(kind),
-            None => p.add(format!(
-                "the type {} is not one of sight, food, cafe, shop, museum, nature, nightlife.",
-                shown(v)
-            )),
+        match read_kind(v) {
+            Ok(kind) => place.kind = Some(kind),
+            Err(message) => p.add(message),
         }
     }
 
@@ -428,6 +426,21 @@ fn read_place(number: usize, value: &Value, problems: &mut Vec<String>) -> Optio
 /// A field that is there and not `null`.
 fn present<'a>(obj: &'a Map<String, Value>, key: &str) -> Option<&'a Value> {
     obj.get(key).filter(|v| !v.is_null())
+}
+
+/// A place type from the file (items 81–83). The older `shop` is read as
+/// `shopping` without a problem; `localTravel` is not a place type.
+fn read_kind(v: &Value) -> Result<Kind, String> {
+    match v.as_str().map(|id| if id == "shop" { Some(Kind::Shopping) } else { Kind::from_id(id) }) {
+        Some(Some(Kind::LocalTravel)) => {
+            Err("the type \"localTravel\" is for travel costs between stops, not a place, so it was left out.".into())
+        }
+        Some(Some(kind)) => Ok(kind),
+        _ => {
+            let ids: Vec<&str> = Kind::ALL.into_iter().filter(|k| k.allowed_for_places()).map(Kind::id).collect();
+            Err(format!("the type {} is not one of {}.", shown(v), ids.join(", ")))
+        }
+    }
 }
 
 fn typed<T: DeserializeOwned>(v: &Value) -> Option<T> {
@@ -551,7 +564,7 @@ pub struct PreviewPlace {
     pub name: String,
     pub area: Option<String>,
     /// `None` when the file gave no type.
-    pub kind: Option<PlaceType>,
+    pub kind: Option<Kind>,
     pub rating: Rating,
 }
 
@@ -710,7 +723,8 @@ fn plan(trip: &Trip, file: &ImportFile) -> Plan {
 
 /// A new place from a file entry, with an empty id. `unverified` lists every
 /// field that came from the file; coordinates read from the link count too.
-/// With no type in the file the kind is Sight, listed as unverified.
+/// With no type in the file the kind is Other, listed as unverified
+/// (before items 81–83 it was Sight).
 fn draft_place(f: &FilePlace) -> Place {
     let (lat, lng) = match (f.lat, f.lng) {
         (Some(a), Some(b)) => (Some(a), Some(b)),
@@ -724,7 +738,7 @@ fn draft_place(f: &FilePlace) -> Place {
         id: String::new(),
         name: f.name.clone(),
         name_local: f.name_local.clone(),
-        kind: f.kind.unwrap_or(PlaceType::Sight),
+        kind: f.kind.unwrap_or(Kind::Other),
         area: f.area.clone(),
         city: f.city.clone(),
         country: f.country.clone(),
@@ -1012,7 +1026,7 @@ mod tests {
 
         let expected = [
             "Place 4 (Golden Gai): the field \"mood\" is not part of the format and was ignored.",
-            "Place 4 (Golden Gai): the type \"bar\" is not one of sight, food, cafe, shop, museum, nature, nightlife.",
+            "Place 4 (Golden Gai): the type \"bar\" is not one of food, cafe, dessert, sight, museum, nature, nightlife, flight, train, bus, car, lodging, shopping, other.",
             "Place 4 (Golden Gai): the country \"Japan\" is not a two-letter code such as JP.",
             "Place 4 (Golden Gai): it has lat but no lng, so the coordinates were left out.",
             "Place 4 (Golden Gai): the usual stay -5 is not a number of minutes between 1 and 1440.",
@@ -1024,6 +1038,26 @@ mod tests {
             "Place 5 has no name, so it was skipped.",
         ];
         assert_eq!(file.problems, expected);
+    }
+
+    #[test]
+    fn reads_the_old_shop_type_and_refuses_local_travel() {
+        let file = read(
+            r#"{"format":"wanderlust-places","version":1,"places":[
+                {"name":"Loft","type":"shop"},
+                {"name":"Taxi","type":"localTravel"},
+                {"name":"Haneda","type":"flight"},
+                {"name":"Mochi stand","type":"dessert"}]}"#,
+        )
+        .unwrap();
+        let kinds: Vec<Option<Kind>> = file.entries.iter().map(|e| e.place.kind).collect();
+        assert_eq!(kinds, vec![Some(Kind::Shopping), None, Some(Kind::Flight), Some(Kind::Dessert)]);
+        assert_eq!(
+            file.problems,
+            vec!["Place 2 (Taxi): the type \"localTravel\" is for travel costs between stops, not a place, so it was left out."]
+        );
+        // With the type left out, the place comes in as Other, unverified.
+        assert_eq!(draft_place(&file.entries[1].place).kind, Kind::Other);
     }
 
     #[test]
@@ -1113,7 +1147,7 @@ mod tests {
 
         let gai = trip.place("imp-3").unwrap();
         assert_eq!(gai.rating, Rating::Unrated);
-        assert_eq!(gai.kind, PlaceType::Sight);
+        assert_eq!(gai.kind, Kind::Other);
         assert!(gai.unverified.contains(&"kind".to_string()));
         assert!(!gai.has_position());
 

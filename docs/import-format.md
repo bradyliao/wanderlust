@@ -2,8 +2,6 @@
 
 Before planning a trip, places come from saved social posts (Instagram and others). An AI (for example Claude) turns those posts into one JSON file in this format, and the app imports it into the trip's Place List. Places can still be added by hand at any time.
 
-The type list follows item 81; until the core is updated (build-plan.md, start of phase 2) the importer accepts only the older seven types.
-
 Decisions behind this (see items 66–71 in [layout-and-behavior.md](layout-and-behavior.md)):
 
 - JSON only, with the ready-made AI prompt at the end of this page.
@@ -72,7 +70,7 @@ Only `name` is required. Anything unknown is **left out**, never guessed.
 | `trip_hint` | text | Optional: what trip the posts were collected for |
 | `name` | text | **Required.** Name in English (or as commonly written in English) |
 | `name_local` | text | Name in the local language, if known |
-| `type` | one of `food`, `cafe`, `dessert`, `sight`, `museum`, `nature`, `nightlife`, `flight`, `train`, `bus`, `car`, `lodging`, `shopping`, `other` | The sub-category (item 81). Not `localTravel` |
+| `type` | one of `food`, `cafe`, `dessert`, `sight`, `museum`, `nature`, `nightlife`, `flight`, `train`, `bus`, `car`, `lodging`, `shopping`, `other` | The sub-category (item 81). Not `localTravel`. The older `shop` is read as `shopping`. Left out or unknown: the place comes in as `other`, marked unverified |
 | `area` | text | Neighbourhood, for example `Asakusa`. Used for grouping the Place List |
 | `city` | text | City, for example `Tokyo` |
 | `country` | two-letter code | ISO 3166-1, for example `JP`, `TW`, `KR` |

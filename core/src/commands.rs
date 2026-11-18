@@ -32,13 +32,13 @@ pub enum Command {
     /// Add a currency or change its rate (items 56, 56a).
     SetCurrency { code: String, rate_to_home: f64, set_on: Option<String> },
     RemoveCurrency { code: String },
-    /// Leave `total` out to keep it, `null` to clear it. Limits are merged;
-    /// a limit of 0 removes it.
+    /// Leave `total` out to keep it, `null` to clear it. Limits are per group
+    /// (items 52, 81) and merged; a limit of 0 removes it.
     SetBudget {
         #[serde(default, deserialize_with = "present", skip_serializing_if = "Option::is_none")]
         total: Option<Option<f64>>,
         #[serde(default)]
-        limits: BTreeMap<Category, f64>,
+        limits: BTreeMap<Group, f64>,
     },
     /// Change some of a day's overrides (city, timeZone, utcOffsetMinutes,
     /// mode); `set` is merged like `updatePlace`, `null` clears a field.
@@ -343,11 +343,11 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             if let Some(t) = total {
                 s.budget = *t;
             }
-            for (cat, v) in limits {
+            for (group, v) in limits {
                 if *v <= 0.0 {
-                    s.limits.remove(cat);
+                    s.limits.remove(group);
                 } else {
-                    s.limits.insert(*cat, *v);
+                    s.limits.insert(*group, *v);
                 }
             }
             Ok(())
@@ -375,12 +375,14 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
             if place.name.trim().is_empty() {
                 return Err("A place needs a name.".into());
             }
+            check_place_kind(place.kind)?;
             tx.put_place(place.clone());
         }
         Command::UpdatePlace { id, set } => {
             let place = tx.trip.place(id).cloned().ok_or_else(|| format!("There is no place \"{id}\"."))?;
             let mut place: Place = merge(&place, set)?;
             place.id = id.clone();
+            check_place_kind(place.kind)?;
             tx.put_place(place);
         }
         Command::RatePlace { id, rating } => {
@@ -455,7 +457,8 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
                 id: item_id.clone(),
                 title: place.name.clone(),
                 place_id: Some(place.id.clone()),
-                category: category_for(place.kind),
+                // The item's sub-category follows the place's (item 81).
+                kind: place.kind,
                 slot: Some(slot),
                 stay: None,
                 booking: None,
@@ -517,6 +520,9 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
         }
         Command::SetBooking { id, booking } => {
             let mut item = tx.item(id)?;
+            if let Some(b) = booking {
+                check_booking_kind(b.kind)?;
+            }
             item.booking = booking.clone();
             tx.put_item(item);
         }
@@ -558,13 +564,21 @@ fn run(tx: &mut Tx, cmd: &Command) -> Result<(), String> {
     Ok(())
 }
 
-/// Default budget category for a place type.
-pub fn category_for(kind: PlaceType) -> Category {
-    match kind {
-        PlaceType::Food | PlaceType::Cafe | PlaceType::Nightlife => Category::Food,
-        PlaceType::Shop => Category::Shopping,
-        PlaceType::Museum | PlaceType::Sight => Category::Tickets,
-        PlaceType::Nature => Category::Other,
+/// Places cannot be Local travel (item 81).
+fn check_place_kind(kind: Kind) -> Result<(), String> {
+    if kind.allowed_for_places() {
+        Ok(())
+    } else {
+        Err(format!("A place can't be {}. Choose another type.", kind.label()))
+    }
+}
+
+/// Bookings cannot be Local travel (item 81).
+fn check_booking_kind(kind: Kind) -> Result<(), String> {
+    if kind.allowed_for_bookings() {
+        Ok(())
+    } else {
+        Err(format!("A booking can't be {}. Choose another type.", kind.label()))
     }
 }
 
@@ -736,6 +750,9 @@ fn check_item(trip: &Trip, item: &Item, check_cost_rate: bool) -> Result<(), Str
     if let Some(stay) = &item.stay {
         check_stay(trip, stay)?;
     }
+    if let Some(booking) = &item.booking {
+        check_booking_kind(booking.kind)?;
+    }
     Ok(())
 }
 
@@ -847,7 +864,7 @@ mod tests {
     #[test]
     fn costs_need_a_known_currency() {
         let mut t = sample();
-        let item: Item = serde_json::from_value(json!({ "id": "i1", "title": "Flights", "category": "flights" })).unwrap();
+        let item: Item = serde_json::from_value(json!({ "id": "i1", "title": "Flights", "kind": "flight" })).unwrap();
         apply(&mut t, &[Command::AddItem { item }], stamp("g1")).unwrap();
         let cost: Cost = serde_json::from_value(json!({ "amount": 1260, "currency": "USD", "status": "booked" })).unwrap();
         let set = Command::SetCost { id: "i1".into(), cost: Some(cost) };
@@ -916,7 +933,7 @@ mod tests {
         let only_limits: Command = serde_json::from_value(json!({ "op": "setBudget", "limits": { "food": 20 } })).unwrap();
         apply(&mut t, &[only_limits], stamp("b")).unwrap();
         assert_eq!(t.settings.budget, Some(100.0));
-        assert_eq!(t.settings.limits.get(&Category::Food), Some(&20.0));
+        assert_eq!(t.settings.limits.get(&Group::Food), Some(&20.0));
         let clear: Command = serde_json::from_value(json!({ "op": "setBudget", "total": null })).unwrap();
         apply(&mut t, &[clear], stamp("c")).unwrap();
         assert_eq!(t.settings.budget, None);
@@ -986,11 +1003,47 @@ mod tests {
     #[test]
     fn booking_a_cost_keeps_the_estimate() {
         let mut t = sample();
-        let item: Item = serde_json::from_value(json!({ "id": "s", "title": "Shinkansen", "category": "transport",
+        let item: Item = serde_json::from_value(json!({ "id": "s", "title": "Shinkansen", "kind": "train",
             "cost": { "amount": 45000, "currency": "JPY", "status": "estimated" } })).unwrap();
         apply(&mut t, &[Command::AddItem { item }], stamp("a")).unwrap();
         let booked: Cost = serde_json::from_value(json!({ "amount": 42510, "currency": "JPY", "status": "booked" })).unwrap();
         apply(&mut t, &[Command::SetCost { id: "s".into(), cost: Some(booked) }], stamp("b")).unwrap();
         assert_eq!(t.item("s").unwrap().cost.as_ref().unwrap().replaced_estimate, Some(Money { amount: 45000.0, currency: "JPY".into() }));
+    }
+
+    #[test]
+    fn places_and_bookings_cannot_be_local_travel() {
+        let mut t = sample();
+        apply(&mut t, &[Command::AddPlace { place: place("p1", "Senso-ji") }], stamp("p")).unwrap();
+        let mut taxi = place("x", "Taxi rank");
+        taxi.kind = Kind::LocalTravel;
+        let e = apply(&mut t, &[Command::AddPlace { place: taxi }], stamp("a")).unwrap_err();
+        assert_eq!(e.message, "A place can't be Local travel. Choose another type.");
+
+        let e = apply(&mut t, &[Command::UpdatePlace { id: "p1".into(), set: json!({ "kind": "localTravel" }) }], stamp("b")).unwrap_err();
+        assert!(e.message.starts_with("A place can't be Local travel"), "{}", e.message);
+        assert_eq!(t.place("p1").unwrap().kind, Kind::Sight);
+
+        // An item may be Local travel (a budget-only cost), but not its booking.
+        let item: Item = serde_json::from_value(json!({ "id": "i", "title": "Taxis", "kind": "localTravel" })).unwrap();
+        apply(&mut t, &[Command::AddItem { item }], stamp("c")).unwrap();
+        let booked: Item = serde_json::from_value(json!({ "id": "j", "title": "Taxi", "kind": "localTravel", "booking": { "kind": "localTravel" } })).unwrap();
+        let e = apply(&mut t, &[Command::AddItem { item: booked }], stamp("d")).unwrap_err();
+        assert_eq!(e.message, "A booking can't be Local travel. Choose another type.");
+        let booking: Booking = serde_json::from_value(json!({ "kind": "localTravel" })).unwrap();
+        let e = apply(&mut t, &[Command::SetBooking { id: "i".into(), booking: Some(booking) }], stamp("e")).unwrap_err();
+        assert!(e.message.starts_with("A booking can't be Local travel"));
+    }
+
+    #[test]
+    fn a_scheduled_place_gives_its_kind_to_the_item() {
+        let mut t = sample();
+        apply(&mut t, &[Command::AddPlace { place: place("p1", "Senso-ji") }], stamp("p")).unwrap();
+        apply(&mut t, &[Command::UpdatePlace { id: "p1".into(), set: json!({ "kind": "museum" }) }], stamp("a")).unwrap();
+        let cmd = Command::SchedulePlace { place_id: "p1".into(), item_id: "v".into(), date: "2026-12-02".into(), start: 600, end: None };
+        apply(&mut t, &[cmd], stamp("b")).unwrap();
+        let item = t.item("v").unwrap();
+        assert_eq!(item.kind, Kind::Museum);
+        assert_eq!(item.kind.group(), Group::Activity);
     }
 }

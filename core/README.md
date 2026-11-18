@@ -18,7 +18,7 @@ Tools: Rust stable, the `wasm32-unknown-unknown` target, `wasm-pack` (installed 
 
 | Module | What it owns | Status |
 | --- | --- | --- |
-| `model.rs` | Every stored record: `Trip`, `Settings`, `Day`, `Place`, `Item` (slot, stay, booking, cost), `Leg`, change log types, enums | Done |
+| `model.rs` | Every stored record: `Trip`, `Settings`, `Day`, `Place`, `Item` (slot, stay, booking, cost), `Leg`, change log types, enums (`Kind`, the 15 sub-categories, and `Group`, the six groups, items 81–83) | Done |
 | `time.rs` | `Date` (no time zone database), `HH:MM` parsing, snapping | Done |
 | `commands.rs` | `Command` (the only way a trip changes), `apply` as one undo step, `undo_last`, `undo_to`, AI `ChangeFile` | Done |
 | `hours.rs` | Opening hours on a date: open and closed ranges | Done |
@@ -67,7 +67,7 @@ Defines its own types. Must provide:
 Defines its own types. Must provide:
 - `cost_total(trip, item) -> Option<f64>`: total in the cost's own currency: amount × nights (if `per_night`; nights from the stay, else 1) × people (if `per_person`; `cost.people` or `settings.people`).
 - `cost_forms(trip, item)`: the total plus calculated per night, per person, per person per night (item 60).
-- `summary(trip) -> BudgetSummary` for the Budget page: home currency; planned, booked and estimated totals in the home currency; budget and left; per person; currency columns in use; per category (amount per currency, home total, limit); per date (home total per category, lodging spread over its nights); cost rows (title, category, status, where it came from, date, amount and currency, home amount, per person, replaced estimate); and currencies missing a rate. Items with `booking.count_in_budget == false` are left out.
+- `summary(trip) -> BudgetSummary` for the Budget page: home currency; planned, booked and estimated totals in the home currency; budget and left; per person; currency columns in use; per group, all six in order (amount per currency, home total, limit), each with its sub-category lines (items 81–83); per date (home total per group, lodging spread over its nights); cost rows (title, kind and group, status, where it came from, date, amount and currency, home amount, per person, replaced estimate); and currencies missing a rate. Items with `booking.count_in_budget == false` are left out.
 - Cost date: slot date, else booking date, else stay check-in, else `cost.date`, else none.
 
 ### import.rs
@@ -108,7 +108,8 @@ A review sub-agent found 10 bugs with failing inputs (home currency switch, fixe
 
 - No leg is drawn from the hotel to the first block of a morning unless the day has a check-out block (item 49). Needs a "leave the base" block key. (The day's location already follows the night before.)
 - Two stays covering the same night: `night_on` takes the first, with no warning.
-- A place with no type in an import comes in as Sight, marked unverified. `Place.kind` could become optional if that proves confusing.
+- A place with no type in an import comes in as Other (Sight before items 81–83), marked unverified. `Place.kind` could become optional if that proves confusing.
+- Travel legs carry no cost yet; a Local travel cost is an item of kind `localTravel` (Transport → Local travel in the budget).
 - Cost rows divide per person by the people the cost covers (a room for 2 shows half); the summary's per-person total divides by the trip's people.
 - Estimate speeds in `travel.rs` are rough stand-ins until routing.
 - Unscheduling a plain visit removes the item, including an estimated cost typed on it (undo brings it back).

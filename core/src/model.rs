@@ -65,8 +65,8 @@ pub struct Settings {
     pub currencies: Vec<CurrencyRate>,
     /// Trip budget in the home currency (item 52).
     pub budget: Option<f64>,
-    /// Limit per category in the home currency (item 52).
-    pub limits: BTreeMap<Category, f64>,
+    /// Limit per group in the home currency (items 52, 81).
+    pub limits: BTreeMap<Group, f64>,
 }
 
 impl Default for Settings {
@@ -117,7 +117,8 @@ pub struct Place {
     pub id: Id,
     pub name: String,
     pub name_local: Option<String>,
-    pub kind: PlaceType,
+    /// Sub-category; never Local travel (item 81).
+    pub kind: Kind,
     pub area: Option<String>,
     pub city: Option<String>,
     /// ISO 3166-1 two-letter code.
@@ -220,8 +221,8 @@ pub struct Item {
     /// Shown on the block, booking row and cost row. Defaults to the place name.
     pub title: String,
     pub place_id: Option<Id>,
-    /// Budget category (item 52).
-    pub category: Category,
+    /// Sub-category; the budget line is its group (items 52, 81).
+    pub kind: Kind,
     /// When it happens. `None` = not on the timetable yet.
     pub slot: Option<Slot>,
     /// Hotel stays: check-in and check-out blocks and the night band (item 63).
@@ -264,7 +265,8 @@ pub struct Stay {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Booking {
-    pub kind: BookingKind,
+    /// Sub-category; never Local travel (items 50, 81).
+    pub kind: Kind,
     pub confirmation: Option<String>,
     /// Where it was booked, for example a booking site.
     pub provider: Option<String>,
@@ -443,17 +445,154 @@ pub enum Record {
 
 // ---------- enums ----------
 
-/// The seven place types (item 17b).
+/// One sub-category, stored on every place, booking and item (items 81–83).
+/// Its group, colour and budget category follow from it, so they can never
+/// disagree. Local travel is only for costs of getting between stops; places
+/// and bookings cannot use it (item 81).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum PlaceType {
-    Sight,
+pub enum Kind {
     Food,
     Cafe,
-    Shop,
+    Dessert,
+    Sight,
     Museum,
     Nature,
     Nightlife,
+    Flight,
+    Train,
+    Bus,
+    Car,
+    LocalTravel,
+    Lodging,
+    Shopping,
+    Other,
+}
+
+impl Kind {
+    /// All 15 sub-categories, in the order of item 81's table.
+    pub const ALL: [Kind; 15] = [
+        Kind::Food,
+        Kind::Cafe,
+        Kind::Dessert,
+        Kind::Sight,
+        Kind::Museum,
+        Kind::Nature,
+        Kind::Nightlife,
+        Kind::Flight,
+        Kind::Train,
+        Kind::Bus,
+        Kind::Car,
+        Kind::LocalTravel,
+        Kind::Lodging,
+        Kind::Shopping,
+        Kind::Other,
+    ];
+
+    /// The group this sub-category belongs to (item 81).
+    pub fn group(self) -> Group {
+        match self {
+            Kind::Food | Kind::Cafe | Kind::Dessert => Group::Food,
+            Kind::Sight | Kind::Museum | Kind::Nature | Kind::Nightlife => Group::Activity,
+            Kind::Flight | Kind::Train | Kind::Bus | Kind::Car | Kind::LocalTravel => Group::Transport,
+            Kind::Lodging => Group::Lodging,
+            Kind::Shopping => Group::Shopping,
+            Kind::Other => Group::Other,
+        }
+    }
+
+    /// Whether a place may have this sub-category: everything except Local
+    /// travel (item 81). Bookings follow the same rule.
+    pub fn allowed_for_places(self) -> bool {
+        self != Kind::LocalTravel
+    }
+
+    /// Bookings use the same list as places (item 81).
+    pub fn allowed_for_bookings(self) -> bool {
+        self.allowed_for_places()
+    }
+
+    /// The camelCase id used in files, for example `localTravel`.
+    pub fn id(self) -> &'static str {
+        match self {
+            Kind::Food => "food",
+            Kind::Cafe => "cafe",
+            Kind::Dessert => "dessert",
+            Kind::Sight => "sight",
+            Kind::Museum => "museum",
+            Kind::Nature => "nature",
+            Kind::Nightlife => "nightlife",
+            Kind::Flight => "flight",
+            Kind::Train => "train",
+            Kind::Bus => "bus",
+            Kind::Car => "car",
+            Kind::LocalTravel => "localTravel",
+            Kind::Lodging => "lodging",
+            Kind::Shopping => "shopping",
+            Kind::Other => "other",
+        }
+    }
+
+    /// The name shown to the user, for example `Local travel`.
+    pub fn label(self) -> &'static str {
+        match self {
+            Kind::Food => "Food",
+            Kind::Cafe => "Café",
+            Kind::Dessert => "Dessert",
+            Kind::Sight => "Sight",
+            Kind::Museum => "Museum",
+            Kind::Nature => "Nature",
+            Kind::Nightlife => "Nightlife",
+            Kind::Flight => "Flight",
+            Kind::Train => "Train",
+            Kind::Bus => "Bus",
+            Kind::Car => "Car",
+            Kind::LocalTravel => "Local travel",
+            Kind::Lodging => "Lodging",
+            Kind::Shopping => "Shopping",
+            Kind::Other => "Other",
+        }
+    }
+
+    /// Read a camelCase id, for example `localTravel`.
+    pub fn from_id(id: &str) -> Option<Kind> {
+        Kind::ALL.into_iter().find(|k| k.id() == id)
+    }
+}
+
+/// The six groups: one colour each, and the budget's category lines
+/// (items 81–83). Every group exists on every list.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Group {
+    Food,
+    Activity,
+    Transport,
+    Lodging,
+    Shopping,
+    Other,
+}
+
+impl Group {
+    /// The six groups in display order (item 81).
+    pub const ALL: [Group; 6] =
+        [Group::Food, Group::Activity, Group::Transport, Group::Lodging, Group::Shopping, Group::Other];
+
+    /// The sub-categories in this group, in display order.
+    pub fn kinds(self) -> Vec<Kind> {
+        Kind::ALL.into_iter().filter(|k| k.group() == self).collect()
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Group::Food => "Food",
+            Group::Activity => "Activity",
+            Group::Transport => "Transport",
+            Group::Lodging => "Lodging",
+            Group::Shopping => "Shopping",
+            Group::Other => "Other",
+        }
+    }
 }
 
 /// Unrated, then the three ratings (items 17a, 68).
@@ -477,32 +616,6 @@ pub enum Mode {
     TwoWheeler,
     Cycle,
     Ride,
-}
-
-/// Budget categories (item 52).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum Category {
-    Flights,
-    Lodging,
-    Transport,
-    Food,
-    Tickets,
-    Shopping,
-    Other,
-}
-
-/// Booking types on the Bookings page (item 50).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum BookingKind {
-    Hotel,
-    Flight,
-    Train,
-    Ticket,
-    Restaurant,
-    Car,
-    Other,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -578,5 +691,52 @@ impl Trip {
 
     pub fn to_json(&self) -> String {
         serde_json::to_string_pretty(self).expect("a trip always serialises")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_kind_has_one_group() {
+        use Group as G;
+        let expected = [
+            (Kind::Food, G::Food),
+            (Kind::Cafe, G::Food),
+            (Kind::Dessert, G::Food),
+            (Kind::Sight, G::Activity),
+            (Kind::Museum, G::Activity),
+            (Kind::Nature, G::Activity),
+            (Kind::Nightlife, G::Activity),
+            (Kind::Flight, G::Transport),
+            (Kind::Train, G::Transport),
+            (Kind::Bus, G::Transport),
+            (Kind::Car, G::Transport),
+            (Kind::LocalTravel, G::Transport),
+            (Kind::Lodging, G::Lodging),
+            (Kind::Shopping, G::Shopping),
+            (Kind::Other, G::Other),
+        ];
+        assert_eq!(expected.map(|(k, _)| k), Kind::ALL);
+        for (kind, group) in expected {
+            assert_eq!(kind.group(), group, "{kind:?}");
+        }
+        // Every group has at least one sub-category (item 83), and the groups'
+        // sub-categories in order are exactly Kind::ALL.
+        assert!(Group::ALL.iter().all(|g| !g.kinds().is_empty()));
+        assert_eq!(Group::ALL.iter().flat_map(|g| g.kinds()).collect::<Vec<_>>(), Kind::ALL.to_vec());
+    }
+
+    #[test]
+    fn ids_are_camel_case_and_only_local_travel_is_not_for_places() {
+        for kind in Kind::ALL {
+            assert_eq!(serde_json::to_value(kind).unwrap(), kind.id());
+            assert_eq!(Kind::from_id(kind.id()), Some(kind));
+            assert_eq!(kind.allowed_for_places(), kind != Kind::LocalTravel);
+            assert_eq!(kind.allowed_for_bookings(), kind != Kind::LocalTravel);
+        }
+        assert_eq!(serde_json::to_value(Group::Activity).unwrap(), "activity");
+        assert_eq!(Kind::from_id("shop"), None);
     }
 }

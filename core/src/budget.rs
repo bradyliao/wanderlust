@@ -10,6 +10,10 @@
 //!   the user typed in (item 56). A currency with no rate is left out of the
 //!   home totals and listed in `missing_rates`; no rate is ever made up.
 //! - Items whose booking is not counted in the budget are left out.
+//! - Totals are per group (the six budget lines), each opening to its
+//!   sub-categories; an item's group follows from its kind (items 81–83).
+//!   Local travel (costs of getting between stops) is Transport → Local
+//!   travel; legs carry no cost of their own yet.
 //! - Nothing is rounded here; the UI rounds for display.
 
 use crate::model::*;
@@ -61,19 +65,32 @@ pub struct CurrencyAmount {
     pub amount: f64,
 }
 
-/// A home-currency amount for one category.
+/// A home-currency amount for one group.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CategoryAmount {
-    pub category: Category,
+pub struct GroupAmount {
+    pub group: Group,
     pub home: f64,
 }
 
-/// One row of the category table (item 52).
+/// One sub-category inside a group line (item 81).
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CategoryLine {
-    pub category: Category,
+pub struct KindLine {
+    pub kind: Kind,
+    /// One entry per currency column, in column order (0 where unused).
+    pub amounts: Vec<CurrencyAmount>,
+    /// Total in the home currency, leaving out currencies with no rate.
+    pub home: f64,
+    pub booked_home: f64,
+    pub estimated_home: f64,
+}
+
+/// One row of the category table: a group (items 52, 81).
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GroupLine {
+    pub group: Group,
     /// One entry per currency column, in column order (0 where unused).
     pub amounts: Vec<CurrencyAmount>,
     /// Total in the home currency, leaving out currencies with no rate.
@@ -82,6 +99,8 @@ pub struct CategoryLine {
     pub estimated_home: f64,
     /// The user's limit in the home currency, if set.
     pub limit: Option<f64>,
+    /// Every sub-category of the group, in order, even with no costs.
+    pub kinds: Vec<KindLine>,
 }
 
 /// One column of the day chart.
@@ -96,8 +115,8 @@ pub struct DateLine {
     pub weekday: String,
     /// False for a cost dated outside the trip (for example a flight the day before).
     pub in_trip: bool,
-    /// Home amount per category, only categories with costs, in category order.
-    pub categories: Vec<CategoryAmount>,
+    /// Home amount per group, only groups with costs, in group order.
+    pub groups: Vec<GroupAmount>,
     pub home: f64,
 }
 
@@ -119,7 +138,9 @@ pub enum CostSource {
 pub struct CostRow {
     pub item_id: Id,
     pub title: String,
-    pub category: Category,
+    pub kind: Kind,
+    /// Follows from `kind` (item 81).
+    pub group: Group,
     pub status: CostStatus,
     pub source: CostSource,
     /// The cost date (see `cost_date`); for a stay, its first night.
@@ -160,13 +181,13 @@ pub struct BudgetSummary {
     pub currencies: Vec<String>,
     /// The "All" row: totals per currency column.
     pub currency_totals: Vec<CurrencyAmount>,
-    /// All seven categories, in order.
-    pub categories: Vec<CategoryLine>,
+    /// All six groups, in `Group::ALL` order (items 81, 83).
+    pub groups: Vec<GroupLine>,
     /// Every trip date (even with nothing on it), plus dated costs outside
     /// the trip, in date order. Lodging is spread evenly over its nights.
     pub dates: Vec<DateLine>,
-    /// Costs with no date, per category.
-    pub undated: Vec<CategoryAmount>,
+    /// Costs with no date, per group.
+    pub undated: Vec<GroupAmount>,
     pub undated_home: f64,
     /// Largest home amount first; rows with no rate last.
     pub rows: Vec<CostRow>,
@@ -174,16 +195,6 @@ pub struct BudgetSummary {
     /// out of every home total. The UI should ask for the rate.
     pub missing_rates: Vec<String>,
 }
-
-pub const ALL_CATEGORIES: [Category; 7] = [
-    Category::Flights,
-    Category::Lodging,
-    Category::Transport,
-    Category::Food,
-    Category::Tickets,
-    Category::Shopping,
-    Category::Other,
-];
 
 /// Nights of a stay (check-out minus check-in), or `None` when the item has
 /// no stay or its dates don't make a positive number of nights.
@@ -289,27 +300,28 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
     let mut planned = 0.0;
     let mut booked = 0.0;
     let mut estimated = 0.0;
-    // category -> currency -> amount
-    let mut by_cat_cur: BTreeMap<Category, BTreeMap<String, f64>> = BTreeMap::new();
-    let mut by_cat_home: BTreeMap<Category, (f64, f64)> = BTreeMap::new(); // (booked, estimated)
-    let mut by_date: BTreeMap<Date, BTreeMap<Category, f64>> = BTreeMap::new();
-    let mut undated: BTreeMap<Category, f64> = BTreeMap::new();
+    // kind -> currency -> amount
+    let mut by_kind_cur: BTreeMap<Kind, BTreeMap<String, f64>> = BTreeMap::new();
+    let mut by_kind_home: BTreeMap<Kind, (f64, f64)> = BTreeMap::new(); // (booked, estimated)
+    let mut by_date: BTreeMap<Date, BTreeMap<Group, f64>> = BTreeMap::new();
+    let mut undated: BTreeMap<Group, f64> = BTreeMap::new();
 
     for item in trip.items.iter().filter(|i| counts_in_budget(i)) {
         let cost = item.cost.as_ref().expect("counts_in_budget checks the cost");
         let forms = cost_forms(trip, item).expect("item has a cost");
         let total = forms.total;
+        let group = item.kind.group();
         if !currencies.contains(&cost.currency) {
             currencies.push(cost.currency.clone());
         }
-        *by_cat_cur.entry(item.category).or_default().entry(cost.currency.clone()).or_default() += total;
+        *by_kind_cur.entry(item.kind).or_default().entry(cost.currency.clone()).or_default() += total;
 
         let rate = trip.rate_to_home(&cost.currency);
         let home = rate.map(|r| total * r);
         match home {
             Some(h) => {
                 planned += h;
-                let entry = by_cat_home.entry(item.category).or_default();
+                let entry = by_kind_home.entry(item.kind).or_default();
                 match cost.status {
                     CostStatus::Booked => {
                         booked += h;
@@ -324,12 +336,12 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
                 if let Some(nights) = night_dates(item) {
                     let share = h / nights.len() as f64;
                     for d in nights {
-                        *by_date.entry(d).or_default().entry(item.category).or_default() += share;
+                        *by_date.entry(d).or_default().entry(group).or_default() += share;
                     }
                 } else if let Some(d) = cost_date(item).as_deref().and_then(Date::parse) {
-                    *by_date.entry(d).or_default().entry(item.category).or_default() += h;
+                    *by_date.entry(d).or_default().entry(group).or_default() += h;
                 } else {
-                    *undated.entry(item.category).or_default() += h;
+                    *undated.entry(group).or_default() += h;
                 }
             }
             None => {
@@ -358,7 +370,8 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
         rows.push(CostRow {
             item_id: item.id.clone(),
             title: item.title.clone(),
-            category: item.category,
+            kind: item.kind,
+            group,
             status: cost.status,
             source: source_of(item),
             date,
@@ -379,25 +392,40 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
         .iter()
         .map(|c| CurrencyAmount {
             currency: c.clone(),
-            amount: by_cat_cur.values().filter_map(|m| m.get(c)).sum(),
+            amount: by_kind_cur.values().filter_map(|m| m.get(c)).sum(),
         })
         .collect();
 
-    let categories = ALL_CATEGORIES
+    let amounts_of = |m: &dyn Fn(&str) -> f64| -> Vec<CurrencyAmount> {
+        currencies.iter().map(|c| CurrencyAmount { currency: c.clone(), amount: m(c) }).collect()
+    };
+    let groups = Group::ALL
         .iter()
-        .map(|&category| {
-            let cur = by_cat_cur.get(&category);
-            let (b, e) = by_cat_home.get(&category).copied().unwrap_or_default();
-            CategoryLine {
-                category,
-                amounts: currencies
-                    .iter()
-                    .map(|c| CurrencyAmount { currency: c.clone(), amount: cur.and_then(|m| m.get(c)).copied().unwrap_or(0.0) })
-                    .collect(),
+        .map(|&group| {
+            let kinds: Vec<KindLine> = group
+                .kinds()
+                .into_iter()
+                .map(|kind| {
+                    let cur = by_kind_cur.get(&kind);
+                    let (b, e) = by_kind_home.get(&kind).copied().unwrap_or_default();
+                    KindLine {
+                        kind,
+                        amounts: amounts_of(&|c| cur.and_then(|m| m.get(c)).copied().unwrap_or(0.0)),
+                        home: b + e,
+                        booked_home: b,
+                        estimated_home: e,
+                    }
+                })
+                .collect();
+            let (b, e) = kinds.iter().fold((0.0, 0.0), |(b, e), k| (b + k.booked_home, e + k.estimated_home));
+            GroupLine {
+                group,
+                amounts: amounts_of(&|c| kinds.iter().flat_map(|k| k.amounts.iter()).filter(|a| a.currency == c).map(|a| a.amount).sum()),
                 home: b + e,
                 booked_home: b,
                 estimated_home: e,
-                limit: s.limits.get(&category).copied(),
+                limit: s.limits.get(&group).copied(),
+                kinds,
             }
         })
         .collect();
@@ -407,13 +435,13 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
     }
     let dates = by_date
         .into_iter()
-        .map(|(d, cats)| DateLine {
+        .map(|(d, groups)| DateLine {
             date: d.to_string(),
             label: d.month_day(),
             weekday: d.weekday_short().to_string(),
             in_trip: trip_dates.contains(&d),
-            home: cats.values().sum(),
-            categories: cats.into_iter().map(|(category, home)| CategoryAmount { category, home }).collect(),
+            home: groups.values().sum(),
+            groups: groups.into_iter().map(|(group, home)| GroupAmount { group, home }).collect(),
         })
         .collect();
 
@@ -436,10 +464,10 @@ pub fn summary(trip: &Trip) -> BudgetSummary {
         left: s.budget.map(|b| b - planned),
         currencies,
         currency_totals,
-        categories,
+        groups,
         dates,
         undated_home: undated.values().sum(),
-        undated: undated.into_iter().map(|(category, home)| CategoryAmount { category, home }).collect(),
+        undated: undated.into_iter().map(|(group, home)| GroupAmount { group, home }).collect(),
         rows,
         missing_rates,
     }
@@ -473,8 +501,8 @@ mod tests {
         t
     }
 
-    fn item(id: &str, title: &str, category: &str, extra: serde_json::Value) -> Item {
-        let mut v = json!({ "id": id, "title": title, "category": category });
+    fn item(id: &str, title: &str, kind: &str, extra: serde_json::Value) -> Item {
+        let mut v = json!({ "id": id, "title": title, "kind": kind });
         v.as_object_mut().unwrap().extend(extra.as_object().unwrap().clone());
         serde_json::from_value(v).unwrap()
     }
@@ -544,7 +572,7 @@ mod tests {
         run(
             &mut t,
             vec![
-                Command::AddItem { item: item("a", "Shibuya Sky", "tickets", json!({})) },
+                Command::AddItem { item: item("a", "Shibuya Sky", "sight", json!({})) },
                 Command::SetCost { id: "a".into(), cost: Some(cost(2500.0, "JPY", json!({ "perPerson": true }))) },
                 Command::AddItem { item: item("r", "Room for 2", "lodging", json!({})) },
                 Command::SetCost { id: "r".into(), cost: Some(cost(9000.0, "JPY", json!({ "perPerson": true, "people": 2 }))) },
@@ -571,11 +599,11 @@ mod tests {
         run(
             &mut t,
             vec![
-                Command::AddItem { item: item("f", "Flights", "flights", json!({ "booking": { "kind": "flight", "date": "2026-12-02" } })) },
+                Command::AddItem { item: item("f", "Flights", "flight", json!({ "booking": { "kind": "flight", "date": "2026-12-02" } })) },
                 Command::SetCost { id: "f".into(), cost: Some(cost(1260.0, "USD", json!({ "status": "booked" }))) },
                 Command::AddItem { item: item("m", "Monja", "food", json!({ "cost": { "amount": 9000, "currency": "JPY", "status": "estimated", "date": "2026-12-03" } })) },
                 Command::AddItem { item: item("c", "Coffee", "food", json!({ "cost": { "amount": 300, "currency": "TWD", "status": "estimated" } })) },
-                Command::SetBudget { total: Some(Some(110000.0)), limits: [(Category::Food, 2000.0)].into_iter().collect() },
+                Command::SetBudget { total: Some(Some(110000.0)), limits: [(Group::Food, 2000.0)].into_iter().collect() },
             ],
         );
         let s = summary(&t);
@@ -589,12 +617,12 @@ mod tests {
         assert_eq!(s.budget, Some(110000.0));
         assert!(s.missing_rates.is_empty());
 
-        let food = s.categories.iter().find(|c| c.category == Category::Food).unwrap();
+        let food = s.groups.iter().find(|c| c.group == Group::Food).unwrap();
         assert_eq!(food.amounts.iter().map(|a| a.amount).collect::<Vec<_>>(), vec![9000.0, 0.0, 300.0]);
         assert!(close(food.home, 1800.0 + 300.0));
         assert_eq!(food.limit, Some(2000.0));
-        assert_eq!(s.categories.len(), 7);
-        assert_eq!(s.categories[0].limit, None);
+        assert_eq!(s.groups.len(), 6);
+        assert_eq!(s.groups[1].limit, None);
 
         // Largest first, with home amounts and sources.
         assert_eq!(s.rows[0].item_id, "f");
@@ -616,7 +644,7 @@ mod tests {
         assert_eq!(s.missing_rates, vec!["KRW"]);
         assert!(close(s.planned, 1800.0));
         assert!(s.currencies.contains(&"KRW".to_string()));
-        let lodging = &s.categories[1];
+        let lodging = &s.groups[3];
         assert_eq!(lodging.home, 0.0);
         assert_eq!(lodging.amounts.iter().find(|a| a.currency == "KRW").unwrap().amount, 100000.0);
         let k = s.rows.last().unwrap();
@@ -630,7 +658,7 @@ mod tests {
         run(
             &mut t,
             vec![
-                Command::AddItem { item: item("s", "Shinkansen", "transport", json!({})) },
+                Command::AddItem { item: item("s", "Shinkansen", "train", json!({})) },
                 Command::SetCost {
                     id: "s".into(),
                     cost: Some(cost(42510.0, "JPY", json!({ "status": "booked", "replacedEstimate": { "amount": 45000, "currency": "JPY" } }))),
@@ -642,7 +670,7 @@ mod tests {
         assert!(close(s.booked, 42510.0 * 0.2));
         assert!(close(s.estimated, 9000.0 * 0.2));
         assert!(close(s.planned, s.booked + s.estimated));
-        let transport = &s.categories[2];
+        let transport = &s.groups[2];
         assert!(close(transport.booked_home, 42510.0 * 0.2) && transport.estimated_home == 0.0);
         let row = s.rows.iter().find(|r| r.item_id == "s").unwrap();
         assert_eq!(row.status, CostStatus::Booked);
@@ -655,9 +683,9 @@ mod tests {
         run(
             &mut t,
             vec![
-                Command::AddItem { item: item("g", "Ghibli (paid by friend)", "tickets", json!({ "booking": { "kind": "ticket", "countInBudget": false } })) },
+                Command::AddItem { item: item("g", "Ghibli (paid by friend)", "sight", json!({ "booking": { "kind": "sight", "countInBudget": false } })) },
                 Command::SetCost { id: "g".into(), cost: Some(cost(3000.0, "JPY", json!({}))) },
-                Command::AddItem { item: item("h", "Hotel", "lodging", json!({ "booking": { "kind": "hotel" } })) },
+                Command::AddItem { item: item("h", "Hotel", "lodging", json!({ "booking": { "kind": "lodging" } })) },
                 Command::SetCost { id: "h".into(), cost: Some(cost(1000.0, "JPY", json!({}))) },
             ],
         );
@@ -666,7 +694,7 @@ mod tests {
         assert_eq!(s.rows.len(), 1);
         assert_eq!(s.rows[0].item_id, "h");
         assert!(close(s.planned, 200.0));
-        assert_eq!(s.categories[4].home, 0.0);
+        assert_eq!(s.groups[1].home, 0.0);
     }
 
     #[test]
@@ -681,10 +709,10 @@ mod tests {
         assert_eq!(s.dates[0].weekday, "Wed");
         assert!(close(s.dates[0].home, 3600.0));
         assert!(close(s.dates[1].home, 3600.0 + 1000.0));
-        assert_eq!(s.dates[1].categories.len(), 2);
+        assert_eq!(s.dates[1].groups.len(), 2);
         assert!(close(s.dates[2].home, 3600.0));
         assert_eq!(s.dates[3].home, 0.0);
-        assert!(s.dates[3].categories.is_empty());
+        assert!(s.dates[3].groups.is_empty());
         let hotel = s.rows.iter().find(|r| r.item_id == "h").unwrap();
         assert_eq!(hotel.date_label, "12/02–12/04");
         assert_eq!(hotel.date.as_deref(), Some("2026-12-02"));
@@ -702,12 +730,12 @@ mod tests {
                 Command::AddItem {
                     item: item("a", "Sushi", "food", json!({
                         "slot": { "date": "2026-12-05", "start": 1140, "end": 1230 },
-                        "booking": { "kind": "restaurant", "date": "2026-12-04" },
+                        "booking": { "kind": "food", "date": "2026-12-04" },
                         "cost": { "amount": 9000, "currency": "JPY", "status": "estimated", "date": "2026-12-02" } })),
                 },
                 // Booking date wins over the cost's own date; outside the trip.
                 Command::AddItem {
-                    item: item("b", "Airport train", "transport", json!({
+                    item: item("b", "Airport train", "train", json!({
                         "booking": { "kind": "train", "date": "2026-12-01" },
                         "cost": { "amount": 1000, "currency": "JPY", "status": "booked", "date": "2026-12-03" } })),
                 },
@@ -724,7 +752,7 @@ mod tests {
         assert!(close(s.dates[0].home, 200.0));
         assert!(close(s.dates.iter().find(|d| d.date == "2026-12-05").unwrap().home, 1800.0));
         assert!(close(s.undated_home, 1100.0));
-        assert_eq!(s.undated.iter().map(|c| c.category).collect::<Vec<_>>(), vec![Category::Food, Category::Shopping]);
+        assert_eq!(s.undated.iter().map(|c| c.group).collect::<Vec<_>>(), vec![Group::Food, Group::Shopping]);
         let total_dated: f64 = s.dates.iter().map(|d| d.home).sum();
         assert!(close(total_dated + s.undated_home, s.planned));
     }
@@ -737,5 +765,47 @@ mod tests {
         assert!(v.get("homeCurrency").is_some() && v.get("missingRates").is_some());
         assert_eq!(v["rows"][0]["forms"]["basis"], "total");
         assert_eq!(v["rows"][0]["source"], "budget");
+    }
+
+    #[test]
+    fn groups_open_to_their_sub_categories() {
+        let mut t = trip();
+        run(
+            &mut t,
+            vec![
+                Command::AddItem { item: item("a", "Ramen", "food", json!({ "cost": { "amount": 3000, "currency": "JPY", "status": "estimated" } })) },
+                Command::AddItem { item: item("b", "Coffee", "cafe", json!({ "cost": { "amount": 1000, "currency": "JPY", "status": "booked" } })) },
+                Command::AddItem { item: item("c", "Parfait", "dessert", json!({ "cost": { "amount": 500, "currency": "TWD", "status": "estimated" } })) },
+                Command::AddItem { item: item("f", "Flight", "flight", json!({ "cost": { "amount": 100, "currency": "USD", "status": "booked" } })) },
+                Command::AddItem { item: item("l", "Taxi to dinner", "localTravel", json!({ "cost": { "amount": 2000, "currency": "JPY", "status": "estimated" } })) },
+            ],
+        );
+        let s = summary(&t);
+        assert_eq!(s.groups.iter().map(|g| g.group).collect::<Vec<_>>(), Group::ALL.to_vec());
+        let food = &s.groups[0];
+        assert_eq!(food.kinds.iter().map(|k| k.kind).collect::<Vec<_>>(), vec![Kind::Food, Kind::Cafe, Kind::Dessert]);
+        assert!(close(food.kinds[0].home, 600.0));
+        assert!(close(food.kinds[1].booked_home, 200.0));
+        assert!(close(food.kinds[2].home, 500.0));
+        assert!(close(food.home, 1300.0));
+        assert!(close(food.booked_home, 200.0) && close(food.estimated_home, 1100.0));
+        // Group amounts per currency are the sum of their sub-categories.
+        let jpy = food.amounts.iter().find(|a| a.currency == "JPY").unwrap();
+        assert_eq!(jpy.amount, 4000.0);
+
+        // Flights and local travel are both Transport (item 82).
+        let transport = &s.groups[2];
+        assert_eq!(transport.kinds.len(), 5);
+        let local = transport.kinds.iter().find(|k| k.kind == Kind::LocalTravel).unwrap();
+        assert!(close(local.home, 400.0));
+        assert!(close(transport.home, 3200.0 + 400.0));
+        // Every group is listed, even empty ones (item 83).
+        assert_eq!(s.groups[5].kinds.len(), 1);
+        assert_eq!(s.groups[5].home, 0.0);
+
+        let row = s.rows.iter().find(|r| r.item_id == "l").unwrap();
+        assert_eq!((row.kind, row.group), (Kind::LocalTravel, Group::Transport));
+        let v = serde_json::to_value(&s).unwrap();
+        assert_eq!(v["groups"][2]["kinds"][4]["kind"], "localTravel");
     }
 }
