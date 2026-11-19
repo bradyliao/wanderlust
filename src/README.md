@@ -6,7 +6,7 @@ React + TypeScript + Vite. All trip logic lives in the Rust core (`core/`, loade
 | --- | --- |
 | `main.tsx` | Mounts the app, loads the styles |
 | `App.tsx` | Loads the core and the last trip, holds the open trip, applies commands, undo (⌘Z / Ctrl+Z), trip files, AI change files, place import (preview, then one step), the selected and hovered place, notices |
-| `core.ts` | Typed wrapper around `core/pkg`: JSON in and out, `CoreError` with the core's plain-words message; `dragPreview` / `movePreview`; the trip's JSON text is cached per trip object, since a drag calls the core many times |
+| `core.ts` | Typed wrapper around `core/pkg`: JSON in and out, `CoreError` with the core's plain-words message; `dragPreview` / `movePreview`; `budgetSummary`, `costForms`; the trip's JSON text is cached per trip object, since a drag calls the core many times |
 | `types.ts` | The JSON shapes the app reads (trip, settings, place, item, log group, plan day with blocks, legs, night, warnings, sun and daylight stops, drag preview, budget summary, import preview) |
 | `storage.ts` | Trips in IndexedDB (one store, keyed by trip id) |
 | `prefs.ts` | Layout, pane sizes, the Place List grouping, the timetable view (multi-day or list), day column width and hour height (item 44) in localStorage, safe when storage is blocked |
@@ -15,9 +15,13 @@ React + TypeScript + Vite. All trip logic lives in the Rust core (`core/`, loade
 | `dragging.ts` | What is being dragged out of the Place List, so the timetable knows the place while the pointer moves (the browser hides drag data until the drop) |
 | `timetable.ts` | Timetable maths as pure functions: minutes ↔ pixels, 15-minute snapping, drop / move / resize slots, side-by-side lanes for overlaps, the daylight gradient from the core's stops (CSS variables per stage), sunrise and sunset marks, closed-hours bands with a 30-minute fade and their tags, travel bands while dragging, block names and colours |
 | `files.ts` | Download a file, read a picked file |
-| `format.ts` | Dates as numbers (`12/02`), money, mode and group labels, export file names |
+| `format.ts` | Dates as numbers (`12/02`), mode and group labels, the top bar budget line, export file names (re-exports `money`) |
+| `money.ts` | Money as text: `NT$`, `¥`, `$` and other symbols, no decimals for JPY / TWD (and other zero-decimal currencies), two for USD; column headings, typed amounts and rates, percentages |
+| `bookings.ts` | Bookings page logic as pure functions (items 49–51, 58–64): which items are bookings, their date and time, date sections and group chips, the stay span, cancellation deadlines coming up, Maps link, the add / edit form turned into commands (only what changed; a booked fixed block is unlocked and locked again when its time is edited), the price basis hint and calculated forms |
+| `budget.ts` | Budget page logic as pure functions (items 52–57, 62): bars against limits, the budget bar, the per-day chart columns, currencies in use, cost sources, "Add estimated cost" as a command. All sums come from the core's `budgetSummary` |
 | `map/style.ts` | Our own MapLibre style (items 41–42): OpenFreeMap vector tiles (OpenMapTiles schema) in matte greys read from the `--map-*` tokens, no POI icons, muted English labels, attribution kept |
 | `map/mapData.ts` | Map logic as pure functions: highlight chip state (days, group filter), stops numbered in time order, each pin's look (grey, group, day, compare), legs as lines (stored `travel.line`, else straight), dash per mode, legend rows, bounds to fit, the pane header text |
+| `pages.css` | Bookings and Budget page styles, theme tokens only |
 | `theme.css` | Colour tokens (items 77–81), including the daylight stages, hatching, travel band and map colours; light only, a dark set redefines the same names |
 | `app.css` | Shell styles, using only theme tokens |
 | `components/TopBar.tsx` | Brand, Plan · Bookings · Budget tabs, trip menu, People, Transport, budget total, undo, history, layout switch |
@@ -35,8 +39,12 @@ React + TypeScript + Vite. All trip logic lives in the Rust core (`core/`, loade
 | `components/kindPaths.ts` | The sub-category icon paths, shared with the map's HTML pins (`kindIconSvg`) |
 | `components/MapPane.tsx` | The Map pane (phase 5, loaded lazily so MapLibre stays out of the main bundle): grey pins with sub-category icons (HTML markers), the highlighted days' stops numbered in the accent colour and joined by their legs (line style by mode), selected ring and pan without zoom, hover ring, pin click selects, highlight chips (dates, groups), fit to the focus day when it changes, legend, leg click opens the timetable's mode picker; tiles that can't load leave pins and legs on a plain background with a note |
 | `pages/PlanPage.tsx` | Stacked and Three-column layouts (items 1–4) with the Place List, the Timetable (view toggle in its header) and the Map (focus day and stop count in its header) |
-| `pages/OtherPages.tsx` | Bookings placeholder; Budget group totals from `budgetSummary` |
-| `*.test.ts` | Vitest: the core wrapper (loads the real Wasm with `initSync`, imports `docs/samples/sample-places.json`), format, prefs, storage, the Place List logic (`places.test.ts`), the timetable maths (`timetable.test.ts`) and the map logic (`map/mapData.test.ts`) |
+| `pages/BookingsPage.tsx` | Bookings page (items 50–51, 81): bookings in date order under date headings (`12/02 WED · Tokyo`), hotel stays with a span bar over their nights, group filter chips, cancellation deadline strip, rows with sub-category icon, time, tags (base nights, free cancel, on timetable) and price; the details panel on the right |
+| `pages/BudgetPage.tsx` | Budget page (items 52–57, 62, 81–83): Planned (Booked / Estimated), Trip budget (editable), Left, per person; home currency menu and rates box (one input per currency, add, remove when unused, the core's message in place when refused); budget bar; group table with a column per currency in use, home total, bar, editable limit, rows open to sub-categories; per-day chart stacked by group; cost list largest first with status tags, replaced estimates faint and an "Actual (later)" column; "+ Add estimated cost"; missing-rate warning |
+| `components/BookingDetails.tsx` | The booking details panel (items 51, 58–60): check-in / check-out or time, Show on timetable (focus day + selection), confirmation hidden until Show, address and Google Maps link, cancellation, booked on and link, price box (amount, currency, Per night / Per person, people, Booked / Estimated, total and the calculated forms from `costForms`), base nights, files, Count in trip budget, notes, Remove |
+| `components/BookingForm.tsx` | Add or edit a booking: type (all sub-categories but Local travel), optional place, title, date and time (or stay dates, hotel times and check-in / check-out blocks), confirmation, provider, link, address, cancellation, price with the toggles, people, status, Count in trip budget, notes |
+| `components/CommitInput.tsx` | A text field that changes the trip on blur or Enter (Escape puts the stored value back); used for prices, people, rates, budget and limits |
+| `*.test.ts` | Vitest: the core wrapper (loads the real Wasm with `initSync`, imports `docs/samples/sample-places.json`), format, prefs, storage, the Place List logic (`places.test.ts`), the timetable maths (`timetable.test.ts`), the map logic (`map/mapData.test.ts`), money (`money.test.ts`), and the Bookings and Budget logic against the real core and the sample trip (`bookings.test.ts`) |
 
 ## Trying the Place List
 
@@ -66,3 +74,10 @@ With the sample trip loaded (above):
 - **Click a leg** for the same mode picker as the timetable (with the Google Maps link).
 - Offline, the tiles don't load: a note says so and the pins and legs stay on the plain background.
 - Dropping a place on the map does nothing (item 12).
+
+## Trying Bookings and Budget
+
+With the sample trip loaded (above):
+
+- **Bookings**: four bookings under 12/02, 12/05 and No date (the flights have no date). Click a row for its details; switch on Per night in the price box and the total becomes ¥162,000 (undo puts it back). "Show on timetable" goes to the Plan page with that day in focus (and the place selected when there is one). "+ Add booking" with a date and a start time makes a fixed block ("Ticket booked"); with a date and no time it waits in the Place List.
+- **Budget**: switch the home currency to USD and back; remove TWD while USD is home, then try TWD again to see the core's message in the rates box. Type a limit, open a group to its sub-categories, add an estimated cost (it shows in the list as "added on Budget").

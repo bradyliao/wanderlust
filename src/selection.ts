@@ -5,7 +5,7 @@
 import { createContext, useContext } from 'react'
 
 /** Which pane the selection came from, so that pane need not scroll to itself. */
-export type SelectFrom = 'list' | 'timetable' | 'map'
+export type SelectFrom = 'list' | 'timetable' | 'map' | 'bookings'
 
 export interface Selection {
   selectedPlaceId: string | null

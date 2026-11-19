@@ -24,7 +24,7 @@ A travel planner used on a computer: a Place List of collected places, a timetab
 
 ## Current state
 
-- **Phase 1 (Rust core) is done; phases 2–5 (app shell, Place List and import, timetable, map) are done; phase 6 (Bookings and Budget pages) is next.** See `docs/build-plan.md`. Run it with `npm install` then `npm run dev` (needs Rust, the wasm32 target and wasm-pack).
+- **Phase 1 (Rust core) is done; phases 2–6 (app shell, Place List and import, timetable, map, Bookings and Budget) are done; phase 7 (online extras: routing, weather) is next.** See `docs/build-plan.md`. Run it with `npm install` then `npm run dev` (needs Rust, the wasm32 target and wasm-pack).
 - Stack: Rust core compiled to Wasm (`wasm-pack`), React + TypeScript + Vite UI, MapLibre, data local in the browser. Browser first, Tauri later. No server, no accounts.
 - Every change to a trip is a `Command` in `core/src/commands.rs`, logged with its author (user or AI) and undoable. AI changes the trip with change files now, through MCP later.
 

@@ -34,6 +34,15 @@ export interface LogGroup {
   changes: unknown[]
 }
 
+/** Overrides for one date (model.rs `Day`). */
+export interface Day {
+  date: string
+  city?: string | null
+  timeZone?: string | null
+  utcOffsetMinutes?: number | null
+  mode?: Mode | null
+}
+
 export interface Trip {
   format: string
   version: number
@@ -42,7 +51,7 @@ export interface Trip {
   startDate: string
   endDate: string
   settings: Settings
-  days: unknown[]
+  days: Day[]
   places: Place[]
   items: Item[]
   legs: unknown[]
@@ -123,17 +132,69 @@ export interface Slot {
   fixedReason?: string | null
 }
 
-/** Only the parts of an item the Place List reads (model.rs `Item`). */
+/** A stay's dates and blocks (model.rs `Stay`, item 63). Nights run from `checkInDate` to the night before `checkOutDate`. */
+export interface Stay {
+  checkInDate: string
+  checkOutDate: string
+  checkIn?: Slot | null
+  checkOut?: Slot | null
+  /** Set by the hotel, minutes: "from 15:00", "by 11:00". */
+  checkInFrom?: number | null
+  checkOutBy?: number | null
+}
+
+/** model.rs `Booking` (items 49–51). */
+export interface Booking {
+  kind: Kind
+  confirmation?: string | null
+  provider?: string | null
+  url?: string | null
+  address?: string | null
+  /** Booked for a date but no time yet (item 64). */
+  date?: string | null
+  /** `YYYY-MM-DD HH:MM`, local time. */
+  cancelDeadline?: string | null
+  cancelNote?: string | null
+  files?: { id: string; name: string }[]
+  /** Defaults to true in the core. */
+  countInBudget?: boolean
+}
+
+export type CostStatus = 'estimated' | 'booked'
+
+export interface Money {
+  amount: number
+  currency: string
+}
+
+/** model.rs `Cost` (items 53, 58–62). */
+export interface Cost {
+  amount: number
+  currency: string
+  /** Off = the whole booking (item 58). */
+  perNight?: boolean
+  perPerson?: boolean
+  /** People it covers; null = everyone on the trip (items 59, 65). */
+  people?: number | null
+  status: CostStatus
+  /** The estimate a booked price replaced (item 62). */
+  replacedEstimate?: Money | null
+  /** For budget-only costs with no slot, booking or stay. */
+  date?: string | null
+}
+
+/** model.rs `Item`: one thing with an optional time, booking and cost (item 61). */
 export interface Item {
   id: string
   title: string
   placeId?: string | null
   kind: Kind
   slot?: Slot | null
-  stay?: { checkInDate: string; checkOutDate: string; checkIn?: Slot | null; checkOut?: Slot | null } | null
-  booking?: { kind: Kind; date?: string | null } | null
-  cost?: unknown
+  stay?: Stay | null
+  booking?: Booking | null
+  cost?: Cost | null
   notes?: string | null
+  updatedAt?: string | null
 }
 
 /** One place in an import preview (import.rs `PreviewPlace`). */
@@ -187,6 +248,18 @@ export type Command =
   | { op: 'setFixed'; id: string; part?: BlockPart; fixed: boolean; reason?: string | null }
   /** `mode: null` goes back to the day's mode. */
   | { op: 'setLegMode'; from: string; to: string; mode: Mode | null }
+  | { op: 'setHomeCurrency'; code: string }
+  | { op: 'setCurrency'; code: string; rateToHome: number; setOn?: string | null }
+  | { op: 'removeCurrency'; code: string }
+  /** Leave `total` out to keep it, `null` clears it; a limit of 0 removes it. */
+  | { op: 'setBudget'; total?: number | null; limits?: Partial<Record<Group, number>> }
+  | { op: 'addItem'; item: Item }
+  /** `set` holds item fields (camelCase), merged; `null` clears one. */
+  | { op: 'updateItem'; id: string; set: Record<string, unknown> }
+  | { op: 'removeItem'; id: string }
+  | { op: 'setCost'; id: string; cost: Cost | null }
+  | { op: 'setBooking'; id: string; booking: Booking | null }
+  | { op: 'setStay'; id: string; stay: Stay | null }
 
 export type BlockPart = 'main' | 'checkIn' | 'checkOut'
 
@@ -328,15 +401,88 @@ export interface PlanDay {
   daylight: DaylightStop[]
 }
 
+export interface CurrencyAmount {
+  currency: string
+  amount: number
+}
+
+/** One sub-category inside a group line (budget.rs `KindLine`). */
+export interface KindLine {
+  kind: Kind
+  amounts: CurrencyAmount[]
+  home: number
+  bookedHome: number
+  estimatedHome: number
+}
+
+/** One of the six group lines, in order (budget.rs `GroupLine`, items 81–83). */
 export interface GroupLine {
   group: Group
+  /** One per column in `BudgetSummary.currencies`. */
+  amounts: CurrencyAmount[]
   home: number
   bookedHome: number
   estimatedHome: number
   limit: number | null
+  kinds: KindLine[]
 }
 
-/** The fields of `budgetSummary` the shell shows. */
+export interface GroupAmount {
+  group: Group
+  home: number
+}
+
+/** Planned spending on one date (lodging spread over its nights). */
+export interface DateLine {
+  date: string
+  label: string
+  weekday: string
+  inTrip: boolean
+  groups: GroupAmount[]
+  home: number
+}
+
+export type PriceBasis = 'total' | 'perNight' | 'perPerson' | 'perPersonPerNight'
+
+/** A price's total and calculated forms (budget.rs `CostForms`, item 60). */
+export interface CostForms {
+  currency: string
+  entered: number
+  basis: PriceBasis
+  nights: number
+  nightsFromStay: boolean
+  people: number
+  peopleFollowTrip: boolean
+  total: number
+  perNight: number | null
+  perPerson: number
+  perPersonPerNight: number | null
+}
+
+export type CostSource = 'booking' | 'timetable' | 'budget'
+
+/** One line of the cost list (budget.rs `CostRow`). */
+export interface CostRow {
+  itemId: string
+  title: string
+  kind: Kind
+  group: Group
+  status: CostStatus
+  source: CostSource
+  date: string | null
+  lastNight: string | null
+  dateLabel: string
+  /** The total, in `currency`. */
+  amount: number
+  currency: string
+  /** Null when the currency has no rate. */
+  home: number | null
+  perPersonHome: number | null
+  replacedEstimate: Money | null
+  forms: CostForms
+}
+
+/** `budgetSummary` (budget.rs `BudgetSummary`, items 52–57). */
 export interface BudgetSummary {
   homeCurrency: string
   people: number
@@ -346,6 +492,14 @@ export interface BudgetSummary {
   perPerson: number
   budget: number | null
   left: number | null
+  /** Currency columns in use: the trip's currencies, then any a cost uses. */
+  currencies: string[]
+  currencyTotals: CurrencyAmount[]
   groups: GroupLine[]
+  dates: DateLine[]
+  undated: GroupAmount[]
+  undatedHome: number
+  /** Largest home amount first. */
+  rows: CostRow[]
   missingRates: string[]
 }

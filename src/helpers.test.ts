@@ -12,8 +12,8 @@ describe('format', () => {
 
   it('writes money and the top bar budget', () => {
     expect(money(79464.4, 'TWD')).toBe('NT$79,464')
-    expect(money(-120, 'USD')).toBe('−US$120')
-    expect(money(5, 'EUR')).toBe('EUR 5')
+    expect(money(-120, 'USD')).toBe('−$120.00')
+    expect(money(5, 'CHF')).toBe('CHF 5.00')
     expect(budgetLine(79464, 110000, 'TWD')).toBe('NT$79,464 / NT$110,000')
     expect(budgetLine(0, null, 'TWD')).toBe('No budget')
     expect(budgetLine(500, null, 'TWD')).toBe('NT$500 · No budget')

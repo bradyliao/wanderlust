@@ -4,7 +4,7 @@
 
 import init, * as wasm from '../core/pkg/wanderlust_core.js'
 import wasmUrl from '../core/pkg/wanderlust_core_bg.wasm?url'
-import type { BudgetSummary, Command, DragPreview, ImportPreview, PlanDay, Stamp, Trip } from './types'
+import type { BudgetSummary, Command, CostForms, DragPreview, ImportPreview, PlanDay, Stamp, Trip } from './types'
 
 export class CoreError extends Error {
   /** Index of the failing command, when a list of commands failed. */
@@ -127,6 +127,11 @@ export function movePreview(trip: Trip, blockKey: string, date: string, start: n
 
 export function budgetSummary(trip: Trip): BudgetSummary {
   return call<BudgetSummary>(() => wasm.budgetSummary(json(trip)))
+}
+
+/** A price's total and calculated forms (item 60); null when the item has no cost. */
+export function costForms(trip: Trip, itemId: string): CostForms | null {
+  return call<{ forms: CostForms | null }>(() => wasm.costForms(tripJson(trip), itemId)).forms
 }
 
 /** What importing a `wanderlust-places` file would do (item 70). Changes nothing. */

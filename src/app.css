@@ -499,56 +499,6 @@ body.resizing {
   font-weight: 600;
 }
 
-.budget-head {
-  display: flex;
-  gap: 32px;
-  margin: 16px 0 24px;
-}
-
-.budget-head .figure {
-  font-size: 18px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.group-list {
-  max-width: 520px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.group-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
-  font-variant-numeric: tabular-nums;
-}
-
-.group-row .swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  border-left: 3px solid;
-}
-
-.group-row .name {
-  flex: 1;
-}
-
-.group-row .limit {
-  width: 140px;
-  text-align: right;
-  color: var(--muted);
-}
-
-.group-row .amount {
-  width: 110px;
-  text-align: right;
-}
-
 .swatch.food { background: var(--kind-food-fill); border-color: var(--kind-food-ink); }
 .swatch.activity { background: var(--kind-activity-fill); border-color: var(--kind-activity-ink); }
 .swatch.transport { background: var(--kind-transport-fill); border-color: var(--kind-transport-ink); }

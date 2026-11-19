@@ -1,5 +1,6 @@
 // Display helpers: dates as numbers (12/02), money, labels.
 
+import { money } from './money'
 import type { Author, Group, Mode } from './types'
 
 /** Travel modes in Google Maps order, with their labels (item 33). */
@@ -40,20 +41,14 @@ export function dateRange(start: string, end: string): string {
   return `${monthDay(start)}/${ys}–${monthDay(end)}/${ye}`
 }
 
-const SYMBOLS: Record<string, string> = { TWD: 'NT$', USD: 'US$', JPY: '¥' }
-
-/** `NT$79,464`. Whole units; negative amounts keep their sign. */
-export function money(amount: number, currency: string): string {
-  const symbol = SYMBOLS[currency] ?? `${currency} `
-  const n = Math.round(amount)
-  const text = Math.abs(n).toLocaleString('en-US')
-  return `${n < 0 ? '−' : ''}${symbol}${text}`
-}
+/** Money as text lives in money.ts; re-exported here for older imports. */
+export { money }
 
 /** Top bar budget: `NT$x / NT$y`, or "No budget". */
 export function budgetLine(planned: number, budget: number | null, currency: string): string {
-  if (budget == null) return planned > 0 ? `${money(planned, currency)} · No budget` : 'No budget'
-  return `${money(planned, currency)} / ${money(budget, currency)}`
+  const m = (n: number) => money(n, currency, { whole: true })
+  if (budget == null) return planned > 0 ? `${m(planned)} · No budget` : 'No budget'
+  return `${m(planned)} / ${m(budget)}`
 }
 
 export function authorLabel(author: Author): string {

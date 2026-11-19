@@ -33,7 +33,7 @@ Each phase ends with something that can be tried.
 | 3 | **Place List and import**: grouping by area / rating / type / scheduled, rows, expand for details, import preview | Done 2026-11-19 |
 | 4 | **Timetable**: multi-day view with daylight background and weather slot, drag from the list, move and resize, closed-hours hatching, travel gaps, fixed blocks, hotel blocks and night band; then list view | Done 2026-11-19 |
 | 5 | **Map**: MapLibre with our own grey style, type pins, highlight chips, routes (straight lines first) | Done 2026-11-19 |
-| 6 | **Bookings page, then Budget page** | Not started |
+| 6 | **Bookings page, then Budget page** | Done 2026-11-19 |
 | 7 | **Online extras**: routing, weather, sun times per city (needs the user's keys) | Not started |
 | Later | MCP server for Claude (route C), Tauri desktop app, cloud sync, sharing, trip guide export | Parked |
 
@@ -72,6 +72,14 @@ Update this table and the status above when a phase or module is finished.
 - **Map done** by a sub-agent, checked by the main session in the browser with the sample trip: MapLibre with our own matte grey style on OpenFreeMap tiles (`src/map/style.ts`, colours from `--map-*` tokens), grey type pins, the focus day's stops numbered in slate blue and joined by legs (line style per mode; straight until routing), day and group highlight chips, legend, selection and hover linked with the other panes (pan, no zoom), leg click opens the mode picker, plain background with a note when tiles can't load. MapLibre is loaded lazily. 65 web tests, build and lint clean.
 - Not verified: ~50 places (the sample has 17), the production build in a browser, routed lines (none stored yet).
 - Choices to confirm with Brady: group chips filter (one click keeps only that group, more add, last off = all); compared days in a paler slate blue, numbered per day, "1·2" for a place on two highlighted days; a new focus day resets the date chips but keeps the group filter; a scheduled Forget place still shows on its highlighted day; only highlighted stops show names (grey pins on hover); selecting from another pane always pans.
+
+## Phase 6 status (2026-11-19)
+
+- **Bookings and Budget pages done** by a sub-agent, checked by the main session in the browser with the sample trip. Bookings: date sections, stay spans, group filter chips, add / edit / remove, details panel with hidden confirmation, price box (whole booking by default, Per night and Per person toggles, people, calculated forms), jump to the timetable. Budget: planned with booked / estimated split, trip budget and left, per person, home currency menu, typed rates and "+ Add currency", six group lines with currency columns, editable limits and sub-category rows, per-day chart, cost list with replaced estimates, "+ Add estimated cost". 85 web tests, build and lint clean.
+- **Extras built from the mock that still need Brady's OK** (each easy to remove): the cancellation deadline strip (next 10 days), the On timetable / Not on timetable / In Place List / Not in budget row tags, the "Count in trip budget" checkbox, the per-day chart, the cost list.
+- Choices to confirm with Brady: "Remove booking" deletes the whole item (also from the timetable and budget); editing a fixed booked time unlocks and relocks it in one step; new check-in / check-out blocks are 30 minutes and unlocked; a new booking's price defaults to Booked and the trip's first added currency; limits and the trip budget are always-editable fields; group chips pick one group at a time; USD shows `$` with cents.
+- Core gaps: attachments aren't stored yet ("comes later"); a booking with no place can't be selected on the timetable, so the jump only sets the day; the morning route from the hotel (known gap).
+- Test data left in the sample trip by the sub-agent: a booking "Sushi dinner, Kyoto (test)" (undo or remove it).
 
 ## Core changes for items 81–83 (done 2026-11-19)
 

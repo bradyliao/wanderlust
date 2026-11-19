@@ -6,7 +6,8 @@ import * as core from './core'
 import { download, takePickedFile } from './files'
 import { modeLabel, tripFileName } from './format'
 import { PlanPage } from './pages/PlanPage'
-import { BookingsPage, BudgetPage } from './pages/OtherPages'
+import { BookingsPage } from './pages/BookingsPage'
+import { BudgetPage } from './pages/BudgetPage'
 import { loadPrefs, savePrefs, type Prefs } from './prefs'
 import { SelectionContext, type SelectFrom, type Selection } from './selection'
 import { hasTrip, listTrips, loadTrip, saveTrip, type TripSummary } from './storage'
@@ -132,6 +133,13 @@ export default function App() {
     },
     [commit, fail],
   )
+
+  /** From the Bookings page: the Plan page with that day in focus and the place selected. */
+  const showOnTimetable = (date: string, placeId: string | null) => {
+    if (tripId) setFocus({ tripId, date })
+    if (placeId) setSelected({ id: placeId, from: 'bookings' })
+    setPage('plan')
+  }
 
   const setPeople = (people: number) => apply([{ op: 'setPeople', people }], `People: ${people}`)
   const setMode = (mode: Mode) => apply([{ op: 'setDefaultMode', mode }], `Transport: ${modeLabel(mode)}`)
@@ -334,8 +342,8 @@ export default function App() {
           />
         </SelectionContext.Provider>
       )}
-      {trip && page === 'bookings' && <BookingsPage />}
-      {trip && page === 'budget' && <BudgetPage summary={budget} />}
+      {trip && page === 'bookings' && <BookingsPage trip={trip} apply={apply} onShowOnTimetable={showOnTimetable} />}
+      {trip && page === 'budget' && <BudgetPage trip={trip} summary={budget} apply={apply} />}
 
       {dialog && (
         <TripDialog
